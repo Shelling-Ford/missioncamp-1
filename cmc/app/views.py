@@ -1,5 +1,5 @@
 from app import context
-from flask import render_template,, redirect, url_for
+from flask import render_template, redirect, url_for
 
 @context.route('/')
 def home():

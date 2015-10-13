@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# import sys
+import sys
 # sys.path.insert(0,"/home/missioncamp/public_html/missioncamp/")
 
 import logging

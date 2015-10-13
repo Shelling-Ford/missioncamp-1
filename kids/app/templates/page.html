@@ -4,6 +4,7 @@
 <style>
 .navbar {
   border-radius: 0;
+  margin-bottom: 0;
 }
 
 .flashes {
@@ -15,7 +16,7 @@
 .divider {
   margin-top: 35px;
   padding-top: 35px;
-  border-top: 1px solid #2E4A9A;
+  border-top: 1px solid #EE7B7A;
 }
 
 ul {
@@ -26,18 +27,18 @@ footer {
   margin-top: 35px;
   padding-top: 35px;
   padding-bottom: 35px;
-  background-color: #2E4A9A;
+  background-color: #f37d21;
   color: rgba(255,255,255,0.3);
 }
 #intro {
-    background: url(/static/img/2016/1/header.jpg) 50% 0 fixed;
+    background: url(/static/img/main.jpg) 50% 0 fixed;
     background-size: 100% auto;
     margin: 0 auto;
     width: 100%;
     height: 0;
     position: relative;
     /*box-shadow: 0 0 50px rgba(0,0,0,0.8);*/
-    padding: 9% 0;
+    padding: 25% 0;
 }
 
 #main {
@@ -56,11 +57,27 @@ footer {
 {% block body %}
 <section>
   <header>
-    <!--
-    <a href="/"><img src="{{ url_for('static', filename='img/2016/1/header.jpg') }}" style="width: 100%" class="hidden-xs" alt="{% trans %}청년대학생선교캠프{% endtrans %}"/></a>
-    -->
-    <a href="{{ url_for('home') }}"><section class="hidden-xs" id="intro" data-speed="6" data-type="background"></section></a>
-    <a href="/"><img src="{{ url_for('static', filename='img/2016/1/header320.jpg') }}" style="width: 100%" class="visible-xs" alt="{% trans %}청년대학생선교캠프{% endtrans %}"/></a>
+    <section class="hidden-xs" id="intro" data-speed="6" data-type="background">
+      <div class="container">
+        <div class="widget col-sm-6 col-xs-12" style="margin-top:-3%">
+          <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='img/title.png') }}" alt="어린이선교캠프" style="width: 100%;"/></a>
+        </div> <!-- .widget -->
+        <div class="widget col-sm-6 col-xs-12" style="margin-top:-20%">
+      		<div class="embed-responsive embed-responsive-16by9">
+      			<iframe class="embed-responsive-item" src="//www.youtube.com/embed/olNBKLW20Eg"></iframe>
+      		</div>
+      		<br/>
+      	</div> <!-- .widget -->
+      </div>
+    </section>
+    <section class="visible-xs">
+      <div class="container">
+        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='img/title.png') }}" alt="어린이선교캠프" style="width: 100%;"/></a>
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe class="embed-responsive-item" src="//www.youtube.com/embed/Q7jE0g31vn0"></iframe>
+        </div>
+      </div>
+    </section>
     <nav class="navbar navbar-default">
       <div class="container ">
         <div class="navbar-header">
@@ -73,8 +90,7 @@ footer {
         </div>
         <div class="collapse navbar-collapse" id="primary-navigation">
           <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('invitation') }}">초대의 글</a></li>
-    				<li><a href="{{ url_for('recommendation') }}">추천의 글</a></li>
+
             <!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
@@ -117,7 +133,7 @@ footer {
   <footer>
     <div class="container">
       <p>COPYRIGHT 2014, www.missioncamp.net ALL RIGHTS RESERVED<br/>
-  		EMAIL : historymakers_b@hanmail.net / TEL : 070-8787-6590~2</p>
+  		EMAIL : intercp-wscamp@hanmail.net / TEL : 070-8787-8846/8847</p>
       {% block footer %}
       {% endblock footer %}
     </div>

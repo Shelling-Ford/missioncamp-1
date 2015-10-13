@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import sys
-# sys.path.insert(0,"/home/missioncamp/public_html/missioncamp/")
+import os, sys
+cur_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, cur_dir)
 
 import logging
 logging.basicConfig(stream=sys.stderr)

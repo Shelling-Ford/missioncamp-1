@@ -46,9 +46,9 @@ def getDateSelectList():
     # 연도 리스트를 생성, 1900년 부터 2015년 까지
     date_select_list['yr_list'] = [ i for i in range(2015, 1900, -1) ]
     # 월 리스트를 생성 1월 부터 12월 까지
-    date_select_list['m_list'] = [ i for i in range(1, 13) ]
+    date_select_list['m_list'] = [ '%02d' % i for i in range(1, 13) ]
     # 일 리스트를 생성 1일 부터 31일 까지
-    date_select_list['d_list'] = [ i for i in range(1, 32) ]
+    date_select_list['d_list'] = [ '%02d' % i for i in range(1, 32) ]
 
     return date_select_list
 
@@ -136,6 +136,64 @@ def getGroupFormData():
     formData = getSafeFormData(getFormData(), group_form_keys)
     return formData
 
+def getAttendArray(camp_idx, formData):
+    attend = [0, 0, 0, 0]
+
+    campdata = db.select_one("SELECT `startday`, `campday` FROM `camp` WHERE `idx` = :idx", {'idx':camp_idx})
+
+    date_of_arrival = formData['date_of_arrival']
+    date_of_leave = formData['date_of_leave']
+
+    # date_of_arrival 변수와 date_of_leave 변수를 이용해 attend1, attend2, attend3, attend4 계산, 어드민 통계에 활용됨
+    if campdata['campday'] == 4:
+        if date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday']):
+            attend[0] = 1
+        elif date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=1)):
+            attend[0] = 1
+            attend[1] = 1
+        elif date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[0] = 1
+            attend[1] = 1
+            attend[2] = 1
+        elif date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=3)):
+            attend[0] = 1
+            attend[1] = 1
+            attend[2] = 1
+            attend[3] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=1)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=1)):
+            attend[1] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=1)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[1] = 1
+            attend[2] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=1)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=3)):
+            attend[1] = 1
+            attend[2] = 1
+            attend[3] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=2)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[2] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=2)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=3)):
+            attend[2] = 1
+            attend[3] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=3)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=3)):
+            attend[3] = 1
+    elif campdata['campday'] == 3:
+        if date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday']):
+            attend[0] = 1
+        elif date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=1)):
+            attend[0] = 1
+            attend[1] = 1
+        elif date_of_arrival == str(campdata['startday']) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[0] = 1
+            attend[1] = 1
+            attend[2] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=1)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=1)):
+            attend[1] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=1)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[1] = 1
+            attend[2] = 1
+        elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=2)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
+            attend[2] = 1
+    return attend
 # 개인신청 취소
 def cancelIndividual(member_idx, reason):
     cancel_data = (reason, datetime.datetime.today(), member_idx)
@@ -167,7 +225,10 @@ def regGroup(camp_idx, formData):
             '%(leadercontact)s', '%(leaderjob)s', %(area_idx)s, 0, 0, '%(grouptype)s', '%(regdate)s', '%(memo)s'
         )
     """ % formData)
+    group_idx = db.execute("SELECT LAST_INSERT_ID() as idx")[0]['idx']
     db.commit()
+
+    return group_idx
 
 #단체신청 수정
 def editGroup(group_idx, formData):
@@ -175,12 +236,12 @@ def editGroup(group_idx, formData):
 
     # 비밀번호 항목이 빈칸인 경우 비밀번호를 지우지 않도록 함.
     if formData['pwd'] == '' or formData['pwd'] == None:
-        formData['pwd'] = db.execute("SELECT `pwd` FROM `group` WHERE `idx` = %s" % (group_idx,))
+        formData['pwd'] = db.execute("SELECT `pwd` FROM `group` WHERE `idx` = %s" % (group_idx,))[0]['pwd']
 
     db.raw_query("""
         UPDATE `group` SET
             `name` = '%(name)s', `pwd` = '%(pwd)s', `leadername` = '%(leadername)s', `leadercontact` = '%(leadercontact)s',
-            `leaderjob` = '%(leaderjob)s', `area_idx` = %(area_idx)s, `mem_num` = %(mem_num)s,
+            `leaderjob` = '%(leaderjob)s', `area_idx` = %(area_idx)s,
             `grouptype` = '%(grouptype)s', `memo` = '%(memo)s'
         WHERE
             `idx` = %(group_idx)s
@@ -192,7 +253,7 @@ def getGroupData(group_idx):
     return db.execute("SELECT * FROM `group` WHERE `idx` = %s" % (group_idx,))[0]
 
 def getMemberList(group_idx):
-    member_list = db.execute("SELECT * FROM `member` WHERE `group_idx` = %s" % (group_idx))
+    member_list = db.execute("SELECT * FROM `member` WHERE `group_idx` = %s AND `cancel_yn` = 0" % (group_idx))
     for member in member_list:
         member['membership'] = getMembership(db.execute("SELECT * FROM `membership` WHERE `member_idx`= %s" % member['idx']))
 
@@ -211,5 +272,6 @@ def dec_mem_num(group_idx):
 # 단체신청 취소
 def cancelGroup(group_idx, reason):
     cancel_data = (reason, datetime.datetime.today(), group_idx)
+    db.raw_query("UPDATE `member` SET `cancel_yn` = 1, `cancel_reason` = '%s', `canceldate` = '%s' WHERE `group_idx` = %s" % cancel_data)
     db.raw_query("UPDATE `group` SET `cancel_yn` = 1, `cancel_reason` = '%s', `canceldate` = '%s' WHERE `idx` = %s" % cancel_data)
     db.commit()

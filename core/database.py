@@ -33,21 +33,36 @@ import collections
 #
 # 쿼리문을 넘겨주면 실행 후 dictionary 리스트를 반환해줌
 # param: query string, return: list of dictionary obj
-def  execute(query):
+def execute(query, params=None):
     s = db_session()
-    result = s.execute(query)
+    if params is None:
+        result = s.execute(query)
+    else:
+        result = s.execute(query, params)
     row = result.fetchone()
     rows = []
     while row is not None:
         rows.append(collections.OrderedDict((col, getattr(row, col)) for col in result._metadata.keys))
         row = result.fetchone()
 
-    s.close()
     return rows
 
-def raw_query(query):
+def select_one(query, params=None):
     s = db_session()
-    s.execute(query)
+    if params is None:
+        result = s.execute(query)
+    else:
+        result = s.execute(query, params)
+    row = result.fetchone()
+    collections.OrderedDict((col, getattr(row, col)) for col in result._metadata.keys)
+    return row
+
+def raw_query(query, params=None):
+    s = db_session()
+    if params is None:
+        s.execute(query)
+    else:
+        s.execute(query, params)
 
 def commit():
     s = db_session()

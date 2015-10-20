@@ -4,9 +4,9 @@
 <div class="container">
   <section class="page-header">
     {% if not group_yn %}
-    <h2>개인 신청(1차캠프: 12.28~31)</h2>
+    <h2>개인 신청</h2>
     {% else %}
-    <h2>멤버 신청서 작성(1차캠프: 12.28~31)</h2>
+    <h2>멤버 신청서 작성</h2>
     {% endif %}
   </section>
 
@@ -98,7 +98,9 @@
             <td><label for="persontype">참가 구분</label></td>
             <td colspan="3">
               <input type="radio" name="persontype" id="youngtype" value="청년"/><label for="youngtype">&nbsp;&nbsp;청년</label><br/>
-              <input type="radio" name="persontype" id="stafftype" value="스탭"/><label for="stafftype">&nbsp;&nbsp;청년 스탭</label>
+              <input type="radio" name="persontype" id="studenttype" value="대학생"/><label for="studenttype">&nbsp;&nbsp;대학생</label><br/>
+              <input type="radio" name="persontype" id="go3type" value="고3"/><label for="go3type">&nbsp;&nbsp;고3</label><br/>
+              <input type="radio" name="persontype" id="stafftype" value="스탭"/><label for="stafftype">&nbsp;&nbsp;청년/대학생 스탭</label>
             </td>
           </tr>
           <tr id="young_job">
@@ -122,6 +124,13 @@
               <option value="군인">군인</option>
               <option value="기타">기타</option>
             </select></td>
+          </tr>
+          <tr id="campus_major">
+            <td><label for="campus">캠퍼스</label></td>
+            <td colspan="3">
+              <label for="campus">학교</label><input type="text" name="campus" id="campus"/><br/>
+              <label for="major">학과</label><input type="text" name="major" id="major"/><br/>
+            </td>
           </tr>
           <tr>
             <td><label for="bus_yn">단체버스 이용</label></td>

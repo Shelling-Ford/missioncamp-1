@@ -82,6 +82,11 @@ def insertMembershipData(camp_idx, member_idx, formData):
     if formData['persontype'] == u'청년':
         membership_data = {'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'job', 'value':formData['job']}
         db.raw_query(membership_insert, membership_data)
+    elif formData['persontype'] == u'대학생':
+        campus_data = {'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'campus', 'value':formData['campus']}
+        db.raw_query(membership_insert, campus_data)
+        major_data = {'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'major', 'value':formData['major']}
+        db.raw_query(membership_insert, major_data)
 
     for t in formData['training']:
         membership_data = {'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'training', 'value':t}

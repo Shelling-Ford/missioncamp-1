@@ -1,25 +1,21 @@
 /*global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    if($('input[name=persontype]').val() === '청년') {
-        $('#young_job').show();
-    } else {
-        $('#young_job').hide();
-    }
-
-    if($('input[name=fullcamp_yn]:checked').val() === '0') {
-        $('#bubun').show();
-    } else {
-        $('#bubun').hide();
-    }
+    $('#bubun').hide();
+    $('#young_job').hide();
+    $('#campus_major').hide();
 
     // 참가구분 == 청년 일때 직업란 보여줌
-    // 참가구분 == 대학생 일때 학교 / 학과 기입란 보여줌
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
+            $('#campus_major').hide();
             $('#young_job').show();
+        } else if ($(this).val() === '대학생') {
+            $('#campus_major').show();
+            $('#young_job').hide();
         } else {
+            $('#campus_major').hide();
             $('#young_job').hide();
         }
     });
@@ -47,25 +43,62 @@ $(document).ready(function () {
         }
     });
 });
+var isChecked = false;
+
+function check_userid() {
+    'use strict';
+    var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[0-9a-zA-Z]([\-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([\-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+
+    if (!email_regex.test(userid)) {
+        alert('올바른 이메일이 아닙니다.');
+        isChecked = false;
+        return;
+    }
+
+    $.ajax({
+        url: './check-userid',
+        type: 'POST',
+        data: 'userid=' + userid + '&campidx=' + campidx,
+        success: function (data) {
+            if (parseInt(data, 10) === 0) {
+                alert("사용이 가능한 이메일입니다.");
+                isChecked = true;
+            } else {
+                alert("사용이 불가한 이메일입니다.");
+                isChecked = false;
+            }
+        }
+    });
+}
+
 
 
 // 폼 검증 함수
 function validate_form() {
 
     'use strict';
-    var contact_regex = /^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/, birth_regex = /^(19([0-9]{2})|200([0-9])|201([0-5]))-?(0([1-9])|1[0-2])-?([0-2][0-9]|[3][0-1])$/g;
+    var contact_regex = /^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/, contact = $('#hp').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
 
+    // 이메일 중복검사
+    if (!isChecked) {
+        alert('이메일 중복 검사를 해주세요');
+        return false;
+    }
 
-    // 비밀번호 공백
-    if ($('#pwd').val() !== '') {
+    // 비밀번호 필드가 존재할 경우(단체 멤버일 경우에는 없음)
+    if($('#pwd').length) {
+        // 비밀번호 공백
+        if ($('#pwd').val() === '') {
+            alert('비밀번호를 입력해 주세요');
+            return false;
+        }
+
         // 비밀번호 일치여부
         if ($('#pwd').val() !== $('#pwd2').val()) {
             alert('비밀번호가 일치하지 않습니다');
             return false;
         }
     }
-
-
 
     // 이름 입력 안함
     if ($('#name').val() === '') {
@@ -86,13 +119,13 @@ function validate_form() {
     }
 
     // 생년월일
-    if (!birth_regex.test($('#birth').val())) {
+    if ($('#birthyr').val() === '' || $('#birthm').val() === '' || $('#birthd').val() === '') {
         alert('생년월일을 올바르게 선택해 주세요');
         return false;
     }
 
     // 연락처
-    if (!contact_regex.test($('#contact').val())) {
+    if (!contact_regex.test(contact)) {
         alert('올바른 연락처 정보를 입력해 주세요');
         return false;
     }
@@ -133,6 +166,8 @@ function validate_form() {
     }
 
 
+    $('#birth').val($('#birthyr').val() + '-' + $('#birthm').val() + '-' + $('#birthd').val());
+    $('#contact').val(contact);
     return true;
 }
 

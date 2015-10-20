@@ -1,9 +1,18 @@
 /*global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    if($('input[name=persontype]').val() === '청년') {
+
+    $('#campus_major').hide();
+    $('#young_job').hide();
+
+    if($('input[name=persontype]:checked').val() === '청년') {
+        $('#campus_major').hide();
         $('#young_job').show();
+    } else if($('input[name=persontype]:checked').val() === '대학생') {
+        $('#campus_major').show();
+        $('#young_job').hide();
     } else {
+        $('#campus_major').hide();
         $('#young_job').hide();
     }
 
@@ -18,8 +27,13 @@ $(document).ready(function () {
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
+            $('#campus').hide();
             $('#young_job').show();
+        } else if ($(this).val() === '대학생') {
+            $('#campus').show();
+            $('#young_job').hide();
         } else {
+            $('#campus').hide();
             $('#young_job').hide();
         }
     });

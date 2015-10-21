@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block head %}
+<style>
+.table1 td, .table1 th  {
+	border: 1px solid #ccc;
+	padding: 4px;
+	font-size: 11px;
+}
+
+.flashes {
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+ul {
+  padding-left: 15px;
+}
+</style>
+{% endblock %}
+{% block body %}
+<section>
+  <header>
+    <nav class="navbar navbar-default">
+      <div class="container ">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-navigation" aria-expanded="false">
+            <span class="sr-only">메뉴</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+					<a class="navbar-brand" href="#">선캠 등록 관리</a>
+        </div>
+        <div class="collapse navbar-collapse" id="primary-navigation">
+          <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('cmc.home') }}">통계</a></li>
+            <li><a href="{{ url_for('cmc.member_list') }}">신청자목록</a></li>
+            <li><a href="{{ url_for('cmc.member_list', cancel_yn=1) }}">취소자목록</a></li>
+						<!--
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                숙소&nbsp;<span class="caret">
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="#">숙소배치</a></li>
+                <li><a href="#">숙소현황</a></li>
+                <li><a href="#">건물셋팅</a></li>
+                <li><a href="#">캠프숙소셋팅</a></li>
+              </ul>
+            </li>
+            <li><a href="#">통계표</a></li>
+					-->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {% block header %}
+    {% endblock header %}
+  </header>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %}
+        <div class="container">
+          <li class="alert alert-info alert-dismissible" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </li>
+        </div>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <section class="content">
+    {% block content %}
+    {% endblock content %}
+  </section>
+</section>
+{% endblock body %}

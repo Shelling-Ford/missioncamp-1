@@ -1,0 +1,38 @@
+{% extends 'cmc/page.html' %}
+
+{% block content %}
+<div class="container">
+  <table class="table1">
+    <tr>
+      {% set i = 0 %}
+      {% for s in stat.summary %}
+      <td>{{ s.name }}</td>
+      {% if not s.cnt == 0 %}
+      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
+      {% else %}
+      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
+      {% endif %}
+      {% set i = i + 1 %}
+      {% if i % 2 == 1 %}
+      </tr><tr>
+      {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+  <br/>
+  <p>지부별</p>
+  <table class="table1">
+    <tr>
+      {% set i = 0 %}
+      {% for s in stat.area %}
+      <td>{{ s.name }}</td>
+      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
+      {% set i = i + 1 %}
+      {% if i % 4 == 0 %}
+      </tr><tr>
+      {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+{% endblock %}

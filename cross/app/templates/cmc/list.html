@@ -1,0 +1,54 @@
+{% extends 'cmc/page.html' %}
+
+{% block content %}
+<div class="container">
+  <table class="table1">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>신청날자</th>
+        <th>출석</th>
+        <th>구분</th>
+        <th>이름</th>
+        <th>지부</th>
+        <th>단체</th>
+        <th>성별</th>
+        <th>연락처</th>
+        <th>재정클레임</th>
+        <th>입금액</th>
+        <th>상태</th>
+        <th>단체버스</th>
+        <th>전체참석</th>
+        <th>오는날</th>
+        <th>가는날</th>
+        <th>숙소</th>
+        <th>메모</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td>{{ m.rownum }}</td>
+        <td>{{ m.regdate }}</td>
+        <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
+        <td>{{ m.persontype }}</td>
+        <td><a href="#">{{ m.name|striptags|truncate(12) }}</a></td>
+        <td>{{ m.area }}</td>
+        <td>{% if not m.group_name == None %} {{ m.group_name }} {% endif %}</td>
+        <td>{{ m.sex }}</td>
+        <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
+        <td>{% if not m.claim == None %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>
+        <td>{% if m.amount == None %} 0 {% else %} {{ m.amount }} {% endif %}</td>
+        <td>{% if m.complete == None or m.complete == 0 %} <span style="color:gray">미납</span> {% elif m.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:red; font-weight:bold">완납</span> {% endif %}</td>
+        <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
+        <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
+        <td>{{ m.date_of_arrival }}</td>
+        <td>{{ m.date_of_leave }}</td>
+        <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
+        <td>{{ m.memo|striptags|truncate(20) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

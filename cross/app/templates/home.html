@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<style>
+.flashes {
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+ul {
+  padding-left: 15px;
+}
+</style>
+{% endblock %}
+{% block body %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+      <div class="container">
+        <li class="alert alert-info alert-dismissible" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </li>
+      </div>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+<div class="container">
+  <div class="page-header col-xs-12 col-sm-offset-3 col-sm-6">
+    <h2>선캠 등록 관리 프로그램(CROSS)</h2>
+  </div>
+  <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+    <div class="well">
+      <form action="" method="POST">
+        <div class="form-group">
+          <label for="userid">아이디</label>
+          <input class="form-control" type="text" name="userid" id="userid" />
+          <br/>
+          <label for="pwd">비밀번호</label>
+          <input class="form-control" type="password" name="pwd" id="pwd" />
+          <br/>
+          <label>캠프</label>
+          <div class="radio">
+            <label><input type="radio" name="camp" id="camp1" value="cmc">청대</label>&nbsp;
+            <label><input type="radio" name="camp" id="camp2" value="cbtj">청직</label>&nbsp;
+            <!--
+            <label><input type="radio" name="camp" id="camp3" value="ws">여남시</label>&nbsp;
+            <label><input type="radio" name="camp" id="camp4" value="youth">청소년</label>&nbsp;
+            <label><input type="radio" name="camp" id="camp5" value="kids">여남시</label>&nbsp;-->
+          </div>
+          <br/>
+          <input type="submit" class="btn btn-success" value="로그인"/>
+          <!--<input type="button" class="btn btn-default" value="비밀번호 찾기"/>-->
+
+        </div>
+      </form>
+    </div>
+    <p>CROSS - Camp Registration and Operating Statistics System</p>
+    <p>십자가의 도가 멸망하는 자들에게는 미련한 것이요 구원을 얻는 우리에게는 하나님의 능력이라 (고전 1:18)</p>
+  </div>
+</div>
+{% endblock %}

@@ -19,7 +19,7 @@ def home():
         camp_idx = getCampIdx('cmc')
     else:
         camp_idx = getCampIdx('cmc', year, term)
-        
+
     stat = get_basic_stat(camp_idx)
     return render_template('cmc/home.html', stat=stat)
 

@@ -18,6 +18,23 @@ def home():
     stat2 = get_basic_stat(camp_idx)
     return render_template('cbtj/home.html', stat1=stat1, stat2=stat2)
 
+@cbtj.route('/old_stat')
+def old_stat():
+    if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
+        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
+        return redirect(url_for('home'))
+
+    year = int(request.args.get('year', 0))
+    term = int(request.args.get('term', 0))
+
+    if year == 0 or term == 0:
+        camp_idx = getCampIdx('cbtj')
+    else:
+        camp_idx = getCampIdx('cbtj', year, term)
+
+    stat = get_basic_stat(camp_idx)
+    return render_template('cbtj/old_stat.html', stat=stat)
+
 @cbtj.route('/list')
 def member_list():
     if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:

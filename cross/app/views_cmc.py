@@ -11,7 +11,15 @@ def home():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
         flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
         return redirect(url_for('home'))
-    camp_idx = getCampIdx('cmc')
+
+    year = int(request.args.get('year', 0))
+    term = int(request.args.get('term', 0))
+
+    if year == 0 or term == 0:
+        camp_idx = getCampIdx('cmc')
+    else:
+        camp_idx = getCampIdx('cmc', year, term)
+        
     stat = get_basic_stat(camp_idx)
     return render_template('cmc/home.html', stat=stat)
 

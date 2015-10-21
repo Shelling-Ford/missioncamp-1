@@ -8,9 +8,11 @@ import hashlib
 
 # 파라메터: 캠프 코드값
 # 반환값: global_options 테이블에 등록되어있는 년도와 학기, 그리고 파라메터로 넘겨준 캠프 코드에 맞는 캠프 idx
-def getCampIdx(camp):
-    year = db.execute("SELECT `value` FROM `global_options` WHERE `key` = 'current_year'")[0]['value']
-    term = db.execute("SELECT `value` FROM `global_options` WHERE `key` = 'current_term'")[0]['value']
+def getCampIdx(camp, year=None, term=None):
+    if year is None:
+        year = db.execute("SELECT `value` FROM `global_options` WHERE `key` = 'current_year'")[0]['value']
+    if term is None:
+        term = db.execute("SELECT `value` FROM `global_options` WHERE `key` = 'current_term'")[0]['value']
     camp_idx = db.execute("SELECT `idx` FROM `camp` WHERE `code` = '%s' AND `year` = %s AND `term` = %s" % (camp, year, term))[0]['idx']
     return camp_idx
 

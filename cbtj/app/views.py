@@ -30,7 +30,8 @@ def camp(camp):
     return render_template('%s/home.html' % camp)
 
 # 아이디 중복체크
-@context.route('/<camp>/check-userid', methods=['POST'])
+@context.route('/<camp>/individual/check-userid', methods=['POST'])
+@context.route('/<camp>/group/member/check-userid', methods=['POST'])
 def check_userid(camp):
     campidx = getCampIdx(camp)
     userid = request.form.get('userid')

@@ -51,7 +51,7 @@ function check_userid() {
     }
 
     $.ajax({
-        url: '/' + camp + '/check-userid',
+        url: './check-userid',
         type: 'POST',
         data: 'userid=' + userid + '&campidx=' + campidx,
         success: function (data) {

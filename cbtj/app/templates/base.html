@@ -52,6 +52,15 @@ $(document).ready(function(){
         $scroll.css({ backgroundPosition: coords });
       }); // end window scroll
    });  // end section function
+
+   $(function() {
+     var zIndexNumber = 1000;
+     // Put your target element(s) in the selector below!
+     $("div").each(function() {
+       $(this).css('zIndex', zIndexNumber);
+       zIndexNumber -= 10;
+     });
+   });
 }); // close out script
 </script>
 {% block script %}

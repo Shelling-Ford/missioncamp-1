@@ -74,7 +74,7 @@ def reg_individual_proc(camp):
         session['idx'] = member_idx
 
         flash(u'신청이 완료되었습니다.')
-        return redirect(url_for('show_individual', camp=camp))
+        return redirect(url_for('show_individual', camp=camp, idx=member_idx))
 
 # 신청조회 - 로그인 폼
 @context.route('/<camp>/check')

@@ -80,6 +80,9 @@ def get_member_list(camp_idx, **kwargs):
     if 'persontype' in kwargs:
         where_clause += str(" AND `m`.`persontype` = :persontype")
 
+    if 'area_idx' in kwargs and kwargs['area_idx'] != None:
+        where_clause += str(" AND `m`.`area_idx` = :area_idx")
+
     query = text("""
         SELECT *
         FROM

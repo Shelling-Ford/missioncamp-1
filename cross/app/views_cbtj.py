@@ -6,11 +6,18 @@ from functions import *
 
 cbtj = Blueprint('cbtj', __name__, template_folder='templates', url_prefix='/cbtj')
 
+def session_check(role):
+    if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in role:
+        return True
+    else:
+        return False
+
 @cbtj.route('/')
 def home():
-    if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
+    if session_check(['master', 'hq', 'branch']):
         flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
         return redirect(url_for('home'))
+
     camp_idx = getCampIdx('cbtj')
     stat1 = get_basic_stat(camp_idx)
 
@@ -20,7 +27,7 @@ def home():
 
 @cbtj.route('/old_stat')
 def old_stat():
-    if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
+    if session_check(['master', 'hq', 'branch']):
         flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
         return redirect(url_for('home'))
 
@@ -37,7 +44,7 @@ def old_stat():
 
 @cbtj.route('/list')
 def member_list():
-    if not 'camp' in session or session['camp'] != 'cbtj' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
+    if session_check(['master', 'hq', 'branch']):
         flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
         return redirect(url_for('home'))
 

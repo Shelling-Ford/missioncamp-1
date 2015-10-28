@@ -56,7 +56,7 @@ def get_basic_stat(camp_idx):
             stat['summary'].append(dict(r))
 
     query = text("""
-        SELECT `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `a`.`idx` `idx`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         WHERE `m`.`camp_idx` = :camp_idx AND `cancel_yn` = 0 GROUP BY `a`.`name`
     """)
@@ -101,7 +101,7 @@ def get_member_list(camp_idx, **kwargs):
 
     kwargs['camp_idx'] = camp_idx
     results = db.execute(query, kwargs)
-    print results
+    
     member_list = []
     for r in results:
         member_list.append(dict(r))

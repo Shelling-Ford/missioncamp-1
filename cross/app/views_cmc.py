@@ -31,6 +31,7 @@ def member_list():
     camp_idx = getCampIdx('cmc')
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
+    area_idx = request.args.get('area_idx', None)
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn)
+    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
     return render_template('cmc/list.html', members=member_list)

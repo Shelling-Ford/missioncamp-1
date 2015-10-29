@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}
+2016여성남성시니어선교캠프
+{% endblock %}
+
+{% block head %}
+<style>
+.navbar {
+  border-radius: 0;
+}
+
+.flashes {
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+
+.divider {
+  margin-top: 35px;
+  padding-top: 35px;
+  border-top: 1px solid #EE7B7A;
+}
+
+ul {
+  padding-left: 15px;
+}
+
+footer {
+  margin-top: 35px;
+  padding-top: 35px;
+  padding-bottom: 35px;
+  background-color: #EE7B7A;
+  color: rgba(255,255,255,0.3);
+}
+#intro {
+    margin: 0 auto;
+    width: 100%;
+    height: 0;
+    position: relative;
+    padding: 9% 0;
+}
+
+#main {
+    background: url(static/img/main.png) 50% 0 fixed;
+    background-size: 100% auto;
+    margin: 0 auto;
+    width: 100%;
+    height: 0;
+    position: relative;
+    padding: 15% 0;
+}
+
+@media all and (max-width: 1024px) {
+  .table td {
+    font-size: 11px;
+  }
+}
+
+@media all and (max-width: 720px) {
+  .table td {
+    font-size: 12px;
+  }
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+<section>
+  <header>
+    <a href="{{ url_for('.home') }}">
+      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='ws/img/2016/header1.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
+    </a>
+    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='ws/img/2016/header1_320.jpg') }}" style="width: 100%" class="visible-xs" alt="여성남성시니어선교캠프"/></a>
+    <nav class="navbar navbar-default">
+      <div class="container ">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-navigation" aria-expanded="false">
+            <span class="sr-only">메뉴</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="primary-navigation">
+          <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('.invitation') }}">초대의 글</a></li>
+    				<li><a href="{{ url_for('.recommendation') }}">추천의 글</a></li>
+            <!--
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                캠프신청&nbsp;<span class="caret">
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="#">개인 신청</a></li>
+                <li><a href="#">단체 신청</a></li>
+                <li><a href="#">신청 조회</a></li>
+              </ul>
+            </li>
+            -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {% block header %}
+    {% endblock header %}
+  </header>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul class="flashes">
+        {% for message in messages %}
+          <div class="container">
+            <li class="alert alert-info alert-dismissible" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </li>
+          </div>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <section class="content">
+    {% block content %}
+    {% endblock content %}
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>COPYRIGHT 2014, www.missioncamp.net ALL RIGHTS RESERVED<br/>
+  		EMAIL : intercp-wscamp@hanmail.net / TEL : 070-8787-8846/8847</p>
+      {% block footer %}
+      {% endblock footer %}
+    </div>
+  </footer>
+</section>
+{% endblock body %}

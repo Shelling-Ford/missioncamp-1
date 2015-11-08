@@ -71,8 +71,8 @@
               <td>{% if member.newcomer_yn %} 예 {% else %} 아니오 {% endif %}</td>
               <td>
                 <div class="btn-group btn-group-xs" role="group" aria-label="...">
-                  <a class="btn btn-default" href="{{ url_for('member_edit', camp='cbtj2', member_idx=member.idx) }}">수정</a>&nbsp;|&nbsp;
-                  <a class="btn btn-danger" href="{{ url_for('member_cancel', camp='cbtj2', member_idx=member.idx) }}">취소</a>
+                  <a class="btn btn-default" href="{{ url_for('.member_edit', camp='cbtj2', member_idx=member.idx) }}">수정</a>&nbsp;|&nbsp;
+                  <a class="btn btn-danger" href="{{ url_for('.member_cancel', camp='cbtj2', member_idx=member.idx) }}">취소</a>
                 </div>
               </td>
             </tr>

@@ -76,6 +76,19 @@ def editIndividual(camp_idx, member_idx, formData, group_idx=None):
 
     db.commit()
 
+def getMembershipDataList(camp_idx, member_idx, formData):
+    membership_data_list = []
+    if formData['persontype'] == u'청년':
+        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'job', 'value':formData['job']})
+    elif formData['persontype'] == u'대학생':
+        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'campus', 'value':formData['campus']})
+        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'major', 'value':formData['major']})
+
+    for t in formData['training']:
+        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'training', 'value':t})
+
+    return membership_data_list
+
 # 최초 신청서 작성과 신청서 수정에서 공통적으로 사용되는 부분을 모듈화함.
 def insertMembershipData(camp_idx, member_idx, formData):
     membership_insert = "INSERT INTO `membership`(`camp_idx`, `member_idx`, `key`, `value`) VALUES (:camp_idx, :member_idx, :key, :value)"

@@ -87,18 +87,8 @@ footer {
             <li><a href="{{ url_for('.invitation') }}">초대의 글</a></li>
     				<li><a href="{{ url_for('.recommendation') }}">추천의 글</a></li>
             <li><a href="{{ url_for('.reg_individual') }}">개인 신청</a></li>
-            <!--
-            <li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                캠프신청&nbsp;<span class="caret">
-              </a>
-              <ul class="dropdown-menu">
-
-                <li><a href="#">단체 신청</a></li>
-                <li><a href="#">신청 조회</a></li>
-              </ul>
-            </li>
-            -->
+            <li><a href="{{ url_for('.reg_group') }}">단체 신청</a></li>
+            <li><a href="{{ url_for('.login') }}">신청 조회</a></li>
           </ul>
         </div>
       </div>

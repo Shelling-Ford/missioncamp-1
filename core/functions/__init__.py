@@ -1,8 +1,8 @@
 #-*-coding:utf-8-*-
-import database as db
+import core.database as db
 
 from flask import request
-from contextlib import closing
+from sqlalchemy.sql import text
 import datetime
 import hashlib
 
@@ -196,6 +196,82 @@ def getAttendArray(camp_idx, formData):
         elif date_of_arrival == str(campdata['startday'] + datetime.timedelta(days=2)) and date_of_leave == str(campdata['startday'] + datetime.timedelta(days=2)):
             attend[2] = 1
     return attend
+
+#개인신청 입력
+def regIndividualCommon(camp_idx, formData, membershipDataList, group_idx=None):
+    formData['camp_idx'] = camp_idx
+    formData['attend_yn'] = 0
+    formData['group_idx'] = group_idx
+    formData['regdate'] = datetime.datetime.today()
+
+    attend = getAttendArray(camp_idx, formData)
+    formData['attend1'] = attend[0]
+    formData['attend2'] = attend[1]
+    formData['attend3'] = attend[2]
+    formData['attend4'] = attend[3]
+
+    insert_sql = text("""
+        INSERT INTO `member`(camp_idx, userid, pwd, name, area_idx, contact,
+            church, birth, sex, bus_yn, mit_yn, newcomer_yn, persontype,
+            fullcamp_yn, date_of_arrival, date_of_leave, language, group_idx, regdate, memo, attend1, attend2, attend3, attend4)
+        VALUES (:camp_idx, :userid, :pwd, :name, :area_idx,
+            :contact, :church, :birth, :sex, :bus_yn, :mit_yn,
+            :newcomer_yn, :persontype, :fullcamp_yn,
+            :date_of_arrival, :date_of_leave, :language, :group_idx,
+            :regdate, :memo, :attend1, :attend2, :attend3, :attend4)
+    """)
+
+    db.raw_query(insert_sql, formData)
+
+    lastrowid = db.execute("SELECT LAST_INSERT_ID() as idx")
+    member_idx = lastrowid[0]['idx']
+
+    membership_insert = text("INSERT INTO `membership`(`camp_idx`, `member_idx`, `key`, `value`) VALUES (:camp_idx, %s, :key, :value)" % member_idx)
+    for membership_data in membershipDataList:
+        db.raw_query(membership_insert, membership_data)
+
+    db.commit()
+    return member_idx
+
+#개인신청 수정
+def editIndividualCommon(camp_idx, member_idx, formData, membershipDataList, group_idx=None):
+    formData['member_idx'] = member_idx
+    formData['group_idx'] = group_idx
+
+    # 비밀번호 항목이 빈칸인 경우 비밀번호를 지우지 않도록 함.
+    if formData['pwd'] == '' or formData['pwd'] == None:
+        pwd = db.execute('SELECT `pwd` FROM `member` WHERE `idx` = :idx', {'idx': member_idx})[0]['pwd']
+        formData['pwd'] = pwd
+
+    attend = getAttendArray(camp_idx, formData)
+    formData['attend1'] = attend[0]
+    formData['attend2'] = attend[1]
+    formData['attend3'] = attend[2]
+    formData['attend4'] = attend[3]
+
+    update_sql = text("""
+        UPDATE `member` SET
+            `name` = :name, `pwd` = :pwd, `area_idx` = :area_idx, `contact` = :contact,
+            `church` = :church, `birth` = :birth, `sex` = :sex,
+            `bus_yn` = :bus_yn, `mit_yn` = :mit_yn,
+            `newcomer_yn` = :newcomer_yn, `persontype` = :persontype,
+            `fullcamp_yn` = :fullcamp_yn, `date_of_arrival` = :date_of_arrival,
+            `date_of_leave` = :date_of_leave, `language` = :language,
+            `group_idx` = :group_idx, `memo` = :memo,
+            `attend1` = :attend1, `attend2` = :attend2, `attend3` = :attend3, `attend4` = :attend4
+        WHERE
+            `idx` = :member_idx
+    """)
+
+    db.raw_query(update_sql, formData)
+    db.raw_query("DELETE FROM `membership` WHERE `member_idx` = :member_idx", {'member_idx': member_idx})
+
+    membership_insert = text("INSERT INTO `membership`(`camp_idx`, `member_idx`, `key`, `value`) VALUES (:camp_idx, %s, :key, :value)" %member_idx)
+    for membership_data in membershipDataList:
+        db.raw_query(membership_insert, membership_data)
+
+    db.commit()
+
 # 개인신청 취소
 def cancelIndividual(member_idx, reason):
     cancel_data = (reason, datetime.datetime.today(), member_idx)

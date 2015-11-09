@@ -15,5 +15,7 @@ context.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
 import views
 from views_cmc import cmc
 from views_cbtj import cbtj
+from views_ws import ws
 context.register_blueprint(cmc)
 context.register_blueprint(cbtj)
+context.register_blueprint(ws)

@@ -1,7 +1,7 @@
 #-*-coding:utf-8-*-
 from flask import render_template, redirect, url_for, session, flash, Blueprint
 from core.functions import *
-from functions.cmc import *
+from core.functions.cmc import *
 
 context = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
 

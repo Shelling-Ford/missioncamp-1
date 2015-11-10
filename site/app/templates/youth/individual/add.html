@@ -1,0 +1,289 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <section class="page-header">
+    {% if not group_yn %}
+    <h2>개인 신청</h2>
+    {% else %}
+    <h2>멤버 신청서 작성</h2>
+    {% endif %}
+  </section>
+
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+    <form class="form-horizontal" id="form" action="" method="POST">
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="userid" class="col-sm-4 control-label">아이디</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="userid" id="userid"/></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="id_check"></p></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd" class="col-sm-4 control-label">비밀번호</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd" id="pwd"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd2" class="col-sm-4 control-label">비밀번호 확인</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd2" id="pwd2"/></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="pwd_check"></p></div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="name" class="col-sm-4 control-label">이름</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="name" id="name"/></div>
+      </div>
+
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="area_idx" class="col-sm-4 control-label">등록지부</label>
+        <div class="col-sm-8">
+          <select name="area_idx" class="form-control" id="area_idx">
+            <option value="">== 선택하세요 ==</option>
+            {% for area in area_list %}
+            <option value="{{ area.idx }}">{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="sex" class="col-sm-4 control-label">성별</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="sex" id="sex_m" value="M" />남자</label>
+          <label><input type="radio" name="sex" id="sex_f" value="F" />여자</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="birth" class="col-sm-4 control-label">출생년도</label>
+        <div class="col-sm-8">
+          <select name="birth" class="form-control" id="birth">
+            <option value="">==선택하세요==</option>
+            <option value="2015">2015</option>
+            <option value="2014">2014</option>
+            <option value="2013">2013</option>
+            <option value="2012">2012</option>
+            <option value="2011">2011</option>
+            <option value="2010">2010</option>
+            <option value="2009">2009</option>
+            <option value="2008">2008</option>
+            <option value="2007">2007</option>
+            <option value="2006">2006</option>
+            <option value="2005">2005</option>
+            <option value="2004">2004</option>
+            <option value="2003">2003</option>
+            <option value="2002">2002</option>
+            <option value="2001">2001</option>
+            <option value="2000">2000</option>
+            <option value="1999">1999</option>
+            <option value="1998">1998</option>
+            <option value="1997">1997</option>
+            <option value="1996">1996</option>
+            <option value="1995">1995</option>
+            <option value="1994">1994</option>
+            <option value="1993">1993</option>
+            <option value="1992">1992</option>
+            <option value="1991">1991</option>
+            <option value="1990">1990</option>
+            <option value="1989">1989</option>
+            <option value="1988">1988</option>
+            <option value="1987">1987</option>
+            <option value="1986">1986</option>
+            <option value="1985">1985</option>
+            <option value="1984">1984</option>
+            <option value="1983">1983</option>
+            <option value="1982">1982</option>
+            <option value="1981">1981</option>
+            <option value="1980">1980</option>
+            <option value="1979">1979</option>
+            <option value="1978">1978</option>
+            <option value="1977">1977</option>
+            <option value="1976">1976</option>
+            <option value="1975">1975</option>
+            <option value="1974">1974</option>
+            <option value="1973">1973</option>
+            <option value="1972">1972</option>
+            <option value="1971">1971</option>
+            <option value="1970">1970</option>
+            <option value="1969">1969</option>
+            <option value="1968">1968</option>
+            <option value="1967">1967</option>
+            <option value="1966">1966</option>
+            <option value="1965">1965</option>
+            <option value="1964">1964</option>
+            <option value="1963">1963</option>
+            <option value="1962">1962</option>
+            <option value="1961">1961</option>
+            <option value="1960">1960</option>
+            <option value="1959">1959</option>
+            <option value="1958">1958</option>
+            <option value="1957">1957</option>
+            <option value="1956">1956</option>
+            <option value="1955">1955</option>
+            <option value="1954">1954</option>
+            <option value="1953">1953</option>
+            <option value="1952">1952</option>
+            <option value="1951">1951</option>
+            <option value="1950">1950</option>
+            <option value="1949">1949</option>
+            <option value="1948">1948</option>
+            <option value="1947">1947</option>
+            <option value="1946">1946</option>
+            <option value="1945">1945</option>
+            <option value="1944">1944</option>
+            <option value="1943">1943</option>
+            <option value="1942">1942</option>
+            <option value="1941">1941</option>
+            <option value="1940">1940</option>
+          </select>
+        </div>
+      </div>
+
+      {% if group_yn == False or group.grouptype == "1" %}
+      <div class="form-group">
+        <label for="hp" class="col-sm-4 control-label">연락처</label>
+        <div class="col-sm-8">
+          <select name="hp" id="hp">
+            <option value="010">010</option>
+            <option value="011">011</option>
+            <option value="016">016</option>
+            <option value="017">017</option>
+            <option value="018">018</option>
+            <option value="019">019</option>
+            <option value="070">070</option>
+          </select>
+          -<input name="hp2" id="hp2" type="text" size="4"/>
+          -<input name="hp3" id="hp3" type="text" size="4"/>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="email" class="col-sm-4 control-label">이메일</label>
+        <div class="col-sm-8"><input type="email" class="form-control" name="email" id="email"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="church" class="col-sm-4 control-label">소속교회</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="church" id="church"/></div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="persontype" class="col-sm-4 control-label">참가구분</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="persontype" id="persontype1" value="중학생"/>중학생</label>
+          <label><input type="radio" name="persontype" id="persontype2" value="고등학생"/>고등학생</label>
+          <label><input type="radio" name="persontype" id="persontype3" value="교사"/>교사</label>
+          <label><input type="radio" name="persontype" id="persontype4" value="교역자"/>교역자</label>
+          <label><input type="radio" name="persontype" id="persontype4" value="기타"/>기타</label>
+        </div>
+      </div>
+
+      {% if not group_yn %}
+      <div class="form-group school">
+        <label for="sch1" class="col-sm-4 control-label">학교</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="sch1" id="sch1"/></div>
+      </div>
+
+      <div class="form-group school">
+        <label for="sch2" class="col-sm-4 control-label">학년</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="sch2" id="sch2">
+            <option value="">== 선택하세요 ==</option>
+            <option value="1">1학년</option>
+            <option value="2">2학년</option>
+            <option value="3">3학년</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bus_yn" class="col-sm-4 control-label">단체버스 이용</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="bus_yn" id="bus_y" value="1" />예</label>
+          <label><input type="radio" name="bus_yn" id="bus_n" value="0" />아니오</label>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="newcomer_yn" class="col-sm-4 control-label">선교캠프가<br/>처음이신가요?</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="newcomer_yn" id="newcomer_y" value="1" />예</label>
+          <label> <input type="radio" name="newcomer_yn" id="newcomer_n" value="0" />아니오</label>
+        </div>
+      </div>
+
+      {% if group_yn == False or group.grouptype == "1" %}
+      <div class="form-group">
+        <label for="training" class="col-sm-4 control-label">인터콥 훈련여부</label>
+        <div class="col-sm-8">
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training1" class="membership" value="청소년비전스쿨"/>청소년비전스쿨</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training2" class="membership" value="Mission Academy"/>Mission Academy</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training3" class="membership" value="U★BTJ Club School"/>U★BTJ Club School</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training4" class="membership" value="UGLC"/>UGLC</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training5" class="membership" value="청소년월드미션"/>청소년월드미션</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training6" class="membership" value="청소년선교캠프"/>청소년선교캠프</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training7" class="membership" value="청소년MIT,GUMF"/>청소년MIT,GUMF</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training8" class="membership" value="U★BTJ 운동가"/>U★BTJ 운동가</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="none" value="없음"/>없음</label></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="route" class="col-sm-4 control-label">인터콥 훈련여부</label>
+        <div class="col-sm-8">
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route1" value="지인추천(친구,선생님)"/>지인추천(친구,선생님)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route2" value="교회추천"/>교회추천</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route3" value="홍보물(포스터,브로셔)"/>홍보물(포스터,브로셔)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route4" value="인터넷(Facebook,포털사이트,카페 등등)"/>인터넷(Facebook,포털사이트,카페 등등)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route5" value="월드미션"/>월드미션</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route6" value="유비투어"/>유비투어</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route7" value="U★BTJ"/>U★BTJ</label></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="memo" class="col-sm-4 control-label">남기고싶은 말</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" rows="3" name="memo" id="memo"></textarea>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input type="button" onclick="submit_form()" class="btn btn-default" value="신청 완료" />
+        </div>
+      </div>
+
+      {% if group_yn %}
+      <input type="hidden" name="group_idx" value="{{ group.idx }}"/>
+      <input type="hidden" name="area_idx" value="{{ group.area_idx }}"/>
+      {% endif %}
+			<input type="hidden" name="contact" id="contact"/>
+			<input type="hidden" name="campidx" id="campidx" value="{{ campidx }}"/>
+      <input type="hidden" name="camp" id="camp" value="{{ camp }}"/>
+      <input type="hidden" name="date_of_arrival" id="date_of_arrival" value="2016-01-04"/>
+      <input type="hidden" name="date_of_leave" id="date_of_leave" value="2016-01-06"/>
+      <input type="hidden" name="fullcamp_yn" id="fullcamp_yn" value="1"/>
+    </form>
+  </div>
+</div> <!-- .container -->
+{% endblock %}
+
+{% block script %}
+  {% if not group_yn %}
+  <script src="{{ url_for('static', filename='youth/js/reg-individual.js') }}"></script>
+  {% elif group.grouptype == "1" %}
+  <script src="{{ url_for('static', filename='youth/js/reg-group-member.js') }}"></script>
+  {% else %}
+  <script src="{{ url_for('static', filename='youth/js/reg-group-member-simple.js') }}"></script>
+  {% endif %}
+{% endblock %}

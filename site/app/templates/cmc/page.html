@@ -62,6 +62,13 @@ footer {
     font-size: 12px;
   }
 }
+
+.fixed {
+  position: fixed;
+  top : 0;
+  width: 100%;
+  z-index: 99;
+}
 </style>
 {% endblock head %}
 
@@ -72,7 +79,7 @@ footer {
       <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='cmc/img/2016/1/header.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
     </a>
     <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='cmc/img/2016/1/header320.jpg') }}" style="width: 100%" class="visible-xs" alt="{% trans %}청년대학생선교캠프{% endtrans %}"/></a>
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-default" name="primary">
       <div class="container ">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-navigation" aria-expanded="false">
@@ -126,3 +133,18 @@ footer {
   </footer>
 </section>
 {% endblock body %}
+
+{% block script %}
+<script>
+$(document).ready(function(){
+  primary_nav = $("nav[name=primary]");
+  primary_nav.scroll(function() {
+    if(this.scrollTop > $('#intro').css('padding-top') + $('#intro').css('padding-bottom') ) {
+      primary_nav.addClass("fixed");
+    } else {
+      primary_nav.removeClass("fixed");
+    }
+  });
+});
+</script>
+{% endblock %}

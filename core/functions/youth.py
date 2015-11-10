@@ -18,13 +18,20 @@ def editIndividual(camp_idx, member_idx, formData, group_idx=None):
 
 def getMembershipDataList(camp_idx, formData):
     membership_data_list = []
-    if formData['persontype'] == u'청년':
-        membership_data_list.append({'camp_idx':camp_idx, 'key':'job', 'value':formData['job']})
-    elif formData['persontype'] == u'대학생':
-        membership_data_list.append({'camp_idx':camp_idx, 'key':'campus', 'value':formData['campus']})
-        membership_data_list.append({'camp_idx':camp_idx, 'key':'major', 'value':formData['major']})
 
-    for t in formData['training']:
-        membership_data_list.append({'camp_idx':camp_idx, 'key':'training', 'value':t})
+    if formData['group_idx'] is None:
+        membership_data_list.append({'camp_idx':camp_idx, 'key':'email', 'value':formData['email']})
+
+        if formData['persontype'] == u'중학생' or formData['persontype'] == u'고등학생':
+            membership_data_list.append({'camp_idx':camp_idx, 'key':'sch1', 'value':formData['sch1']})
+            membership_data_list.append({'camp_idx':camp_idx, 'key':'sch2', 'value':formData['sch2']})
+
+    if 'training' in formData:
+        for t in formData['training']:
+            membership_data_list.append({'camp_idx':camp_idx, 'key':'training', 'value':t})
+
+    if 'route' in formData:
+        for t in formData['route']:
+            membership_data_list.append({'camp_idx':camp_idx, 'key':'route', 'value':t})
 
     return membership_data_list

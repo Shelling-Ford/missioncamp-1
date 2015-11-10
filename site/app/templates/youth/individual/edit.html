@@ -1,0 +1,276 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <div class="page-header">
+    {% if not group_yn %}
+    <h2>개인 신청 수정</h2>
+    {% else %}
+    <h2>멤버 신청서 수정</h2>
+    {% endif %}
+  </div>
+
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+    <form class="form-horizontal" id="form" action="" method="POST">
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="userid" class="col-sm-4 control-label">아이디</label>
+        <div class="col-sm-8"><p class="form-control-static" id="userid">{{ member.userid }}</p></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="id_check"></p></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd" class="col-sm-4 control-label">비밀번호</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd" id="pwd" placeholder="변경할 경우에만 입력해 주세요..."/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd2" class="col-sm-4 control-label">비밀번호 확인</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd2" id="pwd2"/></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="pwd_check"></p></div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="name" class="col-sm-4 control-label">이름</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="name" id="name" value="{{ member.name }}"/></div>
+      </div>
+
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="area_idx" class="col-sm-4 control-label">등록지부</label>
+        <div class="col-sm-8">
+          <select name="area_idx" class="form-control" id="area_idx">
+            <option value="">== 선택하세요 ==</option>
+            {% for area in area_list %}
+            <option value="{{ area.idx }}" {% if area.idx == member.area_idx %} selected {% endif %}>{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="sex" class="col-sm-4 control-label">성별</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="sex" id="sex_m" value="M" {% if member.sex == 'M' %} checked {% endif %}/>남자</label>
+          <label><input type="radio" name="sex" id="sex_f" value="F" {% if member.sex == 'F' %} checked {% endif %}/>여자</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="birth" class="col-sm-4 control-label">출생년도</label>
+        <div class="col-sm-8">
+          <select name="birth" class="form-control" id="birth">
+            <option value="">==선택하세요==</option>
+            <option value="2015" {% if member.birth == "2015" %} selected {% endif %}>2015</option>
+            <option value="2014" {% if member.birth == "2014" %} selected {% endif %}>2014</option>
+            <option value="2013" {% if member.birth == "2013" %} selected {% endif %}>2013</option>
+            <option value="2012" {% if member.birth == "2012" %} selected {% endif %}>2012</option>
+            <option value="2011" {% if member.birth == "2011" %} selected {% endif %}>2011</option>
+            <option value="2010" {% if member.birth == "2010" %} selected {% endif %}>2010</option>
+            <option value="2009" {% if member.birth == "2009" %} selected {% endif %}>2009</option>
+            <option value="2008" {% if member.birth == "2008" %} selected {% endif %}>2008</option>
+            <option value="2007" {% if member.birth == "2007" %} selected {% endif %}>2007</option>
+            <option value="2006" {% if member.birth == "2006" %} selected {% endif %}>2006</option>
+            <option value="2005" {% if member.birth == "2005" %} selected {% endif %}>2005</option>
+            <option value="2004" {% if member.birth == "2004" %} selected {% endif %}>2004</option>
+            <option value="2003" {% if member.birth == "2003" %} selected {% endif %}>2003</option>
+            <option value="2002" {% if member.birth == "2002" %} selected {% endif %}>2002</option>
+            <option value="2001" {% if member.birth == "2001" %} selected {% endif %}>2001</option>
+            <option value="2000" {% if member.birth == "2000" %} selected {% endif %}>2000</option>
+            <option value="1999" {% if member.birth == "1999" %} selected {% endif %}>1999</option>
+            <option value="1998" {% if member.birth == "1998" %} selected {% endif %}>1998</option>
+            <option value="1997" {% if member.birth == "1997" %} selected {% endif %}>1997</option>
+            <option value="1996" {% if member.birth == "1996" %} selected {% endif %}>1996</option>
+            <option value="1995" {% if member.birth == "1995" %} selected {% endif %}>1995</option>
+            <option value="1994" {% if member.birth == "1994" %} selected {% endif %}>1994</option>
+            <option value="1993" {% if member.birth == "1993" %} selected {% endif %}>1993</option>
+            <option value="1992" {% if member.birth == "1992" %} selected {% endif %}>1992</option>
+            <option value="1991" {% if member.birth == "1991" %} selected {% endif %}>1991</option>
+            <option value="1990" {% if member.birth == "1990" %} selected {% endif %}>1990</option>
+            <option value="1989" {% if member.birth == "1989" %} selected {% endif %}>1989</option>
+            <option value="1988" {% if member.birth == "1988" %} selected {% endif %}>1988</option>
+            <option value="1987" {% if member.birth == "1987" %} selected {% endif %}>1987</option>
+            <option value="1986" {% if member.birth == "1986" %} selected {% endif %}>1986</option>
+            <option value="1985" {% if member.birth == "1985" %} selected {% endif %}>1985</option>
+            <option value="1984" {% if member.birth == "1984" %} selected {% endif %}>1984</option>
+            <option value="1983" {% if member.birth == "1983" %} selected {% endif %}>1983</option>
+            <option value="1982" {% if member.birth == "1982" %} selected {% endif %}>1982</option>
+            <option value="1981" {% if member.birth == "1981" %} selected {% endif %}>1981</option>
+            <option value="1980" {% if member.birth == "1980" %} selected {% endif %}>1980</option>
+            <option value="1979" {% if member.birth == "1979" %} selected {% endif %}>1979</option>
+            <option value="1978" {% if member.birth == "1978" %} selected {% endif %}>1978</option>
+            <option value="1977" {% if member.birth == "1977" %} selected {% endif %}>1977</option>
+            <option value="1976" {% if member.birth == "1976" %} selected {% endif %}>1976</option>
+            <option value="1975" {% if member.birth == "1975" %} selected {% endif %}>1975</option>
+            <option value="1974" {% if member.birth == "1974" %} selected {% endif %}>1974</option>
+            <option value="1973" {% if member.birth == "1973" %} selected {% endif %}>1973</option>
+            <option value="1972" {% if member.birth == "1972" %} selected {% endif %}>1972</option>
+            <option value="1971" {% if member.birth == "1971" %} selected {% endif %}>1971</option>
+            <option value="1970" {% if member.birth == "1970" %} selected {% endif %}>1970</option>
+            <option value="1969" {% if member.birth == "1969" %} selected {% endif %}>1969</option>
+            <option value="1968" {% if member.birth == "1968" %} selected {% endif %}>1968</option>
+            <option value="1967" {% if member.birth == "1967" %} selected {% endif %}>1967</option>
+            <option value="1966" {% if member.birth == "1966" %} selected {% endif %}>1966</option>
+            <option value="1965" {% if member.birth == "1965" %} selected {% endif %}>1965</option>
+            <option value="1964" {% if member.birth == "1964" %} selected {% endif %}>1964</option>
+            <option value="1963" {% if member.birth == "1963" %} selected {% endif %}>1963</option>
+            <option value="1962" {% if member.birth == "1962" %} selected {% endif %}>1962</option>
+            <option value="1961" {% if member.birth == "1961" %} selected {% endif %}>1961</option>
+            <option value="1960" {% if member.birth == "1960" %} selected {% endif %}>1960</option>
+            <option value="1959" {% if member.birth == "1959" %} selected {% endif %}>1959</option>
+            <option value="1958" {% if member.birth == "1958" %} selected {% endif %}>1958</option>
+            <option value="1957" {% if member.birth == "1957" %} selected {% endif %}>1957</option>
+            <option value="1956" {% if member.birth == "1956" %} selected {% endif %}>1956</option>
+            <option value="1955" {% if member.birth == "1955" %} selected {% endif %}>1955</option>
+            <option value="1954" {% if member.birth == "1954" %} selected {% endif %}>1954</option>
+            <option value="1953" {% if member.birth == "1953" %} selected {% endif %}>1953</option>
+            <option value="1952" {% if member.birth == "1952" %} selected {% endif %}>1952</option>
+            <option value="1951" {% if member.birth == "1951" %} selected {% endif %}>1951</option>
+            <option value="1950" {% if member.birth == "1950" %} selected {% endif %}>1950</option>
+            <option value="1949" {% if member.birth == "1949" %} selected {% endif %}>1949</option>
+            <option value="1948" {% if member.birth == "1948" %} selected {% endif %}>1948</option>
+            <option value="1947" {% if member.birth == "1947" %} selected {% endif %}>1947</option>
+            <option value="1946" {% if member.birth == "1946" %} selected {% endif %}>1946</option>
+            <option value="1945" {% if member.birth == "1945" %} selected {% endif %}>1945</option>
+            <option value="1944" {% if member.birth == "1944" %} selected {% endif %}>1944</option>
+            <option value="1943" {% if member.birth == "1943" %} selected {% endif %}>1943</option>
+            <option value="1942" {% if member.birth == "1942" %} selected {% endif %}>1942</option>
+            <option value="1941" {% if member.birth == "1941" %} selected {% endif %}>1941</option>
+            <option value="1940" {% if member.birth == "1940" %} selected {% endif %}>1940</option>
+          </select>
+        </div>
+      </div>
+
+      {% if group_yn == False or group.grouptype == "1" %}
+      <div class="form-group">
+        <label for="hp" class="col-sm-4 control-label">연락처</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="contact" id="contact" value="{{ member.contact }}" /></div>
+      </div>
+      {% endif %}
+
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="email" class="col-sm-4 control-label">이메일</label>
+        <div class="col-sm-8"><input type="email" class="form-control" name="email" id="email" value="{{ membership.email }}"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="church" class="col-sm-4 control-label">소속교회</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="church" id="church" value="{{ member.church }}"/></div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="persontype" class="col-sm-4 control-label">참가구분</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="persontype" id="persontype1" value="중학생" {% if member.persontype == '중학생' %} checked {% endif %}/>중학생</label>
+          <label><input type="radio" name="persontype" id="persontype2" value="고등학생" {% if member.persontype == '고등학생' %} checked {% endif %}/>고등학생</label>
+          <label><input type="radio" name="persontype" id="persontype3" value="교사" {% if member.persontype == '교사' %} checked {% endif %}/>교사</label>
+          <label><input type="radio" name="persontype" id="persontype4" value="교역자" {% if member.persontype == '교역자' %} checked {% endif %}/>교역자</label>
+          <label><input type="radio" name="persontype" id="persontype4" value="기타" {% if member.persontype == '기타' %} checked {% endif %}/>기타</label>
+        </div>
+      </div>
+
+      {% if not group_yn %}
+      <div class="form-group school">
+        <label for="sch1" class="col-sm-4 control-label">학교</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="sch1" id="sch1" value="{{ membership.sch1 }}"/></div>
+      </div>
+
+      <div class="form-group school">
+        <label for="sch2" class="col-sm-4 control-label">학년</label>
+        <div class="col-sm-8">
+          <select class="form-control" name="sch2" id="sch2">
+            <option value="1" {% if membership.sch2 == "1" %} selected {% endif %}>1학년</option>
+            <option value="2" {% if membership.sch2 == "2" %} selected {% endif %}>2학년</option>
+            <option value="3" {% if membership.sch2 == "3" %} selected {% endif %}>3학년</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="bus_yn" class="col-sm-4 control-label">단체버스 이용</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="bus_yn" id="bus_y" value="1" {% if member.bus_yn %} checked {% endif %}/>예</label>
+          <label><input type="radio" name="bus_yn" id="bus_n" value="0" {% if not member.bus_yn %} checked {% endif %}/>아니오</label>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <label for="newcomer_yn" class="col-sm-4 control-label">선교캠프가<br/>처음이신가요?</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="newcomer_yn" id="newcomer_y" value="1" {% if member.newcomer_yn %} checked {% endif %}/>예</label>
+          <label> <input type="radio" name="newcomer_yn" id="newcomer_n" value="0" {% if not member.newcomer_yn %} checked {% endif %}/>아니오</label>
+        </div>
+      </div>
+
+      {% if group_yn == False or group.grouptype == "1" %}
+      <div class="form-group">
+        <label for="training" class="col-sm-4 control-label">인터콥 훈련여부</label>
+        <div class="col-sm-8">
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training1" class="membership" value="청소년비전스쿨" {% if "청소년비전스쿨" in membership.training %} checked {% endif %}/>청소년비전스쿨</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training2" class="membership" value="Mission Academy" {% if "Mission Academy" in membership.training %} checked {% endif %}/>Mission Academy</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training3" class="membership" value="U★BTJ Club School" {% if "U★BTJ Club School" in membership.training %} checked {% endif %}/>U★BTJ Club School</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training4" class="membership" value="UGLC" {% if "UGLC" in membership.training %} checked {% endif %}/>UGLC</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training5" class="membership" value="청소년월드미션" {% if "청소년월드미션" in membership.training %} checked {% endif %}/>청소년월드미션</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training6" class="membership" value="청소년선교캠프" {% if "청소년선교캠프" in membership.training %} checked {% endif %}/>청소년선교캠프</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training7" class="membership" value="청소년MIT,GUMF" {% if "청소년MIT,GUMF" in membership.training %} checked {% endif %}/>청소년MIT,GUMF</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="training8" class="membership" value="U★BTJ 운동가" {% if "U★BTJ 운동가" in membership.training %} checked {% endif %}/>U★BTJ 운동가</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="training" id="none" value="없음" {% if "없음" in membership.training %} checked {% endif %}/>없음</label></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="route" class="col-sm-4 control-label">인터콥 훈련여부</label>
+        <div class="col-sm-8">
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route1" class="membership" value="지인추천(친구,선생님)" {% if "지인추천(친구,선생님)" in membership.route %} checked {% endif %}/>지인추천(친구,선생님)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route2" class="membership" value="교회추천" {% if "교회추천" in membership.route %} checked {% endif %}/>교회추천</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route3" class="membership" value="홍보물(포스터,브로셔)" {% if "홍보물(포스터,브로셔)" in membership.route %} checked {% endif %}/>홍보물(포스터,브로셔)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route4" class="membership" value="인터넷(Facebook,포털사이트,카페 등등)" {% if "인터넷(Facebook,포털사이트,카페 등등)" in membership.route %} checked {% endif %}/>인터넷(Facebook,포털사이트,카페 등등)</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route5" class="membership" value="월드미션" {% if "월드미션" in membership.route %} checked {% endif %}/>월드미션</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route6" class="membership" value="유비투어" {% if "유비투어" in membership.route %} checked {% endif %}/>유비투어</label></div>
+          <div class="checkbox"><label><input type="checkbox" name="route" id="route7" class="membership" value="U★BTJ" {% if "U★BTJ" in membership.route %} checked {% endif %}/>U★BTJ</label></div>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if not group_yn %}
+      <div class="form-group">
+        <label for="memo" class="col-sm-4 control-label">남기고싶은 말</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" rows="3" name="memo" id="memo">{{ member.memo }}</textarea>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input type="button" onclick="submit_form()" class="btn btn-default" value="수정 완료" />
+        </div>
+      </div>
+
+      {% if group_yn %}
+      <input type="hidden" name="group_idx" value="{{ group.idx }}"/>
+      <input type="hidden" name="area_idx" value="{{ group.area_idx }}"/>
+      {% endif %}
+			<input type="hidden" name="campidx" id="campidx" value="{{ campidx }}"/>
+      <input type="hidden" name="camp" id="camp" value="{{ camp }}"/>
+      <input type="hidden" name="date_of_arrival" id="date_of_arrival" value="2016-01-04"/>
+      <input type="hidden" name="date_of_leave" id="date_of_leave" value="2016-01-06"/>
+      <input type="hidden" name="fullcamp_yn" id="fullcamp_yn" value="1"/>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+{% if not group_yn %}
+<script src="{{ url_for('static', filename='youth/js/reg-individual-edit.js') }}"></script>
+{% elif group.grouptype == "1" %}
+<script src="{{ url_for('static', filename='youth/js/reg-group-member-edit.js') }}"></script>
+{% else %}
+<script src="{{ url_for('static', filename='youth/js/reg-group-member-simple.js') }}"></script>
+{% endif %}
+{% endblock %}

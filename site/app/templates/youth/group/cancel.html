@@ -1,0 +1,19 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <section class="page-header">
+    <h2>단체 신청 취소</h2>
+  </section>
+  <div class="col-xs-12 col-sm-6">
+    <div class="well">
+      <form class="form form-group" role="form" id="form" action="#" method="POST">
+        <label for="cancel_reason">취소 사유를 적어주세요</label>
+        <textarea class="form-control" name="cancel_reason" id="cancel_reason" rows="8" cols="30"></textarea>
+        <p><input type="submit" class="btn btn-danger" value="신청 취소"/></p>
+        <p>** 단체 신청 취소시 구성원 모두의 신청 정보가 취소됩니다.</p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

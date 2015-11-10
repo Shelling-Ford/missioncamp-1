@@ -2,7 +2,6 @@
 from core.functions import regIndividualCommon
 from core.functions import editIndividualCommon
 import core.database as db
-from contextlib import closing
 import datetime
 from sqlalchemy.sql import text
 

@@ -1,0 +1,86 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <div class="page-header">
+    <h2>단체 신청</h2>
+  </div>
+  <div class="col-xs-12 col-sm-6 well">
+    <form class="form-horizontal" id="form" role="form" action="" method="POST">
+      <div class="form-group">
+        <label for="groupid" class="col-sm-4 control-label">단체아이디</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="groupid" id="groupid"/></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="id_check"></p></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd" class="col-sm-4 control-label">비밀번호</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd" id="pwd"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="pwd2" class="col-sm-4 control-label">비밀번호 확인</label>
+        <div class="col-sm-8"><input type="password" class="form-control" name="pwd2" id="pwd2"/></div>
+        <div class="col-sm-offset-4 col-sm-8"><p id="pwd_check"></p></div>
+      </div>
+
+      <div class="form-group">
+        <label for="name" class="col-sm-4 control-label">단체이름</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="name" id="name"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="grouptype" class="col-sm-4 control-label">단체 유형</label>
+        <div class="col-sm-8 radio">
+          <label><input type="radio" name="grouptype" id="grouptype1" value="1">다니엘과 세친구</label>
+          <label><input type="radio" name="grouptype" id="grouptype2" value="2">예수님과 열두제자</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="leadername" class="col-sm-4 control-label">담당자 이름</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="leadername" id="leadername"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="leadercontact" class="col-sm-4 control-label">담당자 연락처</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="leadercontact" id="leadercontact"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="leaderjob" class="col-sm-4 control-label">담당자 직업</label>
+        <div class="col-sm-8"><input type="text" class="form-control" name="leaderjob" id="leaderjob"/></div>
+      </div>
+
+      <div class="form-group">
+        <label for="area_idx" class="col-sm-4 control-label">등록지부</label>
+        <div class="col-sm-8">
+          <select name="area_idx" class="form-control" id="area_idx">
+            <option value="">== 선택하세요 ==</option>
+            {% for area in area_list %}
+            <option value="{{ area.idx }}">{{ area.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="memo" class="col-sm-4 control-label">남기고싶은 말</label>
+        <div class="col-sm-8">
+          <textarea class="form-control" rows="3" name="memo" id="memo"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-4 col-sm-8">
+          <input type="button" class="btn btn-default" onclick="submit_form()" value="신청 완료"/>
+        </div>
+      </div>
+      <input type="hidden" name="campidx" id="campidx" value="{{ campidx }}"/>
+    </form>
+  </div>
+</div>
+{% endblock%}
+
+{% block script %}
+  <script src="{{ url_for('static', filename='youth/js/reg-group.js') }}"></script>
+{% endblock %}

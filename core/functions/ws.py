@@ -1,9 +1,7 @@
 #-*-coding:utf-8-*-
 from core.functions import regIndividualCommon
 from core.functions import editIndividualCommon
-import core.database as db
 import datetime
-from sqlalchemy.sql import text
 
 # 개인 신청 등록
 def regIndividual(camp_idx, formData, group_idx=None):

@@ -1,5 +1,5 @@
 #-*-coding:utf-8-*-
-import core.database as db
+from core.database import db
 
 from flask import request
 from sqlalchemy.sql import text

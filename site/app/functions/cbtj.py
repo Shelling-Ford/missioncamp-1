@@ -1,7 +1,6 @@
 #-*-coding:utf-8-*-
 from core import functions as core_functions
-import core.database as db
-from contextlib import closing
+from core.database import db
 import datetime
 from sqlalchemy.sql import text
 

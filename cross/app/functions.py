@@ -1,6 +1,6 @@
 #-*-coding:utf-8-*-
 from sqlalchemy.sql import text
-import core.database as db
+from core.database import db
 
 def login_check(camp, id, pwd):
     results = db.execute("SELECT * FROM `admin` WHERE `adminid` = :id AND `adminpw` = :pwd AND `camp` = :camp", {'id': id, 'pwd': pwd, 'camp': camp})
@@ -101,7 +101,7 @@ def get_member_list(camp_idx, **kwargs):
 
     kwargs['camp_idx'] = camp_idx
     results = db.execute(query, kwargs)
-    
+
     member_list = []
     for r in results:
         member_list.append(dict(r))

@@ -42,7 +42,11 @@ class SQLDriver():
         else:
             result = s.execute(query, params)
         row = result.fetchone()
-        r = collections.OrderedDict((col, getattr(row, col)) for col in result._metadata.keys)
+        if row is not None:
+            r = dict((col, getattr(row, col)) for col in result._metadata.keys)
+        else:
+            r = None
+            
         return r
 
     def raw_query(self, query, params=None):

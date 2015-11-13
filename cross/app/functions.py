@@ -1,6 +1,8 @@
 #-*-coding:utf-8-*-
 from sqlalchemy.sql import text
 from core.database import db
+from core.functions import getMembership
+import datetime
 
 def login_check(camp, id, pwd):
     results = db.execute("SELECT * FROM `admin` WHERE `adminid` = :id AND `adminpw` = :pwd AND `camp` = :camp", {'id': id, 'pwd': pwd, 'camp': camp})
@@ -9,6 +11,7 @@ def login_check(camp, id, pwd):
     else:
         return 0
 
+# 기본 통계
 def get_basic_stat(camp_idx):
     sql = []
     # 전체
@@ -67,6 +70,7 @@ def get_basic_stat(camp_idx):
 
     return stat
 
+# member 목록 열람
 def get_member_list(camp_idx, **kwargs):
     db.raw_query("SET @rownum:=0")
 
@@ -74,13 +78,13 @@ def get_member_list(camp_idx, **kwargs):
     if 'cancel_yn' in kwargs:
         where_clause += str(" AND `m`.`cancel_yn` = :cancel_yn")
 
-    if 'name' in kwargs:
-        where_clause += str(" AND `m`.`name` = :name")
+    if 'name' in kwargs and kwargs['name'] is not None and kwargs['name'] != '':
+        where_clause += str(" AND `m`.`name` LIKE CONCAT('%',:name,'%')")
 
-    if 'persontype' in kwargs:
+    if 'persontype' in kwargs and kwargs['persontype'] is not None  and kwargs['persontype'] != '':
         where_clause += str(" AND `m`.`persontype` = :persontype")
 
-    if 'area_idx' in kwargs and kwargs['area_idx'] != None:
+    if 'area_idx' in kwargs and kwargs['area_idx'] is not None and kwargs['area_idx'] != '':
         where_clause += str(" AND `m`.`area_idx` = :area_idx")
 
     query = text("""
@@ -92,8 +96,7 @@ def get_member_list(camp_idx, **kwargs):
             FROM `member` `m`
                 LEFT JOIN `payment` `p` ON  `m`.`idx` = `p`.`member_idx`
                 LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx`
-                LEFT JOIN `roomsetting` `rs` ON `m`.`room_idx` = `rs`.`idx`
-                LEFT JOIN `room` `r` ON `r`.`idx` = `rs`.`room_idx`
+                LEFT JOIN `room` `r` ON `r`.`idx` = `m`.`room_idx`
                 LEFT JOIN `group` `g` ON `g`.`idx` = `m`.`group_idx`
             WHERE %s ORDER BY `m`.`idx`
         ) `list` ORDER BY `rownum` DESC
@@ -102,8 +105,72 @@ def get_member_list(camp_idx, **kwargs):
     kwargs['camp_idx'] = camp_idx
     results = db.execute(query, kwargs)
 
-    member_list = []
     for r in results:
-        member_list.append(dict(r))
+        r['membership'] = get_membership(r['idx'])
 
-    return member_list
+    return results
+
+# member 정보 열람
+def get_member(member_idx):
+    param = {"member_idx": member_idx}
+    query = text("SELECT * FROM `member` WHERE `idx` = :member_idx")
+    member = db.select_one(query, param)
+    return member
+
+# membership 정보 열람
+def get_membership(member_idx):
+    param = {"member_idx": member_idx}
+    query = text("SELECT * FROM `membership` WHERE `member_idx` = :member_idx")
+    membership = getMembership(db.select_all(query, param))
+    return membership
+
+# 재정정보 열람
+def get_payment(member_idx):
+    param = {"member_idx": member_idx}
+    query = text("SELECT * FROM `payment` WHERE `member_idx` = :member_idx")
+    payment = db.select_one(query, param)
+    return payment
+
+# 재정정보 입력
+def save_payment(**kwargs):
+    if kwargs['paydate'] == None or kwargs['paydate'] == u'':
+        kwargs['paydate'] = "%s" % datetime.datetime.today().date()
+
+    payment = get_payment(kwargs['member_idx'])
+
+    if payment is None:
+        query = text("""
+            INSERT INTO
+                `payment`(`member_idx`, `amount`, `complete`, `claim`, `paydate`, `staff_name`)
+            VALUES
+                (:member_idx, :amount, :complete, :claim, :paydate, :staff_name)
+        """)
+    else:
+        query = text("""
+            UPDATE `payment` SET
+                `amout` = :amount,
+                `complete` = :complete,
+                `claim` = :claim,
+                `paydate` = :paydate,
+                `staff_name` = :staff_name
+            WHERE
+                `member_idx` = :member_idx
+        """)
+
+    db.raw_query(query, kwargs)
+    db.commit()
+
+# 재정정보 삭제
+def delete_payment(member_idx):
+    db.raw_query("DELETE FROM `payment` WHERE `member_idx`= :member_idx", {'member_idx': member_idx})
+    db.commit()
+
+# 숙소 목록을 불러옴
+def get_room_list():
+    results = db.select_all("SELECT * FROM `room` ORDER BY `building`, `number`")
+    return results
+
+# 신청자에 숙소배치 정보를 등록해줌
+def set_member_room(**kwargs):
+    db.raw_query("UPDATE `member` SET `room_idx` = :room_idx WHERE `idx` = :member_idx", kwargs)
+    db.commit()

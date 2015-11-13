@@ -1,0 +1,52 @@
+{% extends 'cmc/page.html' %}
+
+{% block content %}
+<div class="container">
+  <table class="table1">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>출석</th>
+        <th>구분</th>
+        <th>이름</th>
+        <th>지부</th>
+        <th>성별</th>
+        <th>연락처</th>
+        <th>선캠참석횟수</th>
+        <th>학교</th>
+        <th>전공/학년</th>
+        <th>교회</th>
+        <th>SM여부</th>
+        <th>전체참석</th>
+        <th>오는날</th>
+        <th>가는날</th>
+        <th>숙소</th>
+        <th>메모</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td>{{ m.rownum }}</td>
+        <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
+        <td>{{ m.camp }}</td>
+        <td><a href="{{ url_for('.old_member', name=m._id.name, hp1=m._id.hp1) }}">{{ m._id.name|striptags|truncate(12) }}</a></td>
+        <td>{{ m.area }}</td>
+        <td>{{ m.sex }}</td>
+        <td>{% if m._id.hp1 != None %}{{ m._id.hp1 }}{% endif %}</td>
+        <td>{{ m.count }}
+        <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
+        <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
+        <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
+        <td>{% if 'intercpmem7' in m and m.intercpmem7 != 'null' %}{{ m.intercpmem7 }}{% endif%}</td>
+        <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
+        <td>{{ m.startday }}</td>
+        <td>{{ m.endday }}</td>
+        <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
+        <td>{{ m.memo|striptags|truncate(20) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

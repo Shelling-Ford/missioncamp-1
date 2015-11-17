@@ -25,6 +25,25 @@ def home():
     stat2 = get_basic_stat(camp_idx)
     return render_template('cbtj/home.html', stat1=stat1, stat2=stat2)
 
+@cbtj.route('/list')
+def member_list():
+    if session_check(['master', 'hq', 'branch']):
+        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
+        return redirect(url_for('home'))
+
+    camp = request.args.get('camp', 'cbtj')
+    camp_idx = getCampIdx(camp)
+    cancel_yn = int(request.args.get('cancel_yn', 0))
+    area_idx = request.args.get('area_idx', None)
+
+    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
+    return render_template('cbtj/list.html', members=member_list)
+
+
+
+
+
+
 @cbtj.route('/old_stat')
 def old_stat():
     if session_check(['master', 'hq', 'branch']):
@@ -41,17 +60,3 @@ def old_stat():
 
     stat = get_basic_stat(camp_idx)
     return render_template('cbtj/old_stat.html', stat=stat)
-
-@cbtj.route('/list')
-def member_list():
-    if session_check(['master', 'hq', 'branch']):
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
-    camp = request.args.get('camp', 'cbtj')
-    camp_idx = getCampIdx(camp)
-    cancel_yn = int(request.args.get('cancel_yn', 0))
-    area_idx = request.args.get('area_idx', None)
-
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
-    return render_template('cbtj/list.html', members=member_list)

@@ -127,16 +127,16 @@
           <tr id="bubun">
             <td>캠프참석기간</td>
             <td colspan="3"><select name="date_of_arrival" id="date_of_arrival">
-              <option {% if member['date_of_arrival']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
-              <option {% if member['date_of_arrival']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
-              <option {% if member['date_of_arrival']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
-              <option {% if member['date_of_arrival']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
+              <option value="2015-12-28" {% if member['date_of_arrival']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
+              <option value="2015-12-29" {% if member['date_of_arrival']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
+              <option value="2015-12-30" {% if member['date_of_arrival']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
+              <option value="2015-12-31" {% if member['date_of_arrival']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
             </select>&nbsp;~&nbsp;
             <select name="date_of_leave" id="date_of_leave">
-              <option {% if member['date_of_leave']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
-              <option {% if member['date_of_leave']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
-              <option {% if member['date_of_leave']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
-              <option {% if member['date_of_leave']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
+              <option value="2015-12-28" {% if member['date_of_leave']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
+              <option value="2015-12-29" {% if member['date_of_leave']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
+              <option value="2015-12-30" {% if member['date_of_leave']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
+              <option value="2015-12-31" {% if member['date_of_leave']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
             </select></td>
           </tr>
           <tr>

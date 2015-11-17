@@ -37,7 +37,7 @@
       <tr>
         {% set i = 0 %}
         {% for s in stat.area %}
-        <td><a href="{{ url_for('cmc.old_list', area=s.name, campcode=campcode) }}">{{ s.name }}</a></td>
+        <td><a href="{{ url_for('cmc.old_list', area_idx=s.idx, year=year, term=term) }}">{{ s.name }}</a></td>
         <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
         {% set i = i + 1 %}
         {% if i % 4 == 0 %}

@@ -12,6 +12,7 @@ class MongoDriver():
 driver = MongoDriver()
 client = driver.get_client()
 db = client.mcamp_old.member
+call_log = client.mcamp_old.call_log
 
 def migrate(campcode):
     mongo_driver = MongoDriver()

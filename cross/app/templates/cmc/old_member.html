@@ -4,7 +4,7 @@
 <div class="container">
   <h2>{{ name }}</h2>
   <h3>{{ hp1 }}</h3>
-  <table class="table1">
+  <table class="table1" style="width:100%">
     <thead>
       <tr>
         <th>캠프코드</th>
@@ -42,5 +42,20 @@
       {% endfor %}
     </tbody>
   </table>
+  <br/>
+  <h2>통화내용</h2>
+  <table class="table1" style="width:100%">
+    {% for i in logs %}
+    <tr><td style="width:200px;">{{ i.date }}</td><td>{{ i.log }}</td></tr>
+    {% endfor %}
+  </table>
+  <h2>새로운 통화내용 입력</h2>
+  <form action="{{ url_for('.save_log') }}" method="POST">
+    <textarea name="log" rows="5" cols="25" class="form-control"></textarea>
+    <br/>
+    <input type="submit" value="저장" class="btn btn-success"/>
+    <input type="hidden" name="name" value="{{ name }}"/>
+    <input type="hidden" name="hp1" value="{{ hp1 }}"/>
+  </form>
 </div>
 {% endblock %}

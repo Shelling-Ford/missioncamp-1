@@ -1,9 +1,21 @@
 #-*-coding:utf-8-*-
-from core.mongo import db
+from core.mongo import db, call_log
 from bson.code import Code
 
 def get_member_list(**kwargs):
-    results = db.find(kwargs).sort("intercpmem7")
+    params = dict()
+
+    if 'skip' in kwargs and kwargs['skip']:
+        skip = kwargs['skip']
+    else:
+        skip = 0
+
+    keys = ['campcode', 'area', 'name', 'camp', 'hp1']
+    for k in keys:
+        if k in kwargs and kwargs[k] is not None:
+            params[k] = kwargs[k]
+
+    results = db.find(params).sort("intercpmem7").skip(skip).limit(40)
 
     member_list = []
     for r in results:
@@ -12,8 +24,58 @@ def get_member_list(**kwargs):
 
     return member_list
 
-def get_member_by_contact():
-    pass
+# 선캠 참석횟수와 함께 리턴
+def get_member_list_with_count(**kwargs):
+    params = dict()
+
+    skip = kwargs['skip']
+
+    keys = ['campcode', 'area', 'name', 'camp']
+    for k in keys:
+        if k in kwargs and kwargs[k] is not None:
+            params[k] = kwargs[k]
+
+    results = db.find(params).sort("intercpmem7").skip(skip).limit(40)
+
+    member_list = []
+    for r in results:
+        item = dict(r)
+        item['count'] = db.count({"hp1": item["hp1"], "name":item["name"], "entry":"Y"})
+        item['call_count'] = call_log.count({"name":item["name"], "hp1":item["hp1"]})
+        member_list.append(item)
+
+    return member_list
+
+def get_member_count(**kwargs):
+    params = dict()
+
+    keys = ['campcode', 'area', 'name', 'camp']
+    for k in keys:
+        if k in kwargs and kwargs[k] is not None:
+            params[k] = kwargs[k]
+
+    count = db.count(params)
+    return count
+
+def get_member_call_logs(name, hp1):
+    params = {"name":name, "hp1":hp1}
+
+    results = call_log.find(params)
+
+    logs = []
+    for i in results:
+        logs.append(i)
+
+    return logs
+
+def get_member_call_log_count(name, hp1):
+    params = {"name":name, "hp1":hp1}
+    count = call_log.count(params)
+    return count
+
+def save_member_call_log(name, hp1, date, log):
+    params = {"name":name, "hp1":hp1, "date":date, "log":log}
+    call_log.insert(params)
 
 def get_basic_stat(campcode):
     summary = []

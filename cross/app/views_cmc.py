@@ -255,12 +255,24 @@ def old_list():
         flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
         return redirect(url_for('home'))
 
-    #campcode = request.args.get('campcode', None)
+    year = int(request.args.get('year', 0))
+    term = int(request.args.get('term', 0))
 
-    #if campcode is not None:
-    member_list = mongo.get_member_by_contact()
+    skip = int(request.args.get('page', 0)) * 40
+    name = request.args.get('name', None)
+    area = request.args.get('area', None)
+    camp = request.args.get('camp', None)
 
-    return render_template("cmc/old_list.html", members=member_list)
+    if year == 0 or term == 0:
+        campcode = request.args.get('campcode', None)
+        member_list = mongo.get_member_list_with_count(skip=skip, campcode=campcode, name=name, area=area, camp=camp)
+        count = mongo.get_member_count(campcode=campcode, name=name, area=area, camp=camp)
+
+    else:
+        camp_idx = getCampIdx('cmc', year, term)
+        #member_list = mongo.get_member_list(campcode=campcode)
+
+    return render_template("cmc/old_list.html", members=member_list, area=area, campcode=campcode, count=range(1, int(count/40)))
 
 @cmc.route('/old-member')
 def old_member():
@@ -273,7 +285,23 @@ def old_member():
 
     if name is not None and hp1 is not None:
         member_list = mongo.get_member_list(name=name, hp1=hp1)
-    return render_template("cmc/old_member.html", name=name, hp1=hp1, members=member_list)
+        logs = mongo.get_member_call_logs(name=name, hp1=hp1)
+        
+    return render_template("cmc/old_member.html", name=name, hp1=hp1, members=member_list, logs=logs)
+
+@cmc.route('/save-log', methods=['POST'])
+def save_log():
+    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
+        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
+        return redirect(url_for('home'))
+
+    name = request.form.get('name', None)
+    hp1 = request.form.get('hp1', None)
+    log = request.form.get('log', None)
+    date = datetime.datetime.today()
+
+    mongo.save_member_call_log(name=name, hp1=hp1, log=log, date=date)
+    return redirect(url_for('.old_member', name=name, hp1=hp1))
 
 @cmc.route('/old-stat')
 def old_stat():
@@ -287,8 +315,8 @@ def old_stat():
     if year == 0 or term == 0:
         campcode = request.args.get('campcode', None)
         stat = mongo.get_basic_stat(campcode)
+        return render_template('cmc/old_stat.html', stat=stat, campcode=campcode)
     else:
         camp_idx = getCampIdx('cmc', year, term)
         stat = get_basic_stat(camp_idx)
-
-    return render_template('cmc/old_stat.html', stat=stat)
+        return render_template('cmc/old_stat_2.html', stat=stat, year=year, term=term)

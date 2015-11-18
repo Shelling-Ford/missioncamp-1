@@ -1,7 +1,7 @@
 #-*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
 from flask.helpers import make_response
-from flask_login import login_required
+from flask_login import login_required,current_user
 from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
 

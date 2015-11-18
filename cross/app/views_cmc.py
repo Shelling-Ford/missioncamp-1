@@ -10,6 +10,7 @@ import xlsxwriter
 
 cmc = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
 
+# 메인 통계
 @cmc.route('/')
 def home():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -27,6 +28,7 @@ def home():
     stat = get_basic_stat(camp_idx)
     return render_template('cmc/home.html', stat=stat)
 
+# 신청자 목록
 @cmc.route('/list')
 def member_list():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -41,6 +43,7 @@ def member_list():
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
 
+# 신청자 상세
 @cmc.route('/member')
 def member():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -59,6 +62,7 @@ def member():
 
     return render_template('cmc/member.html', member=member, payment=payment, role=session['role'], rooms=room_list, area_name=area_name)
 
+# 입금 정보 입력
 @cmc.route('/pay', methods=['POST'])
 def pay():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
@@ -74,6 +78,7 @@ def pay():
     save_payment(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
     return redirect(url_for('.member', member_idx=member_idx))
 
+# 입금 정보 삭제
 @cmc.route('/delpay')
 def delpay():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
@@ -83,6 +88,7 @@ def delpay():
     delete_payment(member_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
+# 숙소 정보 입력
 @cmc.route('/room_setting', methods=['POST'])
 def room_setting():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
@@ -93,6 +99,7 @@ def room_setting():
     set_member_room(member_idx=member_idx, room_idx=room_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
+# 엑셀 다운로드
 @cmc.route('/excel-down', methods=['GET'])
 def excel_down():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
@@ -249,6 +256,7 @@ def member_cancel_proc():
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.member_list'))
 
+# 이전 참가자 리스트
 @cmc.route('/old-list')
 def old_list():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -274,6 +282,7 @@ def old_list():
 
     return render_template("cmc/old_list.html", members=member_list, area=area, campcode=campcode, count=range(1, int(count/40)))
 
+# 이전 참가자 상세
 @cmc.route('/old-member')
 def old_member():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -286,9 +295,10 @@ def old_member():
     if name is not None and hp1 is not None:
         member_list = mongo.get_member_list(name=name, hp1=hp1)
         logs = mongo.get_member_call_logs(name=name, hp1=hp1)
-        
+
     return render_template("cmc/old_member.html", name=name, hp1=hp1, members=member_list, logs=logs)
 
+# 통화내용 저장
 @cmc.route('/save-log', methods=['POST'])
 def save_log():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
@@ -303,6 +313,7 @@ def save_log():
     mongo.save_member_call_log(name=name, hp1=hp1, log=log, date=date)
     return redirect(url_for('.old_member', name=name, hp1=hp1))
 
+# 이전 통계
 @cmc.route('/old-stat')
 def old_stat():
     if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:

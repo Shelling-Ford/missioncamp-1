@@ -1,15 +1,15 @@
 #-*-coding:utf-8-*-
-from flask import render_template, flash, redirect, url_for, session, request, Blueprint
+from flask import render_template, flash, redirect, url_for, session, request, Blueprint, abort
 from flask.helpers import make_response
-from flask_login import login_required
+from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
+import xlsxwriter
 
 from core.functions import *
 from core.functions.cmc import *
 from functions import *
 import functions_mongo as mongo
-import xlsxwriter
 
 # Blueprint 초기화
 cmc = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
@@ -17,6 +17,7 @@ cmc = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
 master_permission = Permission(RoleNeed('master'))
 hq_permission = Permission(RoleNeed('hq'))
 branch_permission = Permission(RoleNeed('branch'))
+cmc_permission = Permission(RoleNeed('cmc'))
 
 # 메인 통계
 @cmc.route('/')
@@ -64,12 +65,13 @@ def member():
         room_list = get_room_list()
         area_name = getAreaName(member['area_idx'])
 
-    return render_template('cmc/member.html', member=member, payment=payment, role=session['role'], rooms=room_list, area_name=area_name)
+    return render_template('cmc/member.html', member=member, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name)
 
 # 입금 정보 입력
 @cmc.route('/pay', methods=['POST'])
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def pay():
     member_idx = request.args.get('member_idx', 0)
     amount = request.form.get('amount')
@@ -85,6 +87,7 @@ def pay():
 @cmc.route('/delpay')
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def delpay():
     member_idx = request.args.get('member_idx', 0)
     delete_payment(member_idx)
@@ -94,6 +97,7 @@ def delpay():
 @cmc.route('/room_setting', methods=['POST'])
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def room_setting():
     member_idx = request.form.get('member_idx', 0)
     room_idx = request.form.get('idx', 0)
@@ -104,6 +108,7 @@ def room_setting():
 @cmc.route('/excel-down', methods=['GET'])
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def excel_down():
     camp_idx = getCampIdx('cmc')
 
@@ -203,6 +208,7 @@ def excel_down():
 @cmc.route('/member-edit')
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def member_edit():
     idx = request.args.get('member_idx', 0)
     session['idx'] = idx
@@ -217,6 +223,7 @@ def member_edit():
 @cmc.route('/member-edit', methods=['POST'])
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def member_edit_proc():
     formData = getIndividualFormData()
     camp_idx = getCampIdx('cmc')
@@ -239,6 +246,7 @@ def member_edit_proc():
 @cmc.route('/member-cancel')
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def member_cancel():
     member_idx = request.args.get('member_idx', 0)
     session['idx'] = member_idx
@@ -249,6 +257,7 @@ def member_cancel():
 @cmc.route('/member-cancel', methods=['POST'])
 @login_required
 @hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
 def member_cancel_proc():
     cancel_reason = request.form.get('cancel_reason', None)
     idx = session['idx']

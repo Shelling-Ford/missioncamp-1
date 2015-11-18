@@ -1,17 +1,28 @@
 #-*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
+from flask.helpers import make_response
+from flask_login import login_required, current_user
+from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
-from core.functions import *
-from functions import *
 
+from core.functions import *
+from core.functions.ws import *
+from functions import *
+import functions_mongo as mongo
+import xlsxwriter
+
+# Blueprint 초기화
 ws = Blueprint('ws', __name__, template_folder='templates', url_prefix='/ws')
 
-@ws.route('/')
-def home():
-    if not 'camp' in session or session['camp'] != 'ws' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
+master_permission = Permission(RoleNeed('master'))
+hq_permission = Permission(RoleNeed('hq'))
+branch_permission = Permission(RoleNeed('branch'))
 
+# 메인 통계
+@ws.route('/')
+@login_required
+@branch_permission.require(http_exception=403)
+def home():
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
@@ -23,11 +34,11 @@ def home():
     stat = get_basic_stat(camp_idx)
     return render_template('ws/home.html', stat=stat)
 
+# 신청자 목록
 @ws.route('/list')
+@login_required
+@branch_permission.require(http_exception=403)
 def member_list():
-    if not 'camp' in session or session['camp'] != 'ws' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     camp_idx = getCampIdx('ws')
 
     cancel_yn = int(request.args.get('cancel_yn', 0))

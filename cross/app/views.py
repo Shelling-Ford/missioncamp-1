@@ -3,6 +3,7 @@ from app import context
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, identity_loaded, RoleNeed
+from collections import namedtuple
 
 from jinja2 import TemplateNotFound
 from core.functions import *
@@ -24,14 +25,14 @@ principals = Principal(context)
 def load_user(adminid):
     return AdminUser.get(adminid)
 
-#
+# flask-principal
 @principals.identity_loader
 def read_identity_from_flask_login():
     if current_user.is_authenticated:
         return Identity(current_user.adminid)
     return AnonymousIdentity()
 
-#
+# flask-principal
 @identity_loaded.connect_via(context)
 def on_identity_loaded(sender, identity):
     if not isinstance(identity, AnonymousIdentity):
@@ -39,9 +40,15 @@ def on_identity_loaded(sender, identity):
             identity.provides.add(RoleNeed('master'))
             identity.provides.add(RoleNeed('hq'))
             identity.provides.add(RoleNeed('branch'))
+            identity.provides.add(RoleNeed('cmc'))
+            identity.provides.add(RoleNeed('cbtj'))
+            identity.provides.add(RoleNeed('ws'))
+            identity.provides.add(RoleNeed('youth'))
+            identity.provides.add(RoleNeed('kids'))
         if current_user.role == 'hq':
             identity.provides.add(RoleNeed('hq'))
             identity.provides.add(RoleNeed('branch'))
+            identity.provides.add(RoleNeed(current_user.camp))
         if current_user.role == 'branch':
             identity.provides.add(RoleNeed('branch'))
 
@@ -71,4 +78,6 @@ def login_proc():
 @login_required
 def logout():
     logout_user()
+    session.clear()
+    flash(u'로그아웃 되었습니다.')
     return redirect(url_for('home'))

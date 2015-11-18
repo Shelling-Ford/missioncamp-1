@@ -54,6 +54,20 @@ ul {
             <li><a href="#">통계표</a></li>
 					-->
           </ul>
+
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                캠프&nbsp;<span class="caret">
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="{{ url_for('cmc.home') }}">청대</a></li>
+                <li><a href="{{ url_for('cbtj.home') }}">청직</a></li>
+                <li><a href="{{ url_for('ws.home') }}">여남시</a></li>
+              </ul>
+            </li>
+						<li><a href="{{ url_for('logout') }}">로그아웃</a></li>
+					</ul>
         </div>
       </div>
     </nav>

@@ -158,7 +158,7 @@ def save_payment(**kwargs):
     else:
         query = text("""
             UPDATE `payment` SET
-                `amout` = :amount,
+                `amount` = :amount,
                 `complete` = :complete,
                 `claim` = :claim,
                 `paydate` = :paydate,

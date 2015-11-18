@@ -1,22 +1,28 @@
 #-*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
 from flask.helpers import make_response
+from flask_login import login_required
+from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
+
 from core.functions import *
 from core.functions.cmc import *
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
 
+# Blueprint 초기화
 cmc = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
+
+master_permission = Permission(RoleNeed('master'))
+hq_permission = Permission(RoleNeed('hq'))
+branch_permission = Permission(RoleNeed('branch'))
 
 # 메인 통계
 @cmc.route('/')
+@login_required
+@branch_permission.require(http_exception=403)
 def home():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
@@ -30,10 +36,9 @@ def home():
 
 # 신청자 목록
 @cmc.route('/list')
+@login_required
+@branch_permission.require(http_exception=403)
 def member_list():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     camp_idx = getCampIdx('cmc')
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
@@ -45,10 +50,9 @@ def member_list():
 
 # 신청자 상세
 @cmc.route('/member')
+@login_required
+@branch_permission.require(http_exception=403)
 def member():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     camp_idx = getCampIdx('cmc')
 
     member_idx = request.args.get('member_idx', 0)
@@ -64,10 +68,9 @@ def member():
 
 # 입금 정보 입력
 @cmc.route('/pay', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
 def pay():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     member_idx = request.args.get('member_idx', 0)
     amount = request.form.get('amount')
     complete = request.form.get('complete')
@@ -80,20 +83,18 @@ def pay():
 
 # 입금 정보 삭제
 @cmc.route('/delpay')
+@login_required
+@hq_permission.require(http_exception=403)
 def delpay():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     member_idx = request.args.get('member_idx', 0)
     delete_payment(member_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 숙소 정보 입력
 @cmc.route('/room_setting', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
 def room_setting():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     member_idx = request.form.get('member_idx', 0)
     room_idx = request.form.get('idx', 0)
     set_member_room(member_idx=member_idx, room_idx=room_idx)
@@ -101,10 +102,9 @@ def room_setting():
 
 # 엑셀 다운로드
 @cmc.route('/excel-down', methods=['GET'])
+@login_required
+@hq_permission.require(http_exception=403)
 def excel_down():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
     camp_idx = getCampIdx('cmc')
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
@@ -201,11 +201,9 @@ def excel_down():
 
 # 개인 신청 수정
 @cmc.route('/member-edit')
+@login_required
+@hq_permission.require(http_exception=403)
 def member_edit():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     idx = request.args.get('member_idx', 0)
     session['idx'] = idx
     member = getIndividualData(idx)
@@ -217,6 +215,8 @@ def member_edit():
 
 # 수정된 신청서 저장
 @cmc.route('/member-edit', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
 def member_edit_proc():
     formData = getIndividualFormData()
     camp_idx = getCampIdx('cmc')
@@ -237,11 +237,9 @@ def member_edit_proc():
 
 # 신청 취소
 @cmc.route('/member-cancel')
+@login_required
+@hq_permission.require(http_exception=403)
 def member_cancel():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     member_idx = request.args.get('member_idx', 0)
     session['idx'] = member_idx
 
@@ -249,6 +247,8 @@ def member_cancel():
 
 # 신청 취소 적용
 @cmc.route('/member-cancel', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
 def member_cancel_proc():
     cancel_reason = request.form.get('cancel_reason', None)
     idx = session['idx']
@@ -258,11 +258,9 @@ def member_cancel_proc():
 
 # 이전 참가자 리스트
 @cmc.route('/old-list')
+@login_required
+@branch_permission.require(http_exception=403)
 def old_list():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
@@ -284,11 +282,9 @@ def old_list():
 
 # 이전 참가자 상세
 @cmc.route('/old-member')
+@login_required
+@branch_permission.require(http_exception=403)
 def old_member():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     name = request.args.get('name', None)
     hp1 = request.args.get('hp1', None)
 
@@ -300,11 +296,9 @@ def old_member():
 
 # 통화내용 저장
 @cmc.route('/save-log', methods=['POST'])
+@login_required
+@branch_permission.require(http_exception=403)
 def save_log():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     name = request.form.get('name', None)
     hp1 = request.form.get('hp1', None)
     log = request.form.get('log', None)
@@ -315,11 +309,9 @@ def save_log():
 
 # 이전 통계
 @cmc.route('/old-stat')
+@login_required
+@branch_permission.require(http_exception=403)
 def old_stat():
-    if not 'camp' in session or session['camp'] != 'cmc' or not 'role' in session or not session['role'] in ['master', 'hq', 'branch']:
-        flash(u"세션이 만료되었습니다. 다시 로그인해주세요")
-        return redirect(url_for('home'))
-
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
@@ -331,3 +323,8 @@ def old_stat():
         camp_idx = getCampIdx('cmc', year, term)
         stat = get_basic_stat(camp_idx)
         return render_template('cmc/old_stat_2.html', stat=stat, year=year, term=term)
+
+@cmc.errorhandler(403)
+def forbidden(e):
+    flash(u'권한이 없습니다.')
+    return redirect(url_for('.home', next=request.url))

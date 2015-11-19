@@ -37,7 +37,9 @@ ul {
             <li><a href="{{ url_for('youth.home') }}">통계</a></li>
             <li><a href="{{ url_for('youth.member_list') }}">신청자목록</a></li>
             <li><a href="{{ url_for('youth.member_list', cancel_yn=1) }}">취소자목록</a></li>
+						<li><a href="{{ url_for('youth.promotion_list') }}">홍보물 신청목록</a></li>
 						<li><a href="{{ url_for('youth.home', year=2015, term=2) }}">지난통계(2015여름)</a></li>
+
 						<!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

@@ -7,6 +7,7 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.youth import *
+from core.models import Promotion
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -46,3 +47,12 @@ def member_list():
 
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
     return render_template('youth/list.html', members=member_list)
+
+# 홍보물 신청 목록
+@youth.route('/promotion-list')
+@login_required
+@branch_permission.require(http_exception=403)
+def promotion_list():
+    camp_idx = getCampIdx('youth')
+    promotion_list = Promotion.get_list(camp_idx)
+    return render_template('youth/promotion_list.html', promotions=promotion_list)

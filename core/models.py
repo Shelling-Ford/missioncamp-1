@@ -41,6 +41,13 @@ class Promotion(db.Base):
             return None
 
     @classmethod
+    def get_list(cls, camp_idx):
+        try:
+            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
+        except NoResultFound as e:
+            return None 
+
+    @classmethod
     def insert(cls, camp_idx, church_name, name, address, contact, memo):
         promotion = cls(camp_idx, church_name, name, address, contact, memo)
         db.db_session.add(promotion)

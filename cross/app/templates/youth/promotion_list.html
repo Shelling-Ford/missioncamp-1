@@ -1,0 +1,28 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container">
+  <table class="table1">
+    <thead>
+      <tr>
+        <th>교회 이름</th>
+        <th>받는분 이름</th>
+        <th>받는분 주소</th>
+        <th>받는분 연락처</th>
+        <th>요청사항</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in promotions %}
+      <tr>
+        <td>{{ p.church_name }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.address }}</td>
+        <td>{{ p.contact }}</td>
+        <td>{{ p.memo }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, session, flash, Blueprint
 from core.functions import *
 from core.functions.youth import *
+from core.models import Promotion
 
 context = Blueprint('youth', __name__, template_folder='templates', url_prefix='/youth')
 
@@ -348,6 +349,20 @@ def member_cancel_proc(member_idx):
     dec_mem_num(idx)
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.show_group'))
+
+@context.route('/promotion', methods=['POST'])
+def save_promotion_info():
+    camp_idx = getCampIdx('youth')
+    church_name = request.form.get('church_name', None)
+    name = request.form.get('name', None)
+    address = request.form.get('address', None)
+    contact = request.form.get('contact', None)
+    memo = request.form.get('memo', None)
+    next_url = request.form.get('next', None)
+
+    Promotion.insert(camp_idx, church_name, name, address, contact, memo)
+    flash(u'홍보물 신청이 완료되었습니다')
+    return redirect(url_for('.home'))
 
 # 로그아웃
 @context.route('/logout')

@@ -53,6 +53,12 @@ def member_list():
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
 
+#@cmc.route('/cancel-list')
+#@login_required
+#@branch_permission.require(http_exception=403)
+#def cancel_list():
+
+
 # 신청자 상세
 @cmc.route('/member')
 @login_required

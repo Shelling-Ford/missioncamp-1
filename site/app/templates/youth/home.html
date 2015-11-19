@@ -144,4 +144,48 @@
     </div>
 	</div>
 </div>
+
+<!-- 홍보물 신청 -->
+<div class="container" style="padding-top:35px;" id="promotion">
+	<br/>
+	<div class="row">
+    <div class="col-sm-6 col-xs-12">
+      <h2 style="margin-top: 5px; font-size: 24px;">홍보물 신청</h2>
+			<p><span style="color: #656565; font-size: 13px;">
+				청소년선교캠프 프로그램과 자세한 내용을 희망하시는 분들은 홍보물신청해주시면 우편으로 발송드리겠습니다.
+				(홍보물: 청소년선교캠프 프로그램 및 안내문, 포스터&amp;브로셔 등)
+			</span></p>
+      <br/>
+      <div class="well">
+				<form role="form" action="{{ url_for('.save_promotion_info') }}" method="POST">
+					<div class="form-group">
+						<label for="church_name">교회 이름</label>
+						<input type="text" class="form-control" id="church_name" name="church_name"/>
+					</div>
+					<div class="form-group">
+						<label for="name">받는분 이름</label>
+						<input type="text" class="form-control" id="name" name="name"/>
+					</div>
+					<div class="form-group">
+						<label for="address">받는분 주소</label>
+						<input type="text" class="form-control" id="address" name="address"/>
+					</div>
+					<div class="form-group">
+						<label for="contact">받는분 연락처</label>
+						<input type="text" class="form-control" id="contact" name="contact"/>
+					</div>
+					<div class="form-group">
+						<label for="memo">요청사항</label>
+						<input type="text" class="form-control" id="memo" name="memo"/>
+					</div>
+					<div class="form-group">
+						<input type="submit" class="btn btn-primary"/>
+					</div>
+				</form>
+			</div>
+      <br/>
+		</div>
+
+	</div>
+</div>
 {% endblock content %}

@@ -6,7 +6,7 @@ from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
 
 from core.functions import *
-
+from core.functions.cbtj import *
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -43,7 +43,7 @@ def member_list():
     member_name = request.args.get('name', None)
 
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
-    return render_template('cbtj/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
+    return render_template('cbtj/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, camp=camp)
 
 # 신청자 상세
 @cbtj.route('/member')
@@ -62,7 +62,7 @@ def member():
         room_list = get_room_list()
         area_name = getAreaName(member['area_idx'])
 
-    return render_template('cbtj/member.html', member=member, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name)
+    return render_template('cbtj/member.html', member=member, camp=camp, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name)
 
 # 입금 정보 입력
 @cbtj.route('/pay', methods=['POST'])
@@ -215,7 +215,7 @@ def member_edit():
     campidx = getCampIdx(camp)
     area_list = getAreaList('cbtj') # form에 들어갈 지부 목록
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
-    return render_template('cbtj/member_edit.html', camp='cmc', campidx=campidx, member=member, membership=member['membership'],
+    return render_template('cbtj/member_edit.html', camp=camp, campidx=campidx, member=member, membership=member['membership'],
         area_list=area_list, date_select_list=date_select_list, group_yn=False)
 
 # 수정된 신청서 저장
@@ -225,9 +225,10 @@ def member_edit():
 @cbtj_permission.require(http_exception=403)
 def member_edit_proc():
     formData = getIndividualFormData()
-    # camp_idx = getCampIdx('cmc')
 
     idx = session['idx']
+    camp = request.args.get('camp', 'cbtj')
+    camp_idx = getCampIdx(camp)
 
     date_of_arrival = datetime.datetime.strptime(formData['date_of_arrival'], '%Y-%m-%d')
     date_of_leave = datetime.datetime.strptime(formData['date_of_leave'], '%Y-%m-%d')

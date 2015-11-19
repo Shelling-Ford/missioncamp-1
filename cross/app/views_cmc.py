@@ -4,12 +4,12 @@ from flask.helpers import make_response
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
-import xlsxwriter
 
 from core.functions import *
 from core.functions.cmc import *
 from functions import *
 import functions_mongo as mongo
+import xlsxwriter
 
 # Blueprint 초기화
 cmc = Blueprint('cmc', __name__, template_folder='templates', url_prefix='/cmc')
@@ -46,9 +46,9 @@ def member_list():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
 
-    if current_user.role == 'branch' and current_user.area_idx != area_idx:
-        flash(u'지부 신청자 명단만 열람 가능합니다.')
-        area_idx = current_user.area_idx
+    #if current_user.role == 'branch' and current_user.area_idx != area_idx:
+    #    flash(u'지부 신청자 명단만 열람 가능합니다.')
+    #    area_idx = current_user.area_idx
 
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)

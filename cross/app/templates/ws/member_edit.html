@@ -1,0 +1,215 @@
+{% extends 'ws/page.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    {% if not group_yn %}
+    <h2>개인 신청 수정</h2>
+    {% else %}
+    <h2>멤버 신청서 수정</h2>
+    {% endif %}
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <form class="form" role="form" id="form" action="#" method="POST">
+      <div class="table-responsive">
+        <table class="table">
+          {% if not group_yn %}
+          <tr>
+            <td><label for="userid">아이디</label></td>
+            <td colspan="3">{{ member.userid }}</td>
+          </tr>
+
+          <tr>
+            <td><label for="pwd">비밀번호</label></td>
+            <td colspan="3"><input type="password" name="pwd" id="pwd" size="12" placeholder="변경하려면 입력하세요..."/></td>
+          </tr>
+
+          <tr>
+            <td><label for="pwd2">비밀번호 확인</label></td>
+            <td colspan="3"><input type="password" name="pwd2" id="pwd2" size="12"/><div id="pwd_alert"></div></td>
+          </tr>
+          {% endif %}
+
+          <tr>
+            <td><label for="name">이름</label></td>
+            <td colspan="3"><input type="text" name="name" id="name" size="12" value="{{ member.name }}"/></td>
+          </tr>
+
+          <tr id="parents">
+            <td><label for="pname"><span style="color:red">보호자 성함</span></label></td>
+            <td colspan="3"><input type="text" name="pname" id="pname" size="12" value="{{ membership.pname }}" /></td>
+          </tr>
+
+          {% if not group_yn %}
+          <tr>
+            <td><label for="area_idx">등록지부</label></td>
+            <td colspan="3">
+              <select name="area_idx" id="area_idx">
+                <option value="">선택하세요</option>
+                  {% for area in area_list %}
+                    {% if area.idx == member.area_idx %}
+                      <option value="{{ area.idx }}" selected>{{ area.name }}</option>
+                    {% else %}
+                      <option value="{{ area.idx }}">{{ area.name }}</option>
+                    {% endif %}
+                  {% endfor %}
+              </select>
+            </td>
+          </tr>
+          {% else %}
+
+          <input type="hidden" name="area_idx" id="area_idx" value="{{ member.area_idx }}"/>
+
+          {% endif %}
+          <tr>
+            <td><label for="sex">성별</label></td>
+            <td colspan="3">
+              <input type="radio" name="sex" id="sex_m" value="M" {% if member.sex == 'M' %} checked {% endif %}/>&nbsp;&nbsp;<label for="sex_m">남자</label>&nbsp;
+              <input type="radio" name="sex" id="sex_f" value="F" {% if member.sex == 'F' %} checked {% endif %}/>&nbsp;&nbsp;<label for="sex_f">여자</label>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="birthyr">생년월일</label></td>
+            <td colspan="3">
+              <input type="text" name="birth" id="birth" size="12" value="{{ member.birth }}" />
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="hp"  id="label_hp">연락처</label></td>
+            <td colspan="3">
+              <input type="text" name="contact" id="contact" size="12" value="{{ member.contact }}" />
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="church">소속교회</label></td>
+            <td colspan="3"><input type="text" name="church" id="church" size="12" value="{{ member.church }}"/></td>
+          </tr>
+
+          <tr>
+              <td><label for="persontype">참가 구분</label></td>
+              <td colspan="3">
+                  <input type="radio" name="persontype" id="stafftype1" value="일반" {% if member.persontype == "일반" %} checked {% endif %}/><label for="persontype1">&nbsp;&nbsp;일반</label><br/>
+                  <input type="radio" name="persontype" id="persontype2" value="어린이" {% if member.persontype == "어린이" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;어린이</label><br/>
+                  <input type="radio" name="persontype" id="persontype3" value="키즈" {% if member.persontype == "키즈" %} checked {% endif %}/><label for="persontype3">&nbsp;&nbsp;키즈</label><br/>
+                  <input type="radio" name="persontype" id="persontype4" value="중보방" {% if member.persontype == "중보방" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;중보방</label><br/>
+                  <input type="radio" name="persontype" id="persontype5" value="전일스탭" {% if member.persontype == "전일캠프" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;전일스탭(2박3일)</label><br/>
+              </td>
+          </tr>
+
+          <tr id="stafftype">
+              <td><label for="stafftype">스탭구분</label></td>
+              <td>
+                  <input type="radio" name="stafftype" id="stafftype1" value="식당" {% if membership.stafftype == '식당' %} checked {% endif %}/><label for="stafftype1">&nbsp;&nbsp;식당</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype2" value="식당느헤미야" {% if membership.stafftype == '식당느헤미야' %} checked {% endif %}/><label for="stafftype2">&nbsp;&nbsp;식당느헤미야</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype3" value="내부안내" {% if membership.stafftype == '내부안내' %} checked {% endif %}/><label for="stafftype3">&nbsp;&nbsp;내부안내</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype4" value="로비" {% if membership.stafftype == '로비' %} checked {% endif %}/><label for="stafftype4">&nbsp;&nbsp;로비</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype5" value="차량" {% if membership.stafftype == '차량' %} checked {% endif %}/><label for="stafftype5">&nbsp;&nbsp;차량</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype6" value="어린이스탭" {% if membership.stafftype == '어린이스탭' %} checked {% endif %}/><label for="stafftype6">&nbsp;&nbsp;어린이스탭</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype7" value="키즈스탭" {% if membership.stafftype == '키즈스탭' %} checked {% endif %}/><label for="stafftype7">&nbsp;&nbsp;키즈스탭</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype8" value="숙소" {% if membership.stafftype == '숙소' %} checked {% endif %}/><label for="stafftype8">&nbsp;&nbsp;숙소</label><br/>
+                  <input type="radio" name="stafftype" id="stafftype9" value="기타" {% if membership.stafftype == '기타' %} checked {% endif %}/><label for="stafftype9">&nbsp;&nbsp;기타<span style="color:red; font-size:10px;">(**위의 스텝에 해당되지 않는경우 남기고 싶은 말에 남겨 주세요)</span></label><br/>
+              </td>
+          </tr>
+
+          <tr id="job">
+              <td><label for="young_job">교회 직분</label></td>
+              <td colspan="3"><select name="job" id="job">
+                  <option value="목회자" {% if membership.job == '목회자' %} selected {% endif %}>목회자</option>
+                  <option value="장로" {% if membership.job == '장로' %} selected {% endif %}>장로</option>
+                  <option value="권사" {% if membership.job == '권사' %} selected {% endif %}>권사</option>
+                  <option value="집사" {% if membership.job == '집사' %} selected {% endif %}>집사</option>
+                  <option value="성도" {% if membership.job == '성도' %} selected {% endif %}>성도</option>
+                  <option value="청년" {% if membership.job == '청년' %} selected {% endif %}>청년</option>
+              </select></td>
+          </tr>
+
+          <tr>
+            <td><label for="bus_yn">단체버스 이용</label></td>
+            <td colspan="3">
+              <input type="radio" name="bus_yn" id="bus_y" value="1" {% if member.bus_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="bus_y">예</label>&nbsp;
+              <input type="radio" name="bus_yn" id="bus_n" value="0" {% if not member.bus_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="bus_n">아니오</label>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+            <td><label for="fullcamp_yn">참가형태</label></td>
+            <td colspan="3">
+              <input type="radio" name="fullcamp_yn" id="fullcamp_y" value="1" {% if member.fullcamp_yn %} checked {% endif %} />&nbsp;&nbsp;<label for="fullcamp_y">전체참가</label>&nbsp;
+              <input type="radio" name="fullcamp_yn" id="fullcamp_n" value="0" {% if not member.fullcamp_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="fullcamp_n">부분참가</label>&nbsp;
+            </td>
+          </tr>
+
+          <tr id="bubun">
+            <td>캠프참석기간</td>
+            <td colspan="3"><select name="date_of_arrival" id="date_of_arrival">
+              <option value="2015-01-07" {% if member['date_of_arrival']|string() == "2015-01-07" %} selected {% endif %}>2015-01-07</option>
+              <option value="2015-01-08" {% if member['date_of_arrival']|string() == "2015-01-08" %} selected {% endif %}>2015-01-08</option>
+              <option value="2015-01-09" {% if member['date_of_arrival']|string() == "2015-01-09" %} selected {% endif %}>2015-01-09</option>
+            </select>&nbsp;~&nbsp;
+            <select name="date_of_leave" id="date_of_leave">
+              <option value="2015-01-07" {% if member['date_of_arrival']|string() == "2015-01-07" %} selected {% endif %}>2015-01-07</option>
+              <option value="2015-01-08" {% if member['date_of_arrival']|string() == "2015-01-08" %} selected {% endif %}>2015-01-08</option>
+              <option value="2015-01-09" {% if member['date_of_arrival']|string() == "2015-01-09" %} selected {% endif %}>2015-01-09</option>
+            </select></td>
+          </tr>
+
+          <tr>
+            <td><label for="newcomer_yn">선교캠프가<br/>처음이신가요?</label></td>
+            <td colspan="3">
+              <input type="radio" name="newcomer_yn" id="newcomer_y" value="1" {% if member.newcomer_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="newcomer_y">예</label>&nbsp;
+              <input type="radio" name="newcomer_yn" id="newcomer_n" value="0" {% if not member.newcomer_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="newcomer_n">아니오</label>&nbsp;
+            </td>
+          </tr>
+
+          <tr>
+              <td>인터콥 훈련여부</td>
+              <td colspan="3">
+                  <table>
+                      <tr>
+                          <td><input type="checkbox" name="training" id="training1" class="membership" value="시니어비전스쿨" {% if "시니어비전스쿨" in membership.training %} checked {% endif %}/> &nbsp;<label for="training1">시니어비전스쿨</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" id="training2" class="membership" value="여성비전스쿨" {% if "여성비전스쿨" in membership.training %} checked {% endif %}/> &nbsp;<label for="training2">여성비전스쿨</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" id="training3" class="membership" value="목회자비전스쿨" {% if "목회자비전스쿨" in membership.training %} checked {% endif %}/> &nbsp;<label for="training3">목회자비전스쿨</label>&nbsp;&nbsp;</td>
+                      </tr>
+                      <tr>
+                          <td><input type="checkbox" name="training" id="training4" class="membership" value="비전스쿨" {% if "비전스쿨" in membership.training %} checked {% endif %}/> &nbsp;<label for="training4">비전스쿨</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" id="training5" class="membership" value="월드미션"  {% if "월드미션" in membership.training %} checked {% endif %}/> &nbsp;<label for="training5">월드미션</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" id="training6" class="membership" value="FO" {% if "FO" in membership.training %} checked {% endif %}/> &nbsp;<label for="training6">FO</label>&nbsp;&nbsp;</td>
+                      </tr>
+                      <tr>
+                          <td><input type="checkbox" name="training" id="training7" class="membership" value="선교캠프" {% if "선교캠프" in membership.training %} checked {% endif %}/> &nbsp;<label for="training7">선교캠프</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" class="membership" id="training8" value="어린이/키즈 선교캠프" {% if "어린이/키즈 선교캠프" in membership.training %} checked {% endif %}/> &nbsp;<label for="training8">어린이/키즈 선교캠프</label>&nbsp;&nbsp;</td>
+                          <td><input type="checkbox" name="training" id="none" value="없음" {% if "없음" in membership.training %} checked {% endif %}/> &nbsp;<label for="none">없음</label>&nbsp;&nbsp;</td>
+                      </tr>
+                  </table>
+              </td>
+          </tr>
+
+          <tr>
+            <td><label for="language">통역 필요</label></td>
+            <td colspan="3"><select name="language" id="language">
+              <option value="필요 없음" {% if member.language == "필요 없음" %} selected {% endif %}>필요 없음</option>
+              <option value="영어" {% if member.language == "영어" %} selected {% endif %}>영어</option>
+              <option value="중국어" {% if member.language == "중국어" %} selected {% endif %}>중국어</option>
+            </select></td>
+          </tr>
+
+          <tr>
+            <td><label for="memo">메모</label></td>
+            <td colspan="3"><textarea cols="20" rows="6" name="memo" id="memo">{{ member.memo }}</textarea></td>
+          </tr>
+
+          <tr>
+            <td colspan="4"><p style="text-align:center"><input type="button" onclick="submit_form()" class="btn btn-default" value="수정 완료" /></p></td>
+          </tr>
+        </table><!--/table-->
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block script %}
+  <script src="{{ url_for('static', filename='ws/js/reg-individual-edit.js') }}"></script>
+{% endblock %}

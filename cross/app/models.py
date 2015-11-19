@@ -1,3 +1,4 @@
+#-*-coding:utf-8-*-
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm.exc import NoResultFound

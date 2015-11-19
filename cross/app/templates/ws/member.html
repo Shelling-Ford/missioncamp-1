@@ -1,4 +1,4 @@
-{% extends 'cmc/page.html' %}
+{% extends 'ws/page.html' %}
 
 {% block content %}
 
@@ -123,19 +123,22 @@
         <td>캠프 참석 기간</td>
         <td>{{ member.date_of_arrival }} ~ {{ member.date_of_leave }}</td>
       </tr>
-      {% if member.persontype == '청년' %}
+      {% if member.persontype == '일반' %}
       <tr>
-        <td>직업</td>
+        <td>교회직분</td>
         <td>{{ member.membership.job }}</td>
       </tr>
-      {% elif member.persontype == '대학생' %}
+
+      {% elif member.persontype == '전일스탭' %}
       <tr>
-        <td>캠퍼스</td>
-        <td>{{ member.membership.campus }}</td>
+        <td>스탭구분</td>
+        <td>{{ member.membership.stafftype }}</td>
       </tr>
+
+      {% elif member.persontype == '어린이' or member.persontype == '키즈' %}
       <tr>
-        <td>전공</td>
-        <td>{{ member.membership.major }}</td>
+        <td>보호자 이름</td>
+        <td>{{ member.membership.pname }}</td>
       </tr>
       {% endif %}
       <tr>
@@ -145,10 +148,6 @@
             {{ t }},
           {% endfor %}
         </td>
-      </tr>
-      <tr>
-        <td>통역 필요</td>
-        <td>{{ member.language }}</td>
       </tr>
       <tr>
         <td>등록 날자</td>
@@ -161,6 +160,7 @@
 
       <tr>
         <td colspan="2">
+          <!--
           <p style="text-align:center">
           <a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>&nbsp;&nbsp;
           {% if member.cancel_yn == 0 %}
@@ -168,7 +168,7 @@
           {% elif member.cancel_yn == 1 %}
             <a class="btn btn-default" href="cancel">신청복원</a>
           {% endif %}
-          </p>
+          </p>-->
         </td>
       </tr>
     </table>

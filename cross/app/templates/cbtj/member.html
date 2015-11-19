@@ -6,7 +6,7 @@
   <section class="page-header col-lg-12">
     <h2>신청자 정보 : {{ member.name }}</h2>
   </section>
-  {% if role == 'hq' or role == 'master' %}
+  {% if (current_user.role == 'hq' and current_user.camp == 'cbtj') or current_user.role == 'master' %}
 
   <section class="col-lg-4 col-sm-6" style="margin-left:0">
     <h4>재정</h4>

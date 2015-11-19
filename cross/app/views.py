@@ -68,7 +68,7 @@ def login_proc():
     adminuser = AdminUser.get(userid)
     if adminuser is not None and pwd == adminuser.adminpw:
         login_user(adminuser)
-        return redirect(url_for('%s.home' % camp))
+        return redirect(url_for('%s.home' % adminuser.camp))
     else:
         flash(u"아이디 또는 비밀번호가 잘못되었습니다.")
         return redirect(url_for('home'))

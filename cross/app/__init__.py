@@ -24,3 +24,6 @@ context.register_blueprint(ws)
 
 from views_youth import youth
 context.register_blueprint(youth)
+
+from views_master import master
+context.register_blueprint(master)

@@ -11,13 +11,15 @@ class AdminUser(db.Base, UserMixin):
     adminpw = Column(String)
     role = Column(String)
     camp = Column(String)
+    area_idx = Column(Integer)
 
-    def __init__(self, idx, adminid, adminpw, role, camp):
+    def __init__(self, idx, adminid, adminpw, role, camp, area_idx):
         self.idx = idx
         self.adminid = adminid
         self.adminpw = adminpw
         self.role = role
         self.camp = camp
+        self.area_idx = area_idx
 
     def get_id(self):
         return self.adminid

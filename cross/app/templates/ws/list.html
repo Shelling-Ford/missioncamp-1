@@ -32,7 +32,7 @@
         <td>{{ m.regdate }}</td>
         <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
         <td>{{ m.persontype }}</td>
-        <td><a href="#">{{ m.name|striptags|truncate(12) }}</a></td>
+        <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area }}</td>
         <td>{% if not m.group_name == None %} {{ m.group_name }} {% endif %}</td>
         <td>{{ m.sex }}</td>

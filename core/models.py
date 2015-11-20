@@ -1,5 +1,5 @@
 #-*-coding:utf-8-*-
-from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Date, ForeignKey, desc
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from core.database import db
@@ -100,7 +100,7 @@ class Member(db.Base):
                     attr = getattr(cls, key)
                     result = result.filter(attr == value)
 
-            return result.all()
+            return result.order_by(desc(cls.idx)).all()
         except NoResultFound:
             return None
 

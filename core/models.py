@@ -48,10 +48,10 @@ class Member(db.Base):
     attend3 = Column(Integer)
     attend4 = Column(Integer)
 
-    membership = relationship("Membership", order_by="Membership.idx", backref="membership_member")
-    payment = relationship("Payment", uselist=False, backref="payment_member")
-    group = relationship("Group", backref="group_members")
-    area = relationship("Area", backref="area_member")
+    membership = relationship("Membership", order_by="Membership.idx", backref=backref("membership_member"))
+    payment = relationship("Payment", uselist=False, backref=backref("payment_member"))
+    group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
+    area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
 
     def __init__(self, camp_idx, userid, pwd, area_idx, **kwargs):
         keys = [
@@ -103,6 +103,37 @@ class Member(db.Base):
             return result.order_by(desc(cls.idx)).all()
         except NoResultFound:
             return None
+
+    @classmethod
+    def count(cls, camp_idx, **kwargs):
+        try:
+            result = db.db_session.query(cls).join(Area).outerjoin(Group).outerjoin(Payment).filter(cls.camp_idx == camp_idx)
+            for key, value in kwargs.iteritems():
+                if value is not None and value != '':
+                    attr = getattr(cls, key)
+                    result = result.filter(attr == value)
+
+            return result.count()
+        except NoResultFound:
+            return None
+
+    @classmethod
+    def set_area(cls, member_idx, area_idx):
+        try:
+            member = db.db_session.query(cls).filter(cls.idx == member_idx).one()
+            member.area_idx = area_idx
+            db.db_session.commit()
+        except Exception as e:
+            raise e
+
+    @classmethod
+    def set_group(cls, member_idx, group_idx):
+        try:
+            member = db.db_session.query(cls).filter(cls.idx == member_idx).one()
+            member.group_idx = group_idx
+            db.db_session.commit()
+        except Exception as e:
+            raise e
 
 class Membership(db.Base):
     __tablename__ = 'membership'

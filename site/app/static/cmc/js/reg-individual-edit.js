@@ -135,6 +135,12 @@ function validate_form() {
         return false;
     }
 
+    // SM 여부
+    if ($('input[name=sm_yn]:checked').val() === undefined) {
+        alert('SM(학생선교사) 여부를 선택해 주세요');
+        return false;
+    }
+
     // 뉴커머 여부
     if ($('input[name=newcomer_yn]:checked').val() === undefined) {
         alert('선캠 처음 참석 여부를 선택해 주세요');

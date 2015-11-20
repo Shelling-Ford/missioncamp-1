@@ -45,6 +45,7 @@ def member_list():
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
     area_idx = request.args.get('area_idx', None)
+    member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
 
     if group_idx is not None:
@@ -52,8 +53,11 @@ def member_list():
     else:
         group = None
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, group_idx=group_idx)
-    return render_template('ws/list.html', members=member_list, group=group)
+
+
+    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    return render_template('ws/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))
 
 # 신청자 상세
 @ws.route('/member')

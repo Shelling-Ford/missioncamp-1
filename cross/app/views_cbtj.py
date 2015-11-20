@@ -31,6 +31,7 @@ def home():
     stat2 = get_basic_stat(camp_idx)
     return render_template('cbtj/home.html', stat1=stat1, stat2=stat2)
 
+from core.models import Group
 # 신청자 목록
 @cbtj.route('/list')
 @login_required
@@ -43,8 +44,13 @@ def member_list():
     member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
 
+    if group_idx is not None:
+        group = Group.get(group_idx)
+    else:
+        group = None
+
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
-    return render_template('cbtj/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, camp=camp)
+    return render_template('cbtj/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, camp=camp, group=group)
 
 # 신청자 상세
 @cbtj.route('/member')
@@ -216,8 +222,11 @@ def member_edit():
     campidx = getCampIdx(camp)
     area_list = getAreaList('cbtj') # form에 들어갈 지부 목록
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
+
+    group_yn = member['group_idx'] is not None
+
     return render_template('cbtj/member_edit.html', camp=camp, campidx=campidx, member=member, membership=member['membership'],
-        area_list=area_list, date_select_list=date_select_list, group_yn=False)
+        area_list=area_list, date_select_list=date_select_list, group_yn=group_yn)
 
 # 수정된 신청서 저장
 @cbtj.route('/member-edit', methods=['POST'])

@@ -83,47 +83,7 @@ def get_basic_stat(camp_idx):
 from core.models import Member
 # member 목록 열람
 def get_member_list(camp_idx, **kwargs):
-    db.raw_query("SET @rownum:=0")
-
-    where_clause = "`m`.`camp_idx` = :camp_idx"
-    if 'cancel_yn' in kwargs:
-        where_clause += str(" AND `m`.`cancel_yn` = :cancel_yn")
-
-    if 'name' in kwargs and kwargs['name'] is not None and kwargs['name'] != '':
-        where_clause += str(" AND `m`.`name` LIKE CONCAT('%',:name,'%')")
-
-    if 'persontype' in kwargs and kwargs['persontype'] is not None  and kwargs['persontype'] != '':
-        where_clause += str(" AND `m`.`persontype` = :persontype")
-
-    if 'area_idx' in kwargs and kwargs['area_idx'] is not None and kwargs['area_idx'] != '':
-        where_clause += str(" AND `m`.`area_idx` = :area_idx")
-
-    if 'group_idx' in kwargs and kwargs['group_idx'] is not None and kwargs['group_idx'] != '':
-        where_clause += str(" AND `m`.`group_idx` = :group_idx")
-
-    query = text("""
-        SELECT *
-        FROM
-        (
-            SELECT @rownum:=@rownum+1 `rownum`, `m`.*, `p`.`amount`, `p`.`claim`, `a`.`name` as `area`, `g`.`name` as `group_name`,
-                `p`.`complete`, `r`.`building`, `r`.`number` as `room_number`
-            FROM `member` `m`
-                LEFT JOIN `payment` `p` ON  `m`.`idx` = `p`.`member_idx`
-                LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx`
-                LEFT JOIN `room` `r` ON `r`.`idx` = `m`.`room_idx`
-                LEFT JOIN `group` `g` ON `g`.`idx` = `m`.`group_idx`
-            WHERE %s ORDER BY `m`.`idx`
-        ) `list` ORDER BY `rownum` DESC
-    """ % where_clause)
-
-    kwargs['camp_idx'] = camp_idx
-    results = db.execute(query, kwargs)
-    #results = Member.get_list(camp_idx)
-
-    for r in results:
-        r['membership'] = get_membership(r['idx'])
-
-    return results
+    return Member.get_list(camp_idx, kwargs)
 
 # member 정보 열람
 def get_member(member_idx):

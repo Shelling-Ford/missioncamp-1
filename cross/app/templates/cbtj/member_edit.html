@@ -210,6 +210,9 @@
           </tr>
         </table><!--/table-->
       </div>
+      {% if group_yn %}
+      <input type="hidden" name="group_idx" value="{{ member.group_idx }}"/>
+      {% endif %}
     </form>
   </div>
 </div>

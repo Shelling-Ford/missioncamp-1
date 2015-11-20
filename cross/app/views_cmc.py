@@ -35,6 +35,7 @@ def home():
     stat = get_basic_stat(camp_idx)
     return render_template('cmc/home.html', stat=stat)
 
+from core.models import Group
 # 신청자 목록
 @cmc.route('/list')
 @login_required
@@ -52,7 +53,12 @@ def member_list():
     #    area_idx = current_user.area_idx
 
     member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
-    return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
+    if group_idx is not None:
+        group = Group.get(group_idx)
+    else:
+        group = None
+
+    return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group)
 
 #@cmc.route('/cancel-list')
 #@login_required
@@ -224,11 +230,14 @@ def member_edit():
     idx = request.args.get('member_idx', 0)
     session['idx'] = idx
     member = getIndividualData(idx)
+
+    group_yn = member['group_idx'] is not None
+
     campidx = getCampIdx('cmc')
     area_list = getAreaList('cmc') # form에 들어갈 지부 목록
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
     return render_template('cmc/member_edit.html', camp='cmc', campidx=campidx, member=member, membership=member['membership'],
-        area_list=area_list, date_select_list=date_select_list, group_yn=False)
+        area_list=area_list, date_select_list=date_select_list, group_yn=group_yn)
 
 # 수정된 신청서 저장
 @cmc.route('/member-edit', methods=['POST'])

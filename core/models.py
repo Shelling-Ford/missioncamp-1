@@ -1,8 +1,18 @@
 #-*-coding:utf-8-*-
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, ForeignKey
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from core.database import db
 import datetime
+
+class Area(db.Base):
+    __tablename__ = "area"
+
+    idx = Column(Integer, primary_key=True)
+    name = Column(String)
+    type = Column(String)
+    camp = Column(String)
+
 
 class Member(db.Base):
     __tablename__ = 'member'
@@ -12,7 +22,7 @@ class Member(db.Base):
     userid = Column(String)
     pwd = Column(String)
     name = Column(String)
-    area_idx = Column(Integer)
+    area_idx = Column(Integer, ForeignKey('area.idx'))
     contact = Column(String)
     church = Column(String)
     birth = Column(String)
@@ -26,7 +36,7 @@ class Member(db.Base):
     date_of_arrival = Column(Date)
     date_of_leave = Column(Date)
     language = Column(String)
-    group_idx = Column(Integer)
+    group_idx = Column(Integer, ForeignKey('group.idx'))
     regdate = Column(Date)
     canceldate = Column(Date)
     cancel_yn = Column(Integer)
@@ -37,6 +47,11 @@ class Member(db.Base):
     attend2 = Column(Integer)
     attend3 = Column(Integer)
     attend4 = Column(Integer)
+
+    membership = relationship("Membership", order_by="Membership.idx", backref="membership_member")
+    payment = relationship("Payment", uselist=False, backref="payment_member")
+    group = relationship("Group", backref="group_members")
+    area = relationship("Area", backref="area_member")
 
     def __init__(self, camp_idx, userid, pwd, area_idx, **kwargs):
         keys = [
@@ -77,18 +92,15 @@ class Member(db.Base):
             return None
 
     @classmethod
-    def get_list(cls, camp_idx, **kwargs):
+    def get_list(cls, camp_idx, params):
         try:
-            result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
-            for key, value in kwargs.iteritems():
-                result = result.filter(cls[key] == value)
+            result = db.db_session.query(cls).join(Area).outerjoin(Group).outerjoin(Payment).filter(cls.camp_idx == camp_idx)
+            for key, value in params.iteritems():
+                if value is not None and value != '':
+                    attr = getattr(cls, key)
+                    result = result.filter(attr == value)
 
-            member_list = result.all()
-
-            results = []
-            for member in member_list:
-                results.append(dict((col, getattr(member, col)) for col in member.__table__.columns.keys()))
-            return results
+            return result.all()
         except NoResultFound:
             return None
 
@@ -97,9 +109,11 @@ class Membership(db.Base):
 
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer)
-    member_idx = Column(Integer)
+    member_idx = Column(Integer, ForeignKey('member.idx'))
     key = Column(String)
     value = Column(String)
+
+    member = relationship("Member", backref='member_memberships')
 
     def __init__(self, camp_idx, member_idx, key, value, idx=None):
         self.idx = idx
@@ -125,6 +139,38 @@ class Membership(db.Base):
         except NoResultFound:
             return None
 
+class Payment(db.Base):
+    __tablename__ = 'payment'
+
+    idx = Column(Integer, primary_key=True)
+    member_idx = Column(Integer, ForeignKey('member.idx'))
+    amount = Column(Integer)
+    complete = Column(Integer)
+    claim = Column(String)
+    staff_name = Column(String)
+    paydate = Column(Date)
+    code = Column(String)
+
+    def __init__(self, member_idx, amount, complete, claim, staff_name, paydate, code, idx=None):
+        self.idx = idx
+        self.member_idx = memeber_idx
+        self.amount = amount
+        self.complete = complete
+        self.claim = claim
+        self.staff_name = staff_name
+        self.paydate
+        self.code = code
+
+    def get_id(self):
+        return self.idx
+
+    @classmethod
+    def get(cls, idx):
+        try:
+            return db.db_session.query(cls).filter(cls.idx == idx).one()
+        except NoResultFound:
+            return None
+
 
 class Group(db.Base):
     __tablename__ = 'group'
@@ -132,10 +178,11 @@ class Group(db.Base):
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer)
     name = Column(String)
-    gropuid = Column(String)
+    groupid = Column(String)
     pwd = Column(String)
     leadername = Column(String)
     leaderjob = Column(String)
+    leadercontact = Column(String)
     area_idx = Column(Integer)
     mem_num = Column(Integer)
     grouptype = Column(String)
@@ -145,7 +192,9 @@ class Group(db.Base):
     cancel_reason = Column(String)
     memo = Column(String)
 
-    def __init__(self, camp_idx, name, groupid, pwd, leadername, leaderjob, area_idx, **kwargs):
+    member = relationship("Member", order_by="Member.idx", backref="member_group")
+
+    def __init__(self, camp_idx, name, groupid, pwd, leadername, leaderjob, leadercontact, area_idx, **kwargs):
         if 'idx' in kwargs:
             self.idx = kwargs['idx']
 
@@ -155,6 +204,7 @@ class Group(db.Base):
         self.pwd = pwd
         self.leadername = leadername
         self.leaderjob = leaderjob
+        self.leadercontact = leadercontact
         self.area_idx = area_idx
 
         if 'mem_num' in kwargs:
@@ -191,7 +241,7 @@ class Group(db.Base):
             return None
 
     @classmethod
-    def get(cls, camp_idx, groupid):
+    def find(cls, camp_idx, groupid):
         try:
             return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).one()
         except NoResultFound:

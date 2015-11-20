@@ -236,7 +236,10 @@ def regIndividualCommon(camp_idx, formData, membershipDataList, group_idx=None):
 #개인신청 수정
 def editIndividualCommon(camp_idx, member_idx, formData, membershipDataList, group_idx=None):
     formData['member_idx'] = member_idx
-    formData['group_idx'] = group_idx
+
+    # 크로스에서 단체 멤버를 수정할 경우 개인으로 바꾸는 오류 수정 2015-11-20
+    if 'group_idx' not in formData or formData['group_idx'] is None:
+        formData['group_idx'] = group_idx
 
     # 비밀번호 항목이 빈칸인 경우 비밀번호를 지우지 않도록 함.
     if formData['pwd'] == '' or formData['pwd'] == None:

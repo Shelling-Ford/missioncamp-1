@@ -35,14 +35,14 @@ def get_member_list_with_count(**kwargs):
         if k in kwargs and kwargs[k] is not None:
             params[k] = kwargs[k]
 
-    if(kwargs['campcode'].split('_')[0] == 'youth'):
+    if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         params['ssn'] = {"$regex":r"^97[0-9]*$"}
 
     results = db.find(params)
 
-    if(kwargs['campcode'].split('_')[0] == 'cmc'):
+    if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'cmc'):
         results = results.sort("intercpmem7").skip(skip).limit(40)
-    elif(kwargs['campcode'].split('_')[0] == 'youth'):
+    elif('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         results = results.sort("ssn", -1).skip(skip).limit(40)
     else:
         results = results.skip(skip).limit(40)
@@ -64,7 +64,7 @@ def get_member_count(**kwargs):
         if k in kwargs and kwargs[k] is not None:
             params[k] = kwargs[k]
 
-    if(kwargs['campcode'].split('_')[0] == 'youth'):
+    if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         params['ssn'] = {"$regex":r"^97[0-9]*$"}
 
     count = db.count(params)

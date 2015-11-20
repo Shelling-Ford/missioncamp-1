@@ -23,9 +23,16 @@
     </ul>
   </div>
   <div class="col-md-10 col-sm-9">
+    <form class="form-inline" action="{{ url_for('.old_list') }}" method="GET">
+      <input type="text" name="name" class="form-control" placeholder="이름"/>
+      <button type="submit" class="btn btn-default">검색</button>
+      <!--<a class="btn btn-primary" href="{{ url_for('.excel_down', cancel_yn=cancel_yn, area_idx=area_idx, name=name) }}">엑셀 다운</a>-->
+    </form>
+    <br/>
     <table class="table1">
       <thead>
         <tr>
+          <th>캠프코드</th>
           <th>출석</th>
           <th>구분</th>
           <th>이름</th>
@@ -35,9 +42,9 @@
           <th>학교</th>
           <th>전공/학년</th>
           <th>교회</th>
-          {% if campcode.split('_')[0] == 'cmc' %}
+          {% if 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'cmc' %}
           <th>SM여부</th>
-          {% elif campcode.split('_')[0] == 'youth' %}
+          {% elif 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'youth' %}
           <th>생년월일</th>
           {% endif %}
           <th>메모</th>
@@ -48,6 +55,7 @@
       <tbody>
         {% for m in members %}
         <tr>
+          <td>{{ m.campcode }}</td>
           <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.entry=='Y' %} checked {% endif %} /></td>
           <td>{{ m.camp }}</td>
           <td><a href="{{ url_for('.old_member', name=m.name, hp1=m.hp1) }}">{{ m.name|striptags|truncate(12) }}</a></td>
@@ -57,9 +65,9 @@
           <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
           <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
           <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
-          {% if campcode.split('_')[0] == 'cmc' %}
+          {% if 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'cmc' %}
           <td>{% if 'intercpmem7' in m and m.intercpmem7 != 'null' %}{{ m.intercpmem7 }}{% endif%}</td>
-          {% elif campcode.split('_')[0] == 'youth' %}
+          {% elif 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'youth' %}
           <td>{% if 'ssn' in m and m.ssn != 'null' %}{{ m.ssn }}{% endif%}</td>
           {% endif %}
           <td>{{ m.memo|striptags|truncate(20) }}</td>

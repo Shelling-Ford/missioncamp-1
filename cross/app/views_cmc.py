@@ -54,7 +54,7 @@ def member_list():
     #    flash(u'지부 신청자 명단만 열람 가능합니다.')
     #    area_idx = current_user.area_idx
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     if group_idx is not None:
         group = Group.get(group_idx)
     else:
@@ -135,7 +135,7 @@ def room_setting():
 def area_setting():
     member_idx = request.form.get('member_idx', 0)
     area_idx = request.form.get('area_idx', 0)
-    Member.set_area(member_idx=member_idx, area_idx=area_idx)
+    Member.update(member_idx=member_idx, area_idx=area_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 단체 변경
@@ -146,7 +146,7 @@ def area_setting():
 def group_setting():
     member_idx = request.form.get('member_idx', 0)
     group_idx = request.form.get('group_idx', 0)
-    Member.set_group(member_idx=member_idx, group_idx=group_idx)
+    Member.update(member_idx=member_idx, group_idx=group_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 엑셀 다운로드

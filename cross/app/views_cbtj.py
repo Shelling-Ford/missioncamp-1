@@ -49,7 +49,7 @@ def member_list():
     else:
         group = None
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     return render_template('cbtj/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, camp=camp, group=group)
 
 # 신청자 상세

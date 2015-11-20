@@ -85,17 +85,17 @@ class Member(db.Base):
             return None
 
     @classmethod
-    def get(cls, camp_idx, userid):
+    def find(cls, camp_idx, userid):
         try:
             return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).one()
         except NoResultFound:
             return None
 
     @classmethod
-    def get_list(cls, camp_idx, params):
+    def get_list(cls, camp_idx, **kwargs):
         try:
             result = db.db_session.query(cls).join(Area).outerjoin(Group).outerjoin(Payment).filter(cls.camp_idx == camp_idx)
-            for key, value in params.iteritems():
+            for key, value in kwargs.iteritems():
                 if value is not None and value != '':
                     attr = getattr(cls, key)
                     result = result.filter(attr == value)
@@ -118,22 +118,14 @@ class Member(db.Base):
             return None
 
     @classmethod
-    def set_area(cls, member_idx, area_idx):
-        try:
-            member = db.db_session.query(cls).filter(cls.idx == member_idx).one()
-            member.area_idx = area_idx
-            db.db_session.commit()
-        except Exception as e:
-            raise e
+    def update(cls, member_idx, **kwargs):
+        member = cls.get(member_idx)
+        if member is not None:
+            for key, value in kwargs.iteritems():
+                if value is not None and value != '':
+                    setattr(member, key, value)
 
-    @classmethod
-    def set_group(cls, member_idx, group_idx):
-        try:
-            member = db.db_session.query(cls).filter(cls.idx == member_idx).one()
-            member.group_idx = group_idx
-            db.db_session.commit()
-        except Exception as e:
-            raise e
+        db.db_session.commit()
 
 class Membership(db.Base):
     __tablename__ = 'membership'

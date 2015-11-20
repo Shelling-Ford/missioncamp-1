@@ -52,7 +52,7 @@ def get_basic_stat(camp_idx):
     """))
 
     query_params = {'camp_idx': camp_idx}
-    stat = {'summary':[], 'area':[], 'persontype':[]}
+    stat = {'summary':[], 'area':[], 'persontype':[], 'group_name':[]}
     for s in sql:
         results = db.execute(s, query_params)
         for r in results:
@@ -77,6 +77,17 @@ def get_basic_stat(camp_idx):
     results = db.execute(query, query_params)
     for r in results:
         stat['persontype'].append(dict(r))
+
+    query = text("""
+        SELECT `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
+        LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
+        WHERE `m`.`camp_idx` = :camp_idx AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`
+    """)
+
+    results = db.execute(query, query_params)
+    for r in results:
+        stat['group_name'].append(dict(r))
 
     return stat
 

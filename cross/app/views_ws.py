@@ -44,8 +44,9 @@ def member_list():
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
     area_idx = request.args.get('area_idx', None)
+    group_idx = request.args.get('group_idx', None)
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
+    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, group_idx=group_idx)
     return render_template('ws/list.html', members=member_list)
 
 # 신청자 상세
@@ -206,7 +207,7 @@ def excel_down():
 # 개인 신청 수정
 @ws.route('/member-edit')
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @ws_permission.require(http_exception=403)
 def member_edit():
     idx = request.args.get('member_idx', 0)
@@ -221,7 +222,7 @@ def member_edit():
 # 수정된 신청서 저장
 @ws.route('/member-edit', methods=['POST'])
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @ws_permission.require(http_exception=403)
 def member_edit_proc():
     formData = getIndividualFormData()
@@ -244,7 +245,7 @@ def member_edit_proc():
 # 신청 취소
 @ws.route('/member-cancel')
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @ws_permission.require(http_exception=403)
 def member_cancel():
     member_idx = request.args.get('member_idx', 0)
@@ -255,7 +256,7 @@ def member_cancel():
 # 신청 취소 적용
 @ws.route('/member-cancel', methods=['POST'])
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @ws_permission.require(http_exception=403)
 def member_cancel_proc():
     cancel_reason = request.form.get('cancel_reason', None)

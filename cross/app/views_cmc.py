@@ -45,12 +45,13 @@ def member_list():
     cancel_yn = int(request.args.get('cancel_yn', 0))
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
+    group_idx = request.args.get('group_idx', None)
 
     #if current_user.role == 'branch' and current_user.area_idx != area_idx:
     #    flash(u'지부 신청자 명단만 열람 가능합니다.')
     #    area_idx = current_user.area_idx
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
+    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
 
 #@cmc.route('/cancel-list')
@@ -217,7 +218,7 @@ def excel_down():
 # 개인 신청 수정
 @cmc.route('/member-edit')
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @cmc_permission.require(http_exception=403)
 def member_edit():
     idx = request.args.get('member_idx', 0)
@@ -232,7 +233,7 @@ def member_edit():
 # 수정된 신청서 저장
 @cmc.route('/member-edit', methods=['POST'])
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @cmc_permission.require(http_exception=403)
 def member_edit_proc():
     formData = getIndividualFormData()
@@ -255,7 +256,7 @@ def member_edit_proc():
 # 신청 취소
 @cmc.route('/member-cancel')
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @cmc_permission.require(http_exception=403)
 def member_cancel():
     member_idx = request.args.get('member_idx', 0)
@@ -266,7 +267,7 @@ def member_cancel():
 # 신청 취소 적용
 @cmc.route('/member-cancel', methods=['POST'])
 @login_required
-@hq_permission.require(http_exception=403)
+@branch_permission.require(http_exception=403)
 @cmc_permission.require(http_exception=403)
 def member_cancel_proc():
     cancel_reason = request.form.get('cancel_reason', None)

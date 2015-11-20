@@ -34,7 +34,7 @@
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area }}</td>
-        <td>{% if not m.group_name == None %} {{ m.group_name }} {% endif %}</td>
+        <td>{% if not m.group_name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group_name }}</a> {% endif %}</td>
         <td>{{ m.sex }}</td>
         <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.claim == None %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>

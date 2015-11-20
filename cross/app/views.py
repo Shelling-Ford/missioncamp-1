@@ -51,6 +51,7 @@ def on_identity_loaded(sender, identity):
             identity.provides.add(RoleNeed(current_user.camp))
         if current_user.role == 'branch':
             identity.provides.add(RoleNeed('branch'))
+            identity.provides.add(RoleNeed(current_user.camp))
 
 
 # 로그인 폼

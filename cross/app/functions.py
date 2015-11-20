@@ -80,6 +80,7 @@ def get_basic_stat(camp_idx):
 
     return stat
 
+from core.models import Member
 # member 목록 열람
 def get_member_list(camp_idx, **kwargs):
     db.raw_query("SET @rownum:=0")
@@ -96,6 +97,9 @@ def get_member_list(camp_idx, **kwargs):
 
     if 'area_idx' in kwargs and kwargs['area_idx'] is not None and kwargs['area_idx'] != '':
         where_clause += str(" AND `m`.`area_idx` = :area_idx")
+
+    if 'group_idx' in kwargs and kwargs['group_idx'] is not None and kwargs['group_idx'] != '':
+        where_clause += str(" AND `m`.`group_idx` = :group_idx")
 
     query = text("""
         SELECT *
@@ -114,6 +118,7 @@ def get_member_list(camp_idx, **kwargs):
 
     kwargs['camp_idx'] = camp_idx
     results = db.execute(query, kwargs)
+    #results = Member.get_list(camp_idx)
 
     for r in results:
         r['membership'] = get_membership(r['idx'])

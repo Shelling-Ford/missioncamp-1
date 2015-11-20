@@ -335,7 +335,7 @@ def old_list():
         camp_idx = getCampIdx('cmc', year, term)
         #member_list = mongo.get_member_list(campcode=campcode)
 
-    return render_template("cmc/old_list.html", members=member_list, area=area, campcode=campcode, count=range(1, int(count/40)))
+    return render_template("cmc/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/40)))
 
 # 이전 참가자 상세
 @cmc.route('/old-member')
@@ -380,6 +380,70 @@ def old_stat():
         camp_idx = getCampIdx('cmc', year, term)
         stat = get_basic_stat(camp_idx)
         return render_template('cmc/old_stat_2.html', stat=stat, year=year, term=term)
+
+# 엑셀 다운로드
+@cmc.route('/old-excel-down', methods=['GET'])
+@login_required
+@hq_permission.require(http_exception=403)
+@cmc_permission.require(http_exception=403)
+def old_excel_down():
+
+    name = request.args.get('name', None)
+    area = request.args.get('area', None)
+    camp = request.args.get('camp', None)
+    campcode = request.args.get('campcode', None)
+    member_list = mongo.get_member_list_with_count(campcode=campcode, name=name, area=area, camp=camp)
+
+    try:
+        import cStringIO as StringIO
+    except:
+        import StringIO
+
+    output = StringIO.StringIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet()
+
+    r = 0
+    c = 0
+    worksheet.write(r, 0, u'캠프코드')
+    worksheet.write(r, 1, u'출석여부')
+    worksheet.write(r, 2, u'구분')
+    worksheet.write(r, 3, u'이름')
+    worksheet.write(r, 4, u'지부')
+    worksheet.write(r, 5, u'성별')
+    worksheet.write(r, 6, u'연락처')
+    worksheet.write(r, 7, u'학교')
+    worksheet.write(r, 8, u'전공/학년')
+    worksheet.write(r, 9, u'교회')
+    worksheet.write(r, 10, u'메모')
+    worksheet.write(r, 11, u'선캠참석횟수')
+
+    r += 1
+
+    date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
+    boolean = {'N':u'아니오', 'Y':u'예'}
+
+    for member in member_list:
+        worksheet.write(r, 0, member['campcode'])
+        worksheet.write(r, 1, boolean[member['entry']])
+        worksheet.write(r, 2, member['camp'])
+        worksheet.write(r, 3, member['name'])
+        worksheet.write(r, 4, member['area'])
+        worksheet.write(r, 5, member['sex'])
+        worksheet.write(r, 6, member['hp1'])
+        worksheet.write(r, 7, member['sch1'])
+        worksheet.write(r, 8, member['sch2'])
+        worksheet.write(r, 9, member['church'])
+        worksheet.write(r, 10, member['memo'])
+        worksheet.write(r, 11, member['count'])
+        r += 1
+
+    workbook.close()
+
+    output.seek(0)
+    response = make_response(output.read())
+    response.headers["Content-Disposition"] = "attachment; filename=member.xlsx"
+    return response
 
 @cmc.errorhandler(403)
 def forbidden(e):

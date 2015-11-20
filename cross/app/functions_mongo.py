@@ -28,7 +28,10 @@ def get_member_list(**kwargs):
 def get_member_list_with_count(**kwargs):
     params = dict()
 
-    skip = kwargs['skip']
+    if 'skip' in kwargs:
+        skip = kwargs['skip']
+    else:
+        skip = None
 
     keys = ['campcode', 'area', 'name', 'camp']
     for k in keys:
@@ -41,10 +44,11 @@ def get_member_list_with_count(**kwargs):
     results = db.find(params)
 
     if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'cmc'):
-        results = results.sort("intercpmem7").skip(skip).limit(40)
+        results = results.sort("intercpmem7")
     elif('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
-        results = results.sort("ssn", -1).skip(skip).limit(40)
-    else:
+        results = results.sort("ssn", -1)
+
+    if skip is not None:
         results = results.skip(skip).limit(40)
 
     member_list = []

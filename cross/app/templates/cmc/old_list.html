@@ -35,7 +35,11 @@
           <th>학교</th>
           <th>전공/학년</th>
           <th>교회</th>
+          {% if campcode.split('_')[0] == 'cmc' %}
           <th>SM여부</th>
+          {% elif campcode.split('_')[0] == 'youth' %}
+          <th>생년월일</th>
+          {% endif %}
           <th>메모</th>
           <th>선캠참석횟수</th>
           <th>통화횟수</th>
@@ -53,7 +57,11 @@
           <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
           <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
           <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
+          {% if campcode.split('_')[0] == 'cmc' %}
           <td>{% if 'intercpmem7' in m and m.intercpmem7 != 'null' %}{{ m.intercpmem7 }}{% endif%}</td>
+          {% elif campcode.split('_')[0] == 'youth' %}
+          <td>{% if 'ssn' in m and m.ssn != 'null' %}{{ m.ssn }}{% endif%}</td>
+          {% endif %}
           <td>{{ m.memo|striptags|truncate(20) }}</td>
           <td>{{ m.count }}</td>
           <td>{{ m.call_count }}</td>

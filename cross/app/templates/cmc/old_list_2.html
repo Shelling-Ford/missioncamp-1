@@ -56,15 +56,15 @@
         {% for m in members %}
         <tr>
           <td>{{ m.campcode }}</td>
-          <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.entry=='Y' %} checked {% endif %} /></td>
-          <td>{{ m.camp }}</td>
-          <td><a href="{{ url_for('.old_member', name=m.name, hp1=m.hp1) }}">{{ m.name|striptags|truncate(12) }}</a></td>
-          <td>{{ m.area }}</td>
+          <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
+          <td>{{ m.persontype }}</td>
+          <td><a href="{{ url_for('.old_member', name=m.name, hp1=m.contact) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+          <td>{{ m.area.name }}</td>
           <td>{{ m.sex }}</td>
-          <td>{% if m.hp1 != None %}{{ m.hp1 }}{% endif %}</td>
-          <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
-          <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
-          <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
+          <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
+          <td>{% for membership in m.membership %}{% if membership.key == 'sch1' %}{{ membership.value }}{% endif %}{% endfor %}</td>
+          <td>{% for membership in m.membership %}{% if membership.key == 'sch2' %}{{ membership.value }}{% endif %}{% endfor %}</td>
+          <td>{{ m.church }}</td>
           {% if 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'cmc' %}
           <td>{% if 'intercpmem7' in m and m.intercpmem7 != 'null' %}{{ m.intercpmem7 }}{% endif%}</td>
           {% elif 'campcode' in kwargs and kwargs['campcode'] is not none and campcode.split('_')[0] == 'youth' %}
@@ -81,8 +81,8 @@
     <table class="table1">
       <tr>
         {% for i in count %}
-        <td><a href="{{ url_for('.old_list', campcode=campcode, area=area, page=i) }}">{{ i }}</a></td>
-        {% if i % 30 == 0 %}</tr><tr>{% endif %}
+        <td><a href="{{ url_for('.old_list', year=year, term=term, area=area, camp=camp, page=i) }}">{{ i+1 }}</a></td>
+        {% if (i+1) % 30 == 0 %}</tr><tr>{% endif %}
         {% endfor %}
       </tr>
     </table>

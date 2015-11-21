@@ -161,7 +161,7 @@ def excel_down():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
 
     try:
         import cStringIO as StringIO
@@ -214,32 +214,40 @@ def excel_down():
     boolean = [u'아니오', u'예']
 
     for member in member_list:
-        worksheet.write(r, 0, member['name'])
-        worksheet.write(r, 1, member['area'])
-        worksheet.write(r, 2, member['contact'])
-        worksheet.write(r, 3, member['church'])
-        worksheet.write(r, 4, member['birth'])
-        worksheet.write(r, 5, member['sex'])
-        worksheet.write(r, 6, boolean[member['bus_yn']])
-        worksheet.write(r, 7, boolean[member['mit_yn']])
-        worksheet.write(r, 8, boolean[member['newcomer_yn']])
-        worksheet.write(r, 9, boolean[member['fullcamp_yn']])
-        worksheet.write_datetime(r, 10, member['date_of_arrival'], date_format)
-        worksheet.write_datetime(r, 11, member['date_of_leave'], date_format)
-        if 'membership' in member and 'job' in member['membership']:
-            worksheet.write(r, 12, member['membership']['job'])
-        if 'membership' in member and 'campus' in member['membership']:
-            worksheet.write(r, 13, member['membership']['campus'])
-        if 'membership' in member and 'major' in member['membership']:
-            worksheet.write(r, 14, member['membership']['major'])
-        if 'membership' in member and 'training' in member['membership']:
-            s = ""
-            for t in member['membership']['training']:
-                s += '%s,' % t
-            worksheet.write(r, 15, s)
-        worksheet.write(r, 16, member['language'])
-        worksheet.write_datetime(r, 17, member['regdate'], date_format)
-        worksheet.write(r, 18, member['memo'])
+        worksheet.write(r, 0, member.name)
+        worksheet.write(r, 1, member.area.name)
+        worksheet.write(r, 2, member.contact)
+        worksheet.write(r, 3, member.church)
+        worksheet.write(r, 4, member.birth)
+        worksheet.write(r, 5, member.sex)
+        worksheet.write(r, 6, boolean[member.bus_yn])
+        worksheet.write(r, 7, boolean[member.mit_yn])
+        worksheet.write(r, 8, boolean[member.newcomer_yn])
+        worksheet.write(r, 9, boolean[member.fullcamp_yn])
+        worksheet.write_datetime(r, 10, member.date_of_arrival, date_format)
+        worksheet.write_datetime(r, 11, member.date_of_leave, date_format)
+
+        job = ''
+        campus = ''
+        major = ''
+        training = ''
+        for membership in member.membership:
+            if membership.key == 'job':
+                job = membership.value
+            elif membership.key == 'campus':
+                campus = membership.value
+            elif membership.key == 'major':
+                major = membership.value
+            elif membership.key == 'training':
+                training += '%s,' % membership.value
+
+        worksheet.write(r, 12, job)
+        worksheet.write(r, 13, campus)
+        worksheet.write(r, 14, major)
+        worksheet.write(r, 15, training)
+        worksheet.write(r, 16, member.language)
+        worksheet.write_datetime(r, 17, member.regdate, date_format)
+        worksheet.write(r, 18, member.memo)
         r += 1
 
     workbook.close()
@@ -321,7 +329,7 @@ def old_list():
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
-    skip = int(request.args.get('page', 0)) * 40
+    skip = int(request.args.get('page', 0)) * 200
     name = request.args.get('name', None)
     area = request.args.get('area', None)
     camp = request.args.get('camp', None)
@@ -330,12 +338,21 @@ def old_list():
         campcode = request.args.get('campcode', None)
         member_list = mongo.get_member_list_with_count(skip=skip, campcode=campcode, name=name, area=area, camp=camp)
         count = mongo.get_member_count(campcode=campcode, name=name, area=area, camp=camp)
-
+        return render_template("cmc/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/200)))
     else:
-        camp_idx = getCampIdx('cmc', year, term)
-        #member_list = mongo.get_member_list(campcode=campcode)
+        camp_idx = getCampIdx(camp, year, term)
+        area_idx = request.args.get('area_idx', None)
+        member_list = Member.get_old_list(camp_idx=camp_idx, name=name, offset=skip, area_idx=area_idx)
+        member_count = Member.count(camp_idx=camp_idx, name=name, area_idx=area_idx)
 
-    return render_template("cmc/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/40)))
+        for member in member_list:
+            count = mongo.db.count({"hp1": member.contact, "name":member.name, "entry":"Y", "fin":{"$ne":"d"}})
+            count += Member.count(camp_idx=camp_idx, name=member.name, contact=member.contact, attend_yn=1, cancel_yn=0)
+            setattr(member, 'count', count)
+
+        return render_template("cmc/old_list_2.html", members=member_list, camp=camp, year=year, term=term, name=name, count=range(0, int(member_count/200)+1))
+
+
 
 # 이전 참가자 상세
 @cmc.route('/old-member')

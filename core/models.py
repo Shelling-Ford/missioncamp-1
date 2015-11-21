@@ -48,7 +48,7 @@ class Member(db.Base):
     attend3 = Column(Integer)
     attend4 = Column(Integer)
 
-    membership = relationship("Membership", order_by="Membership.idx", backref=backref("membership_member"))
+    membership = relationship("Membership", order_by="Membership.key", backref=backref("membership_member"))
     payment = relationship("Payment", uselist=False, backref=backref("payment_member"))
     group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
     area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
@@ -101,6 +101,24 @@ class Member(db.Base):
                     result = result.filter(attr == value)
 
             return result.order_by(desc(cls.idx)).all()
+        except NoResultFound:
+            return None
+
+    @classmethod
+    def get_old_list(cls, camp_idx, offset=None, **kwargs):
+        try:
+            result = db.db_session.query(cls).join(Area).outerjoin(Membership).filter(cls.camp_idx == camp_idx)
+            for key, value in kwargs.iteritems():
+                if value is not None and value != '':
+                    attr = getattr(cls, key)
+                    result = result.filter(attr == value)
+
+            result = result.order_by(desc(cls.idx))
+
+            if offset is not None:
+                return result.limit(200).offset(offset).all()
+            else:
+                return result.all()
         except NoResultFound:
             return None
 

@@ -79,7 +79,7 @@ def get_basic_stat(camp_idx):
         stat['persontype'].append(dict(r))
 
     query = text("""
-        SELECT `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `g`.`idx` `idx`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
         WHERE `m`.`camp_idx` = :camp_idx AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`

@@ -15,7 +15,9 @@ def get_member_list(**kwargs):
         if k in kwargs and kwargs[k] is not None:
             params[k] = kwargs[k]
 
-    results = db.find(params).sort("intercpmem7").skip(skip).limit(40)
+    params['fin'] = {"$ne":"d"}
+
+    results = db.find(params)
 
     member_list = []
     for r in results:
@@ -38,6 +40,8 @@ def get_member_list_with_count(**kwargs):
         if k in kwargs and kwargs[k] is not None:
             params[k] = kwargs[k]
 
+    params['fin'] = {"$ne":"d"}
+
     if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         params['ssn'] = {"$regex":r"^97[0-9]*$"}
 
@@ -49,12 +53,12 @@ def get_member_list_with_count(**kwargs):
         results = results.sort("ssn", -1)
 
     if skip is not None:
-        results = results.skip(skip).limit(40)
+        results = results.skip(skip).limit(200)
 
     member_list = []
     for r in results:
         item = dict(r)
-        item['count'] = db.count({"hp1": item["hp1"], "name":item["name"], "entry":"Y"})
+        item['count'] = db.count({"hp1": item["hp1"], "name":item["name"], "entry":"Y", "fin":{"$ne":"d"}})
         item['call_count'] = call_log.count({"name":item["name"], "hp1":item["hp1"]})
         member_list.append(item)
 
@@ -67,6 +71,8 @@ def get_member_count(**kwargs):
     for k in keys:
         if k in kwargs and kwargs[k] is not None:
             params[k] = kwargs[k]
+
+    params['fin'] = {"$ne":"d"}
 
     if('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         params['ssn'] = {"$regex":r"^97[0-9]*$"}

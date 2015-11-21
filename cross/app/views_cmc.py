@@ -409,7 +409,10 @@ def old_excel_down():
     area = request.args.get('area', None)
     camp = request.args.get('camp', None)
     campcode = request.args.get('campcode', None)
-    member_list = mongo.get_member_list_with_count(campcode=campcode, name=name, area=area, camp=camp)
+
+
+    year = int(request.args.get('year', 0))
+    term = int(request.args.get('term', 0))
 
     try:
         import cStringIO as StringIO
@@ -422,6 +425,7 @@ def old_excel_down():
 
     r = 0
     c = 0
+
     worksheet.write(r, 0, u'캠프코드')
     worksheet.write(r, 1, u'출석여부')
     worksheet.write(r, 2, u'구분')
@@ -438,22 +442,61 @@ def old_excel_down():
     r += 1
 
     date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
-    boolean = {'N':u'아니오', 'Y':u'예'}
 
-    for member in member_list:
-        worksheet.write(r, 0, member['campcode'])
-        worksheet.write(r, 1, boolean[member['entry']])
-        worksheet.write(r, 2, member['camp'])
-        worksheet.write(r, 3, member['name'])
-        worksheet.write(r, 4, member['area'])
-        worksheet.write(r, 5, member['sex'])
-        worksheet.write(r, 6, member['hp1'])
-        worksheet.write(r, 7, member['sch1'])
-        worksheet.write(r, 8, member['sch2'])
-        worksheet.write(r, 9, member['church'])
-        worksheet.write(r, 10, member['memo'])
-        worksheet.write(r, 11, member['count'])
-        r += 1
+    if year == 0 or term == 0:
+        campcode = request.args.get('campcode', None)
+        member_list = mongo.get_member_list_with_count(campcode=campcode, name=name, area=area, camp=camp)
+
+        boolean = {'N':u'아니오', 'Y':u'예'}
+
+        for member in member_list:
+            worksheet.write(r, 0, member['campcode'])
+            worksheet.write(r, 1, boolean[member['entry']])
+            worksheet.write(r, 2, member['camp'])
+            worksheet.write(r, 3, member['name'])
+            worksheet.write(r, 4, member['area'])
+            worksheet.write(r, 5, member['sex'])
+            worksheet.write(r, 6, member['hp1'])
+            worksheet.write(r, 7, member['sch1'])
+            worksheet.write(r, 8, member['sch2'])
+            worksheet.write(r, 9, member['church'])
+            worksheet.write(r, 10, member['memo'])
+            worksheet.write(r, 11, member['count'])
+            r += 1
+
+    else:
+        camp_idx = getCampIdx(camp, year, term)
+        area_idx = request.args.get('area_idx', None)
+        member_list = Member.get_old_list(camp_idx=camp_idx, name=name, area_idx=area_idx)
+
+        boolean = [u'아니오', u'예']
+
+        for member in member_list:
+            count = mongo.db.count({"hp1": member.contact, "name":member.name, "entry":"Y", "fin":{"$ne":"d"}})
+            count += Member.count(camp_idx=camp_idx, name=member.name, contact=member.contact, attend_yn=1, cancel_yn=0)
+            setattr(member, 'count', count)
+
+            sch1 = ''
+            sch2 = ''
+            for membership in member.membership:
+                if membership.key == 'sch1':
+                    sch1 = membership.value
+                elif membership.key == 'sch2':
+                    sch2 = membership.value
+
+            worksheet.write(r, 0, "%s_%d_%d" % (camp, year, term))
+            worksheet.write(r, 1, boolean[member.attend_yn])
+            worksheet.write(r, 2, member.persontype)
+            worksheet.write(r, 3, member.name)
+            worksheet.write(r, 4, member.area.name)
+            worksheet.write(r, 5, member.sex)
+            worksheet.write(r, 6, member.contact)
+            worksheet.write(r, 7, sch1)
+            worksheet.write(r, 8, sch2)
+            worksheet.write(r, 9, member.church)
+            worksheet.write(r, 10, member.memo)
+            worksheet.write(r, 11, member.count)
+            r += 1
 
     workbook.close()
 

@@ -48,12 +48,7 @@ def member_list():
     member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
 
-    if group_idx is not None:
-        group = Group.get(group_idx)
-    else:
-        group = None
-
-
+    group = Group.get(group_idx) if group_idx is not None else None
 
     member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)

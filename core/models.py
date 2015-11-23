@@ -249,7 +249,7 @@ class Group(db.Base):
 
     @classmethod
     def get_list(cls, camp_idx):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).first()
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
 
 class Promotion(db.Base):
     __tablename__ = 'promotion'

@@ -72,7 +72,7 @@
         <td>{{ m.sex }}</td>
         <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.claim == None %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>
-        <td>{% if m.amount == None %} 0 {% else %} {{ m.amount }} {% endif %}</td>
+        <td>{% if m.payment == None %} 0 {% else %} {{ '{:,}'.format(m.payment.amount) }} {% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
         <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>

@@ -69,71 +69,49 @@ class Member(db.Base):
         self.area_idx = area_idx
 
         for key in keys:
-            if key in kwargs:
-                self[key] = kwargs[key]
-            else:
-                self[key] = None
+            self[key] = kwargs[key] if key in kwargs else None
 
     def get_id(self):
         return self.idx
 
     @classmethod
     def get(cls, idx):
-        try:
-            return db.db_session.query(cls).filter(cls.idx == idx).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def find(cls, camp_idx, userid):
-        try:
-            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
 
     @classmethod
     def get_list(cls, camp_idx, **kwargs):
-        try:
-            result = db.db_session.query(cls).join(Area).outerjoin(Group).outerjoin(Payment).filter(cls.camp_idx == camp_idx)
-            for key, value in kwargs.iteritems():
-                if value is not None and value != '':
-                    attr = getattr(cls, key)
-                    result = result.filter(attr == value)
+        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.group).outerjoin(Member.payment).filter(cls.camp_idx == camp_idx)
+        for key, value in kwargs.iteritems():
+            if value is not None and value != '':
+                attr = getattr(cls, key)
+                result = result.filter(attr == value)
 
-            return result.order_by(desc(cls.idx)).all()
-        except NoResultFound:
-            return None
+        return result.order_by(desc(cls.idx)).all()
 
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
-        try:
-            result = db.db_session.query(cls).join(Area).outerjoin(Membership).filter(cls.camp_idx == camp_idx)
-            for key, value in kwargs.iteritems():
-                if value is not None and value != '':
-                    attr = getattr(cls, key)
-                    result = result.filter(attr == value)
+        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.membership).filter(cls.camp_idx == camp_idx)
+        for key, value in kwargs.iteritems():
+            if value is not None and value != '':
+                attr = getattr(cls, key)
+                result = result.filter(attr == value)
 
-            result = result.order_by(desc(cls.idx))
-
-            if offset is not None:
-                return result.limit(200).offset(offset).all()
-            else:
-                return result.all()
-        except NoResultFound:
-            return None
+        result = result.order_by(desc(cls.idx))
+        return result.limit(200).offset(offset).all() if offset is not None else result.all()
 
     @classmethod
     def count(cls, camp_idx, **kwargs):
-        try:
-            result = db.db_session.query(cls).join(Area).outerjoin(Group).outerjoin(Payment).filter(cls.camp_idx == camp_idx)
-            for key, value in kwargs.iteritems():
-                if value is not None and value != '':
-                    attr = getattr(cls, key)
-                    result = result.filter(attr == value)
+        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.group).outerjoin(Member.payment).filter(cls.camp_idx == camp_idx)
+        for key, value in kwargs.iteritems():
+            if value is not None and value != '':
+                attr = getattr(cls, key)
+                result = result.filter(attr == value)
 
-            return result.count()
-        except NoResultFound:
-            return None
+        return result.count()
 
     @classmethod
     def update(cls, member_idx, **kwargs):
@@ -168,17 +146,11 @@ class Membership(db.Base):
 
     @classmethod
     def get(cls, idx):
-        try:
-            return db.db_session.query(cls).filter(cls.idx == idx).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get_list(cls, member_idx):
-        try:
-            return db.db_session.query(cls).filteR(cls.member_idx == member_idx).all()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
 
 class Payment(db.Base):
     __tablename__ = 'payment'
@@ -207,11 +179,7 @@ class Payment(db.Base):
 
     @classmethod
     def get(cls, idx):
-        try:
-            return db.db_session.query(cls).filter(cls.idx == idx).one()
-        except NoResultFound:
-            return None
-
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
 
 class Group(db.Base):
     __tablename__ = 'group'
@@ -248,10 +216,7 @@ class Group(db.Base):
         self.leadercontact = leadercontact
         self.area_idx = area_idx
 
-        if 'mem_num' in kwargs:
-            self.mem_num = kwargs['mem_num']
-        else:
-            self.mem_num = 0
+        self.mem_num = kwargs['mem_num'] if 'mem_num' in kwargs else 0
 
         if 'grouptype' in kwargs:
             self.grouptype = kwargs['grouptype']
@@ -276,24 +241,15 @@ class Group(db.Base):
 
     @classmethod
     def get(cls, idx):
-        try:
-            return db.db_session.query(cls).filter(cls.idx == idx).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def find(cls, camp_idx, groupid):
-        try:
-            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).first()
 
     @classmethod
     def get_list(cls, camp_idx):
-        try:
-            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).first()
 
 class Promotion(db.Base):
     __tablename__ = 'promotion'
@@ -320,24 +276,15 @@ class Promotion(db.Base):
 
     @classmethod
     def get(cls, idx):
-        try:
-            return db.db_session.query(cls).filter(cls.idx == idx).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get(cls, camp_idx, church_name):
-        try:
-            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.church_name == church_name).one()
-        except NoResultFound:
-            return None
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.church_name == church_name).first()
 
     @classmethod
     def get_list(cls, camp_idx):
-        try:
-            return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
-        except NoResultFound as e:
-            return None
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
 
     @classmethod
     def insert(cls, camp_idx, church_name, name, address, contact, memo):

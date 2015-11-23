@@ -17,7 +17,7 @@ def editIndividual(camp_idx, member_idx, formData, group_idx=None):
 def getMembershipDataList(camp_idx, formData):
     membership_data_list = []
 
-    if formData['group_idx'] is None:
+    if 'group_idx' not in formData or formData['group_idx'] is None:
         membership_data_list.append({'camp_idx':camp_idx, 'key':'email', 'value':formData['email']})
 
         if formData['persontype'] == u'중학생' or formData['persontype'] == u'고등학생':

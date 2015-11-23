@@ -7,7 +7,7 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.youth import *
-from core.models import Promotion
+from core.models import Promotion, Member
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -45,7 +45,7 @@ def member_list():
     cancel_yn = int(request.args.get('cancel_yn', 0))
     area_idx = request.args.get('area_idx', None)
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
     return render_template('youth/list.html', members=member_list)
 
 # 홍보물 신청 목록

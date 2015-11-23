@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from core.database import db
 import datetime
 
+# 지부
 class Area(db.Base):
     __tablename__ = "area"
 
@@ -13,7 +14,7 @@ class Area(db.Base):
     type = Column(String)
     camp = Column(String)
 
-
+# 개인 신청서 / 단체 멤버 신청서
 class Member(db.Base):
     __tablename__ = 'member'
 
@@ -123,6 +124,7 @@ class Member(db.Base):
 
         db.db_session.commit()
 
+# 세대별 기타 정보
 class Membership(db.Base):
     __tablename__ = 'membership'
 
@@ -152,6 +154,7 @@ class Membership(db.Base):
     def get_list(cls, member_idx):
         return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
 
+# 입금 정보
 class Payment(db.Base):
     __tablename__ = 'payment'
 
@@ -181,6 +184,7 @@ class Payment(db.Base):
     def get(cls, idx):
         return db.db_session.query(cls).filter(cls.idx == idx).first()
 
+# 단체
 class Group(db.Base):
     __tablename__ = 'group'
 
@@ -204,9 +208,7 @@ class Group(db.Base):
     member = relationship("Member", order_by="Member.idx", backref="member_group")
 
     def __init__(self, camp_idx, name, groupid, pwd, leadername, leaderjob, leadercontact, area_idx, **kwargs):
-        if 'idx' in kwargs:
-            self.idx = kwargs['idx']
-
+        self.idx = kwargs['idx'] if 'idx' in kwargs else None
         self.camp_idx = camp_idx
         self.name = name
         self.groupid = name
@@ -215,26 +217,13 @@ class Group(db.Base):
         self.leaderjob = leaderjob
         self.leadercontact = leadercontact
         self.area_idx = area_idx
-
         self.mem_num = kwargs['mem_num'] if 'mem_num' in kwargs else 0
-
-        if 'grouptype' in kwargs:
-            self.grouptype = kwargs['grouptype']
-
-        if 'regdate' in kwargs:
-            self.regdate = datetime.datetime.today()
-
-        if 'cancel_yn' in kwargs:
-            self.cancel_yn = kwargs['cancel_yn']
-
-        if 'canceldate' in kwargs:
-            self.canceldate = kwargs['canceldate']
-
-        if 'cancel_reason' in kwargs:
-            self.cancel_reason = kwargs['cancel_reason']
-
-        if 'memo' in kwargs:
-            self.memo = kwargs['memo']
+        self.grouptype = kwargs['grouptype'] if 'grouptype' in kwargs else None
+        self.regdate = datetime.datetime.today() if 'regdate' in kwargs else None
+        self.cancel_yn = kwargs['cancel_yn'] if 'cancel_yn' in kwargs else None
+        self.canceldate = kwargs['canceldate'] if 'canceldate' in kwargs else None
+        self.cancel_reason = kwargs['cancel_reason'] if 'cancel_reason' in kwargs else None
+        self.memo = kwargs['memo'] if 'memo' in kwargs else None
 
     def get_id(self):
         return self.idx
@@ -251,6 +240,7 @@ class Group(db.Base):
     def get_list(cls, camp_idx):
         return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
 
+# 청소년 홍보물
 class Promotion(db.Base):
     __tablename__ = 'promotion'
 

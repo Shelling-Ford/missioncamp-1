@@ -81,7 +81,7 @@
         <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
         <td>{{ m.memo|striptags|truncate(20) }}</td>
       </tr>
-      {% set i = i + 1 %}
+      {% set i = i - 1 %}
       {% endfor %}
     </tbody>
   </table>

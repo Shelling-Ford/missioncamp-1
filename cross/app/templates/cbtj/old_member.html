@@ -1,0 +1,61 @@
+{% extends 'cbtj/page.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>{{ name }}</h2>
+  <h3>{{ hp1 }}</h3>
+  <table class="table1" style="width:100%">
+    <thead>
+      <tr>
+        <th>캠프코드</th>
+        <th>구분</th>
+        <th>지부</th>
+        <th>성별</th>
+        <th>학교</th>
+        <th>전공/학년</th>
+        <th>교회</th>
+        <th>SM여부</th>
+        <th>전체참석</th>
+        <th>오는날</th>
+        <th>가는날</th>
+        <th>숙소</th>
+        <th>메모</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td>{{ m.campcode }}</td>
+        <td>{{ m.camp }}</td>
+        <td>{{ m.area }}</td>
+        <td>{{ m.sex }}</td>
+        <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
+        <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
+        <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
+        <td>{% if 'intercpmem7' in m and m.intercpmem7 != 'null' %}{{ m.intercpmem7 }}{% endif%}</td>
+        <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
+        <td>{{ m.date_of_arrival }}</td>
+        <td>{{ m.date_of_leave }}</td>
+        <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
+        <td>{{ m.memo|striptags|truncate(20) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <br/>
+  <h2>통화내용</h2>
+  <table class="table1" style="width:100%">
+    {% for i in logs %}
+    <tr><td style="width:200px;">{{ i.date }}</td><td>{{ i.log }}</td></tr>
+    {% endfor %}
+  </table>
+  <h2>새로운 통화내용 입력</h2>
+  <form action="{{ url_for('.save_log') }}" method="POST">
+    <textarea name="log" rows="5" cols="25" class="form-control"></textarea>
+    <br/>
+    <input type="submit" value="저장" class="btn btn-success"/>
+    <input type="hidden" name="name" value="{{ name }}"/>
+    <input type="hidden" name="hp1" value="{{ hp1 }}"/>
+  </form>
+</div>
+{% endblock %}

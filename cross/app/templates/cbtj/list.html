@@ -62,7 +62,7 @@
       {% set i = members|length %}
       {% for m in members %}
       <tr>
-        <td>{{ m.rownum }}</td>
+        <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
         <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
         <td>{{ m.persontype }}</td>

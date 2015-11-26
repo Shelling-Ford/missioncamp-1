@@ -1,0 +1,80 @@
+{% extends 'cbtj/page.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-2 col-sm-3">
+    <ul>
+      <li><a href="{{ url_for('.old_list', camp='cbtj', year=2015, term=2)}}">2015년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='young_2015_1')}}">2015년 겨울</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='young_2014_2')}}">2014년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='young_2014')}}">2014년 겨울</a></li>
+    </ul>
+
+    <h4>여남시</h4>
+    <ul>
+      <li><a href="{{ url_for('.old_list', camp='ws', year=2015, term=2)}}">2015년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='ws_2015_1')}}">2015년 겨울</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='ws_2014_2')}}">2014년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='ws_2014')}}">2014년 겨울</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='ws_2013_2')}}">2013년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', campcode='ws_2013')}}">2013년 겨울</a></li>
+    </ul>
+  </div>
+  <div class="col-md-10 col-sm-9">
+    <form class="form-inline" action="{{ url_for('.old_list') }}" method="GET">
+      <input type="text" name="name" class="form-control" placeholder="이름"/>
+      <button type="submit" class="btn btn-default">검색</button>
+      <a class="btn btn-primary" href="{{ url_for('.old_excel_down', campcode=campcode, area=area, name=name) }}">엑셀 다운</a>
+    </form>
+    <br/>
+    <table class="table1">
+      <thead>
+        <tr>
+          <th>캠프코드</th>
+          <th>출석</th>
+          <th>구분</th>
+          <th>이름</th>
+          <th>지부</th>
+          <th>성별</th>
+          <th>연락처</th>
+          <th>학교</th>
+          <th>전공/학년</th>
+          <th>교회</th>
+          <th>메모</th>
+          <th>선캠참석횟수</th>
+          <th>통화횟수</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>{{ m.campcode }}</td>
+          <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.entry=='Y' %} checked {% endif %} /></td>
+          <td>{{ m.camp }}</td>
+          <td><a href="{{ url_for('.old_member', name=m.name, hp1=m.hp1) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+          <td>{{ m.area }}</td>
+          <td>{{ m.sex }}</td>
+          <td>{% if m.hp1 != None %}{{ m.hp1 }}{% endif %}</td>
+          <td>{% if 'sch1' in m %}{{ m.sch1 }}{% endif%}</td>
+          <td>{% if 'sch2' in m %}{{ m.sch2 }}{% endif%}</td>
+          <td>{% if 'church' in m %}{{ m.church }}{% endif%}</td>
+          <td>{{ m.memo|striptags|truncate(20) }}</td>
+          <td>{{ m.count }}</td>
+          <td>{{ m.call_count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br/>
+    <table class="table1">
+      <tr>
+        {% for i in count %}
+        <td><a href="{{ url_for('.old_list', campcode=campcode, area=area, page=i) }}">{{ i }}</a></td>
+        {% if i % 30 == 0 %}</tr><tr>{% endif %}
+        {% endfor %}
+      </tr>
+    </table>
+    <br/>
+  </div>
+</div>
+{% endblock %}

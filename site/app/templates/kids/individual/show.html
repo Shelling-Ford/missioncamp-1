@@ -15,7 +15,7 @@
 
         <tr>
           <td>지부</td>
-          <td>{{ area_name }}</td>
+          <td>{{ member.area.name }}</td>
         </tr>
 
         <tr>
@@ -29,13 +29,17 @@
         </tr>
 
         <tr>
-          <td>연락처</td>
-          <td>{{ member.contact }}</td>
+          <td>보호자 이름</td>
+          <td>
+            {% for t in member.membership %}
+              {% if t.key == 'pname' %}{{ t.value }}{% endif %}
+            {% endfor %}
+          </td>
         </tr>
 
         <tr>
-          <td>이메일</td>
-          <td>{{ member.membership.email }}</td>
+          <td>보호자 연락처</td>
+          <td>{{ member.contact }}</td>
         </tr>
 
         <tr>
@@ -48,22 +52,25 @@
           <td>{{ member.persontype }}</td>
         </tr>
 
-        {% if member.persontype == '중학생' or member.persontype == '고등학생' %}
+        {% if member.persontype == '어린이' %}
         <tr>
           <td>학교</td>
-          <td>{{ member.membership.sch1 }}</td>
+          <td>
+            {% for t in member.membership %}
+              {% if t.key == 'sch1' %}{{ t.value }}{% endif %}
+            {% endfor %}
+          </td>
         </tr>
 
         <tr>
           <td>학년</td>
-          <td>{{ member.membership.sch2 }}학년</td>
+          <td>
+            {% for t in member.membership %}
+              {% if t.key == 'sch2' %}{{ t.value }}학년{% endif %}
+            {% endfor %}
+          </td>
         </tr>
         {% endif %}
-
-        <tr>
-          <td>단체버스 이용 여부</td>
-          <td>{% if member.bus_yn %} 예 {% else %} 아니오 {% endif %}</td>
-        </tr>
 
         <tr>
           <td>선교캠프 참여 경험</td>
@@ -73,8 +80,8 @@
         <tr>
           <td>인터콥 훈련 여부</td>
           <td>
-            {% for t in member.membership.training %}
-              {{ t }},&nbsp;
+            {% for t in member.membership %}
+              {% if t.key == 'training' %}{{ t.value }},&nbsp;{% endif %}
             {% endfor %}
           </td>
         </tr>

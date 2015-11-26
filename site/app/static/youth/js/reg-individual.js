@@ -34,7 +34,7 @@ $(document).ready(function () {
 var isChecked = false;
 function check_userid() {
   'use strict';
-  var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[a-z]?[a-z0-9\-\_]{4,}$/i;
+  var userid = $('#userid').val(), email_regex = /^[a-z]?[a-z0-9\-\_]{4,}$/i;
 
   if (!email_regex.test(userid)) {
     $('#id_check').html('아이디는 영문 소문자 및 숫자 4글자 이상 입력해주세요');
@@ -46,7 +46,7 @@ function check_userid() {
   $.ajax({
     url: './check-userid',
     type: 'POST',
-    data: 'userid=' + userid + '&campidx=' + campidx,
+    data: 'userid=' + userid,
     success: function (data) {
       if (parseInt(data, 10) === 0) {
         $('#id_check').html("사용이 가능한 아이디입니다.")

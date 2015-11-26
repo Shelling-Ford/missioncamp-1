@@ -1,0 +1,21 @@
+{% extends 'kids/page.html' %}
+{% import 'macros.html' as macros %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <section class="page-header" id="page-header" style="padding-top:45px;">
+    {% if not group_yn %}
+    <h2>개인 신청</h2>
+    {% else %}
+    <h2>멤버 신청서 작성</h2>
+    {% endif %}
+  </section>
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+    {{ macros.render_form(form, action_url='', action_text='신청 완료',class_='form-horizontal') }}
+  </div>
+</div> <!-- .container -->
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='kids/js/reg-individual.js') }}"></script>
+{% endblock %}

@@ -118,7 +118,7 @@ class Member(db.Base):
 
     @classmethod
     def get_list(cls, camp_idx=None, **kwargs):
-        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.group).outerjoin(Member.payment)
+        result = db.db_session.query(cls)
         if camp_idx is not None:
             result = result.filter(cls.camp_idx == camp_idx)
 
@@ -131,7 +131,7 @@ class Member(db.Base):
 
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
-        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.membership).filter(cls.camp_idx == camp_idx)
+        result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
         for key, value in kwargs.iteritems():
             if value is not None and value != '':
                 attr = getattr(cls, key)
@@ -142,7 +142,7 @@ class Member(db.Base):
 
     @classmethod
     def count(cls, camp_idx, **kwargs):
-        result = db.db_session.query(cls).join(Member.area).outerjoin(Member.group).outerjoin(Member.payment).filter(cls.camp_idx == camp_idx)
+        result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
         for key, value in kwargs.iteritems():
             if value is not None and value != '':
                 attr = getattr(cls, key)

@@ -52,14 +52,17 @@ def get_basic_stat(camp_idx):
     """))
 
     query_params = {'camp_idx': camp_idx}
-    stat = {'summary':[], 'area':[], 'persontype':[], 'group_name':[], 'campus': []}
+    stat = {
+        'summary':[], 'area':[], 'persontype':[], 'group_name':[], 'campus': [],
+        'training':[], 'job': [],
+    }
     for s in sql:
         results = db.execute(s, query_params)
         for r in results:
             stat['summary'].append(dict(r))
 
     query = text("""
-        SELECT `a`.`idx` `idx`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `a`.`idx` `idx`, `a`.`idx` `param`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         WHERE `m`.`camp_idx` = :camp_idx AND `cancel_yn` = 0 GROUP BY `a`.`name`
     """)
@@ -69,7 +72,7 @@ def get_basic_stat(camp_idx):
         stat['area'].append(dict(r))
 
     query = text("""
-        SELECT `m`.`persontype` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `m`.`persontype` `name`, `m`.`persontype` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         WHERE `m`.`camp_idx` = :camp_idx AND `cancel_yn` = 0 GROUP BY `persontype`
     """)
@@ -79,7 +82,7 @@ def get_basic_stat(camp_idx):
         stat['persontype'].append(dict(r))
 
     query = text("""
-        SELECT `g`.`idx` `idx`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `g`.`idx` `idx`, `g`.`idx` `param`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
         WHERE `m`.`camp_idx` = :camp_idx AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`
@@ -99,6 +102,28 @@ def get_basic_stat(camp_idx):
     results = db.execute(query, query_params)
     for r in results:
         stat['campus'].append(dict(r))
+
+    query = text("""
+        SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
+        LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
+        WHERE `m`.`camp_idx` = :camp_idx AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'training' GROUP BY `ms`.`value`
+    """)
+
+    results = db.execute(query, query_params)
+    for r in results:
+        stat['training'].append(dict(r))
+
+    query = text("""
+        SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
+        LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
+        WHERE `m`.`camp_idx` = :camp_idx AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'job' GROUP BY `ms`.`value`
+    """)
+
+    results = db.execute(query, query_params)
+    for r in results:
+        stat['job'].append(dict(r))
 
     return stat
 

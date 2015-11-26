@@ -48,11 +48,12 @@ def member_list():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
+    persontype = request.args.get('persontype', None)
 
     group = Group.get(group_idx) if group_idx is not None else None
 
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
-    count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
+    count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
     return render_template('ws/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))
 
 # 신청자 상세
@@ -90,7 +91,7 @@ def pay():
     staff_name = request.form.get('staff_name')
 
     save_payment(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
-    return redirect(url_for('.member', member_idx=member_idx))
+    return redirect(url_for('.member_list'))
 
 # 입금 정보 삭제
 @ws.route('/delpay')
@@ -100,7 +101,7 @@ def pay():
 def delpay():
     member_idx = request.args.get('member_idx', 0)
     delete_payment(member_idx)
-    return redirect(url_for('.member', member_idx=member_idx))
+    return redirect(url_for('.member_list'))
 
 # 숙소 정보 입력
 @ws.route('/room_setting', methods=['POST'])
@@ -297,6 +298,17 @@ def member_cancel_proc():
     idx = session['idx']
     cancelIndividual(idx, cancel_reason)
     flash(u'신청이 취소되었습니다')
+    return redirect(url_for('.member_list'))
+
+# 신청 취소 복원
+@ws.route('/member-recover')
+@login_required
+@branch_permission.require(http_exception=403)
+@ws_permission.require(http_exception=403)
+def member_recover():
+    member_idx = request.args.get('member_idx')
+    Member.update(member_idx, cancel_yn=0)
+    flash(u'신청이 복원되었습니다')
     return redirect(url_for('.member_list'))
 
 # 이전 참가자 리스트

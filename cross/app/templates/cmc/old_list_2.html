@@ -55,7 +55,7 @@
       <tbody>
         {% for m in members %}
         <tr>
-          <td>{{ m.campcode }}</td>
+          <td>{{ m.camp.code }}_{{ m.camp.year}}_{{ m.camp.term }}</td>
           <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
           <td>{{ m.persontype }}</td>
           <td><a href="{{ url_for('.old_member', name=m.name, hp1=m.contact) }}">{{ m.name|striptags|truncate(12) }}</a></td>

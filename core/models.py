@@ -66,7 +66,7 @@ class Member(db.Base):
     __tablename__ = 'member'
 
     idx = Column(Integer, primary_key=True)
-    camp_idx = Column(Integer)
+    camp_idx = Column(Integer, ForeignKey('camp.idx'))
     userid = Column(String)
     pwd = Column(String)
     name = Column(String)
@@ -100,6 +100,7 @@ class Member(db.Base):
     payment = relationship("Payment", uselist=False, backref=backref("payment_member"))
     group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
     area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
+    camp = relationship("Camp", backref=backref("camp_member", lazy='dynamic'))
 
     def get_id(self):
         return self.idx

@@ -43,9 +43,9 @@ class Camp(db.Base):
 
     @classmethod
     def get_idx(cls, code, year=None, term=None):
-        if year is None:
+        if year is None or year == 0:
             year = GlobalOptions.get_year()
-        if term is None:
+        if term is None or term == 0:
             term = GlobalOptions.get_term()
         return db.db_session.query(cls).filter(cls.code == code, cls.year == year, cls.term == term).one().idx
 
@@ -200,6 +200,7 @@ class Member(db.Base):
         member.camp_idx = camp_idx
         member.group_idx = group_idx
         member.regdate = datetime.datetime.today()
+        member.cancel_yn = 0
         member.attend_yn = 0
 
         attend = getAttendArray(camp_idx, formData)

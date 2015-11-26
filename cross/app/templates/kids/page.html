@@ -1,0 +1,21 @@
+{% extends 'page.html' %}
+{% block navs %}
+<ul class="nav navbar-nav">
+	<li><a href="{{ url_for('kids.home') }}">통계</a></li>
+	<li><a href="{{ url_for('kids.member_list') }}">신청자목록</a></li>
+	<!--
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			숙소&nbsp;<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="#">숙소배치</a></li>
+			<li><a href="#">숙소현황</a></li>
+			<li><a href="#">건물셋팅</a></li>
+			<li><a href="#">캠프숙소셋팅</a></li>
+		</ul>
+	</li>
+	<li><a href="#">통계표</a></li>
+-->
+</ul>
+{% endblock %}

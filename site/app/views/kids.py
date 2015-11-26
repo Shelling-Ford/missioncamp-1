@@ -43,13 +43,13 @@ def reg_individual_proc():
     if check > 0:
         # 아이디 중복 관련 Exception을 발생시킴
         flash(u'중복된 아이디입니다. 아이디를 다시 확인해주세요.')
-        return redirect(url_for('.reg_individual'))
+        return redirect(url_for('.reg_individual')+'#content')
     else:
         member_idx = Member.insert(campidx, formData, None, getMembershipDataList(campidx, formData))
         session['type'] = u'개인'
         session['idx'] = member_idx
         flash(u'신청이 완료되었습니다.')
-        return redirect(url_for('.show_individual'))
+        return redirect(url_for('.show_individual')+'#content')
 
 # 신청조회 - 로그인 폼
 @context.route('/check')
@@ -61,17 +61,17 @@ def login_proc():
     logintype = request.form.get('logintype', None)
     if logintype == '' or logintype == None:
         flash(u'신청 구분을 선택해주세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     userid = request.form.get('userid', None)
     if userid == '' or userid == None:
         flash(u'아이디를 입력해주세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     pwd = request.form.get('pwd', None)
     if pwd == '' or pwd == None:
         flash(u'비밀번호를 입력해 주세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     campidx = Camp.get_idx('kids')
     if logintype == u'개인':
@@ -79,29 +79,29 @@ def login_proc():
             idx = Member.get_idx(campidx, userid)
             session['type'] = u'개인'
             session['idx'] = idx
-            return redirect(url_for('.show_individual'))
+            return redirect(url_for('.show_individual')+'#content')
         else:
             flash(u'아이디 또는 비밀번호가 잘못되었습니다.')
-            return redirect(url_for('.login'))
+            return redirect(url_for('.login')+'#content')
     elif logintype == u'단체':
         if Group.login_check(campidx, userid, pwd):
             idx = Group.get_idx(campidx,userid)
             session['type'] = u'단체'
             session['idx'] = idx
-            return redirect(url_for('.show_group'))
+            return redirect(url_for('.show_group')+'#content')
         else:
             flash(u'아이디 또는 비밀번호가 잘못되었습니다.')
-            return redirect(url_for('.login'))
+            return redirect(url_for('.login')+'#content')
     else:
         flash('신청구분이 잘못되었습니다. 관리자에게 문의해주세요(070-8787-8870)')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
 # 개인신청 조회
 @context.route('/individual/info')
 def show_individual():
     if check_session(u'개인'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     idx = session['idx']
     member = Member.get(idx)
@@ -112,7 +112,7 @@ def show_individual():
 def edit_individual():
     if check_session(u'개인'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     idx = session['idx']
     member = Member.get(idx)
@@ -129,14 +129,14 @@ def edit_inidividual_proc():
     idx = session['idx']
     Member.update(idx, camp_idx, formData=formData, membership_data_list=getMembershipDataList(camp_idx, formData))
     flash(u'신청서 수정이 완료되었습니다.')
-    return redirect(url_for('.show_individual', idx=idx))
+    return redirect(url_for('.show_individual', idx=idx)+'#content')
 
 # 신청 취소
 @context.route('/individual/cancel')
 def cancel_individual():
     if check_session(u'개인'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     return render_template('kids/individual/cancel.html')
 
@@ -147,7 +147,7 @@ def cancel_individual_proc():
     idx = session['idx']
     Member.cancle(idx, reason)
     flash(u'신청이 취소되었습니다')
-    return redirect(url_for('.home'))
+    return redirect(url_for('.home')+'#content')
 
 # 단체 아이디 중복체크
 @context.route('/group/check-groupid', methods=['POST'])
@@ -172,7 +172,7 @@ def reg_group_proc():
     if check > 0:
         # 아이디 중복 관련 Exception을 발생시킴
         flash(u'중복된 아이디입니다. 아이디를 다시 확인해주세요.')
-        return redirect(url_for('.reg_group'))
+        return redirect(url_for('.reg_group')+'#content')
 
     else:
         formData = getGroupFormData()
@@ -182,14 +182,14 @@ def reg_group_proc():
         session['idx'] = group_idx
 
         flash(u'신청이 완료되었습니다.')
-        return redirect(url_for('.show_group'))
+        return redirect(url_for('.show_group')+'#content')
 
 # 단체신청 조회
 @context.route('/group/info')
 def show_group():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     camp_idx = Camp.get_idx('kids')
     group = Group.get(idx)
@@ -201,7 +201,7 @@ def show_group():
 def edit_group():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     group = Group.get(idx)
     form = GroupForm()
@@ -213,19 +213,19 @@ def edit_group():
 def edit_group_proc():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     formData = getGroupFormData()
     Group.update(idx, formData)
     flash(u"단체 정보 수정이 완료되었습니다.")
-    return redirect(url_for('.show_group'))
+    return redirect(url_for('.show_group')+'#content')
 
 # 단체 취소
 @context.route('/group/cancel')
 def cancel_group():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     return render_template('kids/group/cancel.html')
 
 # 단체 취소 저장
@@ -233,12 +233,12 @@ def cancel_group():
 def cancel_group_proc():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     cancel_reason = request.form.get('cancel_reason', None)
     Group.cancel(idx, cancel_reason)
     flash(u"단체 신청이 모두 취소되었습니다.")
-    return redirect(url_for('.home'))
+    return redirect(url_for('.home')+'#content')
 
 
 # 단체 멤버 추가
@@ -246,7 +246,7 @@ def cancel_group_proc():
 def member_add():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     group = Group.get(idx)
     form = GroupMemberRegForm()
@@ -259,21 +259,21 @@ def member_add():
 def member_add_proc():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     campidx = Camp.get_idx('kids')
     formData = getIndividualFormData()
     member_idx = Member.insert(campidx, formData, idx, getMembershipDataList(campidx, formData))
     Group.inc_mem_num(idx)
     flash(u'멤버 추가가 완료되었습니다.')
-    return redirect(url_for('.show_group'))
+    return redirect(url_for('.show_group')+'#content')
 
 # 단체 멤버 수정
 @context.route('/group/member/edit/<member_idx>')
 def member_edit(member_idx):
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     form = GroupMemberRegForm()
     group = Group.get(idx)
@@ -287,20 +287,20 @@ def member_edit(member_idx):
 def membet_edit_proc(member_idx):
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
     idx = session['idx']
     camp_idx = Camp.get_idx('kids')
     formData = getIndividualFormData()
     Member.update(member_idx, camp_idx, formData=formData, membership_data_list=getMembershipDataList(camp_idx, formData))
     flash(u'신청서 수정이 완료되었습니다.')
-    return redirect(url_for('.show_group'))
+    return redirect(url_for('.show_group')+'#content')
 
 # 신청 취소
 @context.route('/group/member/cancel/<member_idx>')
 def member_cancel(member_idx):
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login'))
+        return redirect(url_for('.login')+'#content')
 
     return render_template('kids/individual/cancel.html')
 
@@ -312,7 +312,7 @@ def member_cancel_proc(member_idx):
     idx = session['idx']
     Group.dec_mem_num(idx)
     flash(u'신청이 취소되었습니다')
-    return redirect(url_for('.show_group'))
+    return redirect(url_for('.show_group')+'#content')
 
 @context.route('/promotion', methods=['POST'])
 def save_promotion_info():
@@ -326,11 +326,11 @@ def save_promotion_info():
 
     Promotion.insert(camp_idx, church_name, name, address, contact, memo)
     flash(u'홍보물 신청이 완료되었습니다')
-    return redirect(url_for('.home'))
+    return redirect(url_for('.home')+'#content')
 
 # 로그아웃
 @context.route('/logout')
 def logout():
     session.clear()
     flash(u'정상적으로 로그아웃 되었습니다.')
-    return redirect(url_for('.home'))
+    return redirect(url_for('.home')+'#content')

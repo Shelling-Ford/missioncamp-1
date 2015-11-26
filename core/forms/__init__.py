@@ -22,7 +22,7 @@ class GroupForm(Form):
     area_idx = SelectField(u'등록지부', choices=Area.get_list('kids'))
     memo = StringField(u'남기고싶은 말', widget=TextArea())
 
-    def set_group_data(group):
+    def set_group_data(self, group):
         self.groupid.data = group.groupid
         self.name.data = group.name
         self.leadername.data = group.leadername

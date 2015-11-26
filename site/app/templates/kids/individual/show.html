@@ -99,9 +99,9 @@
         <tr>
           <td colspan="2">
             <p style="text-align:center">
-              <a class="btn btn-default" href="{{ url_for('.edit_individual', idx=member.idx) }}">수정</a>&nbsp;&nbsp;
-              <a class="btn btn-default" href="{{ url_for('.cancel_individual', idx=member.idx) }}">신청취소</a>
-              <a href="{{ url_for('.logout') }}" class="btn btn-default">로그아웃</a>
+              <a class="btn btn-default" href="{{ url_for('.edit_individual', idx=member.idx) }}#content">수정</a>&nbsp;&nbsp;
+              <a class="btn btn-default" href="{{ url_for('.cancel_individual', idx=member.idx) }}#content">신청취소</a>
+              <a href="{{ url_for('.logout') }}#content" class="btn btn-default">로그아웃</a>
             </p>
           </td>
         </tr>

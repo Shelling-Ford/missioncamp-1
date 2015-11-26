@@ -410,7 +410,7 @@ class Group(db.Base):
                 form_keys = ['name', 'leadername', 'leaderjob', 'area_idx', 'memo']
 
                 for key in form_keys:
-                    setattr(member, key, formData[key] if key in formData else None)
+                    setattr(group, key, formData[key] if key in formData else None)
 
                 group.leadercontact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
                 if 'pwd' in formData and formData['pwd'] != None and formData['pwd'] != '':
@@ -418,7 +418,7 @@ class Group(db.Base):
 
             for key, value in kwargs.iteritems():
                 if value is not None and value != '':
-                    setattr(member, key, value)
+                    setattr(group, key, value)
 
         db.db_session.commit()
 

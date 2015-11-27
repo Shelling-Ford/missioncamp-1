@@ -100,14 +100,14 @@ class Member(db.Base):
     payment = relationship("Payment", uselist=False, backref=backref("payment_member"))
     group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
     area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
-    camp = relationship("Camp", backref=backref("camp_member", lazy='dynamic'))
+    #camp = relationship("Camp", backref=backref("camp_member", lazy='dynamic'))
 
     def get_id(self):
         return self.idx
 
     @classmethod
     def get_idx(cls, camp_idx, userid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid)
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first().idx
 
     @classmethod
     def get(cls, idx):

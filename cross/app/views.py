@@ -64,7 +64,6 @@ def home():
 def login_proc():
     userid = request.form.get('userid', None)
     pwd = request.form.get('pwd', None)
-    camp = request.form.get('camp', None)
 
     adminuser = AdminUser.get(userid)
     if adminuser is not None and pwd == adminuser.adminpw:

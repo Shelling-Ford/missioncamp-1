@@ -38,9 +38,11 @@ ul {
 
 					<ul class="nav navbar-nav navbar-right">
 						<li>
+						{% if 'master' not in request.url_rule.rule %}
 						<form class="navbar-form" action="{{ url_for('.member_list') }}" method="GET">
 					    <input type="text" name="name" class="form-control" placeholder="이름으로 검색"/>
 					  </form>
+						{% endif %}
 						<li>
 						{% if current_user.role == 'hq' or current_user.role == 'master' %}
 						<li class="dropdown">

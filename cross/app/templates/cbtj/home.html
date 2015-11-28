@@ -3,6 +3,16 @@
 
 {% block content %}
 <div class="container">
+  <h2>종합</h2>
+  {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
+  <br/>
+  {{ macros.render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3)}}
+  <br/>
+  {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
+  <br/>
+  {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
+  <br/>
+
   <h2>1차캠프</h2>
   {{ macros.render_stat(stat=stat1.summary, title='요약', cols=2, first_row_cols=1)}}
   <br/>

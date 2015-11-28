@@ -27,9 +27,11 @@ def home():
     camp_idx = getCampIdx('cbtj')
     stat1 = get_basic_stat(camp_idx)
 
-    camp_idx = getCampIdx('cbtj2')
-    stat2 = get_basic_stat(camp_idx)
-    return render_template('cbtj/home.html', stat1=stat1, stat2=stat2)
+    camp_idx2 = getCampIdx('cbtj2')
+    stat2 = get_basic_stat(camp_idx2)
+
+    stat = get_basic_stat(camp_idx, camp_idx2)
+    return render_template('cbtj/home.html', stat1=stat1, stat2=stat2, stat=stat)
 
 from core.models import Group
 # 신청자 목록

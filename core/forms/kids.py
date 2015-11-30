@@ -46,8 +46,6 @@ class RegistrationForm(Form):
         self.newcomer_yn.data = member.newcomer_yn
         self.memo.data = member.memo
 
-
-
 class GroupMemberRegForm(Form):
     group_idx = HiddenField()
     name = StringField(u'이름')

@@ -1,38 +1,17 @@
 {% extends 'youth/page.html' %}
+{% import 'macros.html' as macros %}
 
 {% block content %}
 <div class="container">
-  <table class="table1">
-    <tr>
-      {% set i = 0 %}
-      {% for s in stat.summary %}
-      <td>{{ s.name }}</td>
-      {% if not s.cnt == 0 %}
-      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
-      {% else %}
-      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
-      {% endif %}
-      {% set i = i + 1 %}
-      {% if i % 2 == 1 %}
-      </tr><tr>
-      {% endif %}
-      {% endfor %}
-    </tr>
-  </table>
+  {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
   <br/>
-  <p>지부별</p>
-  <table class="table1">
-    <tr>
-      {% set i = 0 %}
-      {% for s in stat.area %}
-      <td><a href="{{ url_for('youth.member_list', cancel_yn=0, area_idx=s.idx) }}">{{ s.name }}</a></td>
-      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
-      {% set i = i + 1 %}
-      {% if i % 4 == 0 %}
-      </tr><tr>
-      {% endif %}
-      {% endfor %}
-    </tr>
-  </table>
+  {{ macros.render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3)}}
+  <br/>
+  {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
+  <br/>
+  {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
+  <br/>
+  {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', cols=3)}}
+  <br/>
 </div>
 {% endblock %}

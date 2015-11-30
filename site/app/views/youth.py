@@ -180,7 +180,7 @@ def check_groupid():
 @context.route('/group/add')
 def reg_group():
     campidx = getCampIdx('youth')
-    return render_template('youth/group/add.html', camp_idx=campidx, area_list=getAreaList('cmc'))
+    return render_template('youth/group/add.html', camp_idx=campidx, area_list=getAreaList('youth'))
 
 # 단체신청 저장
 @context.route('/group/add', methods=['POST'])

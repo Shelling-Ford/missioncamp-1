@@ -19,37 +19,37 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     sql.append(text("""
         SELECT 'total' as 'tag', '전체' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0
     """ % query_option))
     # 개인
     sql.append(text("""
         SELECT '개인' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL
     """ % query_option))
     # 단체
     sql.append(text("""
         SELECT '단체' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL
     """ % query_option))
     # 성별
     sql.append(text("""
         SELECT CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 GROUP BY `sex`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `sex`
     """ % query_option))
     # 개인 성별
     sql.append(text("""
         SELECT CONCAT('개인 ', CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END) as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL GROUP BY `sex`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL GROUP BY `sex`
     """ % query_option))
     # 단체 성별
     sql.append(text("""
         SELECT CONCAT('단체 ', CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END) as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
         FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL GROUP BY `sex`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL GROUP BY `sex`
     """ % query_option))
 
     query_params = {'camp_idx': camp_idx}
@@ -66,7 +66,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     query = text("""
         SELECT `a`.`idx` `idx`, `a`.`idx` `param`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `cancel_yn` = 0 GROUP BY `a`.`name`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0 GROUP BY `a`.`name`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -76,7 +76,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     query = text("""
         SELECT `m`.`persontype` `name`, `m`.`persontype` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `cancel_yn` = 0 GROUP BY `persontype`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0 GROUP BY `persontype`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -87,7 +87,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
         SELECT `g`.`idx` `idx`, `g`.`idx` `param`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -98,7 +98,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
         SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'campus' GROUP BY `ms`.`value`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'campus' GROUP BY `ms`.`value`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -109,7 +109,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
         SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'training' GROUP BY `ms`.`value`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'training' GROUP BY `ms`.`value`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -120,7 +120,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
         SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE `m`.`camp_idx` = :camp_idx %s AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'job' GROUP BY `ms`.`value`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'job' GROUP BY `ms`.`value`
     """ % query_option)
 
     results = db.execute(query, query_params)

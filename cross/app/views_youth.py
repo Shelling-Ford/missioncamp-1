@@ -9,6 +9,7 @@ from core.functions import *
 from core.functions.youth import *
 from core.models import Promotion, Member, Camp, Group, Area
 from core.forms.youth import RegistrationForm
+from models import Room
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -30,9 +31,9 @@ def home():
     term = int(request.args.get('term', 0))
 
     if year == 0 or term == 0:
-        camp_idx = getCampIdx('youth')
+        camp_idx = Camp.get_idx('youth')
     else:
-        camp_idx = getCampIdx('youth', year, term)
+        camp_idx = Camp.get_idx('youth', year, term)
 
     stat = get_basic_stat(camp_idx)
     return render_template('youth/home.html', stat=stat)
@@ -46,8 +47,10 @@ def member_list():
 
     cancel_yn = int(request.args.get('cancel_yn', 0))
     area_idx = request.args.get('area_idx', None)
+    member_name = request.args.get('name', None)
+    group_idx = request.args.get('group_idx', None)
 
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     return render_template('youth/list.html', members=member_list)
 
 # 홍보물 신청 목록
@@ -70,7 +73,7 @@ def member():
 
     if member_idx != 0:
         member = Member.get(member_idx)
-        room_list = get_room_list()
+        room_list = Room.get_list()
         area_list = Area.get_list('youth')
         group_list = Group.get_list(camp_idx)
 
@@ -125,7 +128,7 @@ def delpay():
 def room_setting():
     member_idx = request.form.get('member_idx', 0)
     room_idx = request.form.get('idx', 0)
-    set_member_room(member_idx=member_idx, room_idx=room_idx)
+    Member.update(member_idx=member_idx, room_idx=room_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 지부 변경

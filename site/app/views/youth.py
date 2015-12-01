@@ -270,7 +270,7 @@ def member_add():
     campidx = getCampIdx('youth')
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
     group = getGroupData(idx)
-    return render_template('youth/individual/add.html', camp='cmc', campidx=campidx,
+    return render_template('youth/individual/add.html', camp='youth', campidx=campidx,
         date_select_list=date_select_list, group_yn=True, group=group)
 
 # 단체 멤버 추가 적용

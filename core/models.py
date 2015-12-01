@@ -19,11 +19,16 @@ class Area(db.Base):
     @classmethod
     def get_list(cls, camp):
         result = []
-        area_list = db.db_session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%"+camp+"%"))).order_by(cls.type, cls.name).all()
-        for area in area_list:
-            result.append((area.idx, area.name))
+        if camp == '*':
+            area_list = db.db_session.query(cls).order_by(cls.type, cls.name).all()
+            return area_list
+        else:
+            area_list = db.db_session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%"+camp+"%"))).order_by(cls.type, cls.name).all()
 
-        return result
+            for area in area_list:
+                result.append((area.idx, area.name))
+
+            return result
 
     @classmethod
     def get_name(cls, idx):

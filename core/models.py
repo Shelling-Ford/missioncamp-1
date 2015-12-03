@@ -95,7 +95,7 @@ class Member(db.Base):
     cancel_yn = Column(Integer)
     cancel_reason = Column(String)
     memo = Column(String)
-    room_idx = Column(Integer)
+    room_idx = Column(Integer, ForeignKey('room.idx'))
     attend1 = Column(Integer)
     attend2 = Column(Integer)
     attend3 = Column(Integer)
@@ -106,6 +106,7 @@ class Member(db.Base):
     group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
     area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
     camp = relationship("Camp", backref=backref("camp_member", lazy='dynamic'))
+    room = relationship("Room", backref=backref("room_member", lazy='dynamic'))
 
     def get_id(self):
         return self.idx
@@ -303,22 +304,45 @@ class Payment(db.Base):
     paydate = Column(Date)
     code = Column(String)
 
-    def __init__(self, member_idx, amount, complete, claim, staff_name, paydate, code, idx=None):
-        self.idx = idx
-        self.member_idx = memeber_idx
-        self.amount = amount
-        self.complete = complete
-        self.claim = claim
-        self.staff_name = staff_name
-        self.paydate
-        self.code = code
-
     def get_id(self):
         return self.idx
 
     @classmethod
     def get(cls, idx):
         return db.db_session.query(cls).filter(cls.idx == idx).first()
+
+    @classmethod
+    def find(cls, member_idx):
+        return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
+
+    @classmethod
+    def save(cls, member_idx, amount, complete, claim, staff_name, paydate=None):
+        if paydate == None or paydate == '':
+            paydate = "%s" % datetime.datetime.today().date()
+
+        payment = cls.find(member_idx)
+        if payment == None:
+            payment = cls()
+            payment.member_idx = member_idx
+            payment.amount = amount
+            payment.complete = complete
+            payment.claim = claim
+            payment.paydate = paydate
+            payment.staff_name = staff_name
+            db.db_session.add(payment)
+        else:
+            payment.amount = amount
+            payment.complete = complete
+            payment.claim = claim
+            payment.paydate = paydate
+            payment.staff_name = staff_name
+
+        db.db_session.commit()
+
+    @classmethod
+    def delete(cls, member_idx):
+        db.db_session.query(cls).filter(cls.member_idx == member_idx).delete()
+        db.db_session.commit()
 
 # 단체
 class Group(db.Base):
@@ -515,3 +539,18 @@ class Options(db.Base):
     @classmethod
     def get_value(cls, camp_idx, key):
         return db.db_session.query(cls).filteR(cls.camp_idx == camp_idx, cls.key == key).one().value
+
+class Room(db.Base):
+    __tablename__ = 'room'
+
+    idx = Column(Integer, primary_key=True)
+    building = Column(String)
+    number = Column(String)
+
+    @classmethod
+    def get(cls, idx):
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
+
+    @classmethod
+    def get_list(cls):
+        return db.db_session.query(cls).all()

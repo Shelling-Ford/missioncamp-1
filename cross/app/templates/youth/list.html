@@ -47,7 +47,7 @@
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
         {% if cancel_yn != 1 %}
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
-        <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
+        <td>{{ m.room.building }} {{ m.room.number }}</td>
         <td>{{ m.memo|striptags|truncate(20) }}</td>
         {% else %}
         <td>{{ m.canceldate }}</td>

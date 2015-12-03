@@ -15,7 +15,7 @@ class RegistrationForm(Form):
     pname = StringField(u'보호자이름')
     contact = ContactField(u'보호자연락처')
     church = StringField(u'소속교회')
-    persontype = RadioField(u'참가구분', choices=[(u'어린이',u'어린이'), (u'교사',u'교사'), (u'교역자',u'교역자'), (u'기타',u'기타')])
+    persontype = RadioField(u'참가구분', choices=[(u'어린이',u'어린이'), (u'교사',u'교사'), (u'교역자',u'교역자'), (u'예배팀',u'예배팀'), (u'키즈스탭',u'키즈스탭'), (u'유스탭',u'유스탭'), (u'선캠팀장',u'선캠팀장'), (u'어부봐',u'어부봐'), (u'선교사',u'선교사'), (u'기타',u'기타')])
     sch1 = StringField(u'학교')
     sch2 = SelectField(u'학년', choices=[(unicode(i), unicode(i)+u'학년') for i in range(1, 7)])
     newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])

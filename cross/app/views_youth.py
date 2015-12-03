@@ -7,9 +7,8 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.youth import *
-from core.models import Promotion, Member, Camp, Group, Area
+from core.models import Promotion, Member, Camp, Group, Area, Room
 from core.forms.youth import RegistrationForm
-from models import Room
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -77,7 +76,7 @@ def member():
         area_list = Area.get_list('youth')
         group_list = Group.get_list(camp_idx)
 
-    return render_template('youth/member.html', member=member, role=current_user.role, rooms=room_list, area_list=area_list, group_list=group_list)
+    return render_template('youth/member.html', member=member, rooms=room_list, area_list=area_list, group_list=group_list)
 
 
 # 개인 신청 수정

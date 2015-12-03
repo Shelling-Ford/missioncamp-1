@@ -31,18 +31,3 @@ class AdminUser(db.Base, UserMixin):
             return db.db_session.query(cls).filter(cls.adminid == id).one()
         except NoResultFound:
             return None
-
-class Room(db.Base):
-    __tablename__ = 'room'
-
-    idx = Column(Integer, primary_key=True)
-    building = Column(String)
-    number = Column(String)
-
-    @classmethod
-    def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def get_list(cls):
-        return db.db_session.query(cls).all()

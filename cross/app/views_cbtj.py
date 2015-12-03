@@ -178,32 +178,40 @@ def excel_down():
     boolean = [u'아니오', u'예']
 
     for member in member_list:
-        worksheet.write(r, 0, member['name'])
-        worksheet.write(r, 1, member['area'])
-        worksheet.write(r, 2, member['contact'])
-        worksheet.write(r, 3, member['church'])
-        worksheet.write(r, 4, member['birth'])
-        worksheet.write(r, 5, member['sex'])
-        worksheet.write(r, 6, boolean[member['bus_yn']])
-        worksheet.write(r, 7, boolean[member['mit_yn']])
-        worksheet.write(r, 8, boolean[member['newcomer_yn']])
-        worksheet.write(r, 9, boolean[member['fullcamp_yn']])
-        worksheet.write_datetime(r, 10, member['date_of_arrival'], date_format)
-        worksheet.write_datetime(r, 11, member['date_of_leave'], date_format)
-        if 'membership' in member and 'job' in member['membership']:
-            worksheet.write(r, 12, member['membership']['job'])
-        if 'membership' in member and 'campus' in member['membership']:
-            worksheet.write(r, 13, member['membership']['campus'])
-        if 'membership' in member and 'major' in member['membership']:
-            worksheet.write(r, 14, member['membership']['major'])
-        if 'membership' in member and 'training' in member['membership']:
-            s = ""
-            for t in member['membership']['training']:
-                s += '%s,' % t
-            worksheet.write(r, 15, s)
-        worksheet.write(r, 16, member['language'])
-        worksheet.write_datetime(r, 17, member['regdate'], date_format)
-        worksheet.write(r, 18, member['memo'])
+        worksheet.write(r, 0, member.name)
+        worksheet.write(r, 1, member.area.name)
+        worksheet.write(r, 2, member.contact)
+        worksheet.write(r, 3, member.church)
+        worksheet.write(r, 4, member.birth)
+        worksheet.write(r, 5, member.sex)
+        worksheet.write(r, 6, boolean[member.bus_yn])
+        worksheet.write(r, 7, boolean[member.mit_yn])
+        worksheet.write(r, 8, boolean[member.newcomer_yn])
+        worksheet.write(r, 9, boolean[member.fullcamp_yn])
+        worksheet.write_datetime(r, 10, member.date_of_arrival, date_format)
+        worksheet.write_datetime(r, 11, member.date_of_leave, date_format)
+
+        job = ''
+        campus = ''
+        major = ''
+        training = ''
+        for membership in member.membership:
+            if membership.key == 'job':
+                job = membership.value
+            elif membership.key == 'campus':
+                campus = membership.value
+            elif membership.key == 'major':
+                major = membership.value
+            elif membership.key == 'training':
+                training += '%s,' % membership.value
+
+        worksheet.write(r, 12, job)
+        worksheet.write(r, 13, campus)
+        worksheet.write(r, 14, major)
+        worksheet.write(r, 15, training)
+        worksheet.write(r, 16, member.language)
+        worksheet.write_datetime(r, 17, member.regdate, date_format)
+        worksheet.write(r, 18, member.memo)
         r += 1
 
     workbook.close()

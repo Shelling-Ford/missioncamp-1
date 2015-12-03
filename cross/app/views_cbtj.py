@@ -7,6 +7,8 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.cbtj import *
+from core.models import Member
+
 from functions import *
 import functions_mongo as mongo
 import xlsxwriter
@@ -123,7 +125,7 @@ def excel_down():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
 
-    member_list = get_member_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
 
     try:
         import cStringIO as StringIO

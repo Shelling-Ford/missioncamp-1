@@ -7,7 +7,7 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.cmc import *
-from core.models import Group, Member
+from core.models import Group, Member, Camp
 
 from functions import *
 import functions_mongo as mongo
@@ -343,7 +343,7 @@ def old_list():
     skip = int(request.args.get('page', 0)) * 200
     name = request.args.get('name', None)
     area = request.args.get('area', None)
-    camp = request.args.get('camp', None)
+    camp = request.args.get('camp', 'cmc')
 
     if year == 0 or term == 0:
         campcode = request.args.get('campcode', None)
@@ -351,7 +351,7 @@ def old_list():
         count = mongo.get_member_count(campcode=campcode, name=name, area=area, camp=camp)
         return render_template("cmc/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/200)))
     else:
-        camp_idx = getCampIdx(camp, year, term)
+        camp_idx = Camp.get_idx(camp, year, term)
         area_idx = request.args.get('area_idx', None)
         member_list = Member.get_old_list(camp_idx=camp_idx, name=name, offset=skip, area_idx=area_idx)
         member_count = Member.count(camp_idx=camp_idx, name=name, area_idx=area_idx)

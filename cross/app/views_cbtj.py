@@ -286,6 +286,16 @@ def member_cancel_proc():
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.member_list'))
 
+# 신청 취소 복원
+@cbtj.route('/member-recover')
+@login_required
+@branch_permission.require(http_exception=403)
+@cbtj_permission.require(http_exception=403)
+def member_recover():
+    member_idx = request.args.get('member_idx')
+    Member.update(member_idx, cancel_yn=0)
+    flash(u'신청이 복원되었습니다')
+    return redirect(url_for('.member_list'))
 
 # 이전 참가자 리스트
 @cbtj.route('/old-list')

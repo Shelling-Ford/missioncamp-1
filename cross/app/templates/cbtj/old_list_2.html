@@ -79,8 +79,8 @@
     <table class="table1">
       <tr>
         {% for i in count %}
-        <td><a href="{{ url_for('.old_list', year=year, term=term, area=area, camp=camp, page=i) }}">{{ i+1 }}</a></td>
-        {% if (i+1) % 30 == 0 %}</tr><tr>{% endif %}
+        <td><a href="{{ url_for('.old_list', year=year, term=term, area=area, camp=camp, page=i) }}">{{ i }}</a></td>
+        {% if i % 30 == 0 %}</tr><tr>{% endif %}
         {% endfor %}
       </tr>
     </table>

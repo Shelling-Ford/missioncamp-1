@@ -5,11 +5,11 @@ from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 from jinja2 import TemplateNotFound
 
-from core.functions import *
-from core.functions.youth import *
+#from core.functions import get_basic_stat
+#from core.functions.youth import *
 from core.models import Promotion, Member, Camp, Group, Area, Room
 from core.forms.youth import RegistrationForm
-from functions import *
+from functions import get_basic_stat
 import functions_mongo as mongo
 import xlsxwriter
 
@@ -106,7 +106,7 @@ def pay():
     paydate = request.form.get('paydate')
     staff_name = request.form.get('staff_name')
 
-    save_payment(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
+    Payment.save(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
     return redirect(url_for('.member_list'))
 
 # 입금 정보 삭제
@@ -116,7 +116,7 @@ def pay():
 @youth_permission.require(http_exception=403)
 def delpay():
     member_idx = request.args.get('member_idx', 0)
-    delete_payment(member_idx)
+    Payment.delete(member_idx)
     return redirect(url_for('.member_list'))
 
 # 숙소 정보 입력

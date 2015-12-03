@@ -2,11 +2,26 @@
 {% block navs %}
 <ul class="nav navbar-nav">
 	<li><a href="{{ url_for('cbtj.home') }}">통계</a></li>
-	<li><a href="{{ url_for('cbtj.member_list') }}">신청자목록(1차)</a></li>
-	<li><a href="{{ url_for('cbtj.member_list', cancel_yn=1) }}">취소자목록(1차)</a></li>
-	<li><a href="{{ url_for('cbtj.member_list', camp='cbtj2') }}">신청자목록(2차)</a></li>
-	<li><a href="{{ url_for('cbtj.member_list', cancel_yn=1, camp='cbtj2') }}">취소자목록(2차)</a></li>
-
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			신청자목록&nbsp;<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj') }}">청대청직(1차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj2') }}">여남시청직(2차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list') }}">전체목록</a></li>
+		</ul>
+	</li>
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			취소자목록&nbsp;<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj', cancel_yn=1) }}">청대청직(1차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj2', cancel_yn=1) }}">여남시청직(2차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=1) }}">전체목록</a></li>
+		</ul>
+	</li>
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			지난자료&nbsp;<span class="caret">

@@ -145,7 +145,7 @@ class Member(db.Base):
                 result = result.filter(attr == value)
 
         result = result.order_by(desc(cls.idx))
-        return result.limit(200).offset(offset).all() if offset is not None else result.all()
+        return result.limit(50).offset(offset).all() if offset is not None else result.all()
 
     @classmethod
     def count(cls, camp_idx, **kwargs):

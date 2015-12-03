@@ -17,7 +17,7 @@ def get_member_list(**kwargs):
 
     params['fin'] = {"$ne":"d"}
 
-    results = db.find(params)
+    results = db.find(params).sort("regday",1)
 
     member_list = []
     for r in results:
@@ -53,7 +53,7 @@ def get_member_list_with_count(**kwargs):
         results = results.sort("ssn", -1)
 
     if skip is not None:
-        results = results.skip(skip).limit(200)
+        results = results.skip(skip).limit(50)
 
     member_list = []
     for r in results:

@@ -305,7 +305,7 @@ def old_list():
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
 
-    skip = int(request.args.get('page', 0)) * 200
+    skip = int(request.args.get('page', 1)) * 50 - 50
     name = request.args.get('name', None)
     area = request.args.get('area', None)
     camp = request.args.get('camp', None)
@@ -314,7 +314,7 @@ def old_list():
         campcode = request.args.get('campcode', None)
         member_list = mongo.get_member_list_with_count(skip=skip, campcode=campcode, name=name, area=area, camp=camp)
         count = mongo.get_member_count(campcode=campcode, name=name, area=area, camp=camp)
-        return render_template("cbtj/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/200)))
+        return render_template("cbtj/old_list.html", members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/50)+2))
     else:
         camp_idx = getCampIdx(camp, year, term)
         area_idx = request.args.get('area_idx', None)
@@ -326,7 +326,7 @@ def old_list():
             count += Member.count(camp_idx=camp_idx, name=member.name, contact=member.contact, attend_yn=1, cancel_yn=0)
             setattr(member, 'count', count)
 
-        return render_template("cbtj/old_list_2.html", members=member_list, camp=camp, year=year, term=term, name=name, count=range(0, int(member_count/200)+1))
+        return render_template("cbtj/old_list_2.html", members=member_list, camp=camp, year=year, term=term, name=name, count=range(1, int(member_count/50)+2))
 
 
 

@@ -5,11 +5,7 @@ from bson.code import Code
 def get_member_list(**kwargs):
     params = dict()
 
-    if 'skip' in kwargs and kwargs['skip']:
-        skip = kwargs['skip']
-    else:
-        skip = 0
-
+    # skip = kwargs['skip'] if 'skip' in kwargs and kwargs['skip'] != None else 0
     keys = ['campcode', 'area', 'name', 'camp', 'hp1']
     for k in keys:
         if k in kwargs and kwargs[k] is not None:
@@ -18,22 +14,14 @@ def get_member_list(**kwargs):
     params['fin'] = {"$ne":"d"}
 
     results = db.find(params).sort("regday",1)
-
-    member_list = []
-    for r in results:
-        member_list.append(dict(r))
-        dict(r)
-
+    member_list = [dict(r) for r in results]
     return member_list
 
 # 선캠 참석횟수와 함께 리턴
 def get_member_list_with_count(**kwargs):
     params = dict()
 
-    if 'skip' in kwargs:
-        skip = kwargs['skip']
-    else:
-        skip = None
+    skip = kwargs['skip'] if 'skip' in kwargs else 0
 
     keys = ['campcode', 'area', 'name', 'camp']
     for k in keys:
@@ -52,7 +40,7 @@ def get_member_list_with_count(**kwargs):
     elif('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         results = results.sort("ssn", -1)
 
-    if skip is not None:
+    if skip is not None or skip != 0:
         results = results.skip(skip).limit(50)
 
     member_list = []
@@ -82,12 +70,8 @@ def get_member_count(**kwargs):
 
 def get_member_call_logs(name, hp1):
     params = {"name":name, "hp1":hp1}
-
     results = call_log.find(params)
-
-    logs = []
-    for i in results:
-        logs.append(i)
+    logs = [i for i in results]
 
     return logs
 

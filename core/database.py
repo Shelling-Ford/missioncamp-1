@@ -60,5 +60,5 @@ class SQLDriver():
         s = self.db_session()
         s.commit()
 
-db = SQLDriver("mysql+mysqldb://root:btj1040!@localhost/mcampadm?charset=utf8")
+db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/mcampadm?charset=utf8")
 #intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")

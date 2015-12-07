@@ -1,4 +1,7 @@
 #-*-coding:utf-8-*-
+activate_this = '/home/missioncamp/.venv/missioncamp/bin/activate_this.py'
+execfile(activate_this, dict(__file__=activate_this))
+
 from app import context
 
 if __name__ == '__main__':

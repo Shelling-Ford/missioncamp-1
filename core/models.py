@@ -30,11 +30,13 @@ class Area(db.Base):
 
             return result
 
+    # 주어진 area_idx에 해당하는 area_name을 반환하는 함수
     @classmethod
     def get_name(cls, idx):
         area = db.db_session.query(cls).filter(cls.idx == idx).one()
         return area.name
 
+# 캠프
 class Camp(db.Base):
     __tablename__ = 'camp'
 
@@ -46,6 +48,8 @@ class Camp(db.Base):
     campday = Column(Integer)
     name = Column(String)
 
+    # camp_idx 반환, year와 term을 파라메터로 넘겨줄 경우 해당 연도와 학기의 camp_idx를 반환해주고
+    # year와 term파라메터가 없을 경우 GlobalOptions에 등록되어있는 year와 term을 현재 활성화되어있는 캠프의 camp_idx를 반환해줌.
     @classmethod
     def get_idx(cls, code, year=None, term=None):
         if year is None or year == 0:
@@ -54,6 +58,7 @@ class Camp(db.Base):
             term = GlobalOptions.get_term()
         return db.db_session.query(cls).filter(cls.code == code, cls.year == year, cls.term == term).one().idx
 
+    # 캠프가 진행되는 날자를 리스트 형태로 반환해주는 함수
     @classmethod
     def get_date_list(cls, camp_idx):
         camp = db.db_session.query(cls).filter(cls.idx == camp_idx).one()
@@ -147,6 +152,7 @@ class Member(db.Base):
         result = result.order_by(desc(cls.idx))
         return result.limit(50).offset(offset).all() if offset is not None else result.all()
 
+    # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
     @classmethod
     def count(cls, camp_idx, **kwargs):
         result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
@@ -157,6 +163,7 @@ class Member(db.Base):
 
         return result.count()
 
+    # 멤버 정보 수정
     @classmethod
     def update(cls, member_idx, camp_idx=None, formData=None, membership_data_list=None, **kwargs):
         member = cls.get(member_idx)
@@ -178,6 +185,7 @@ class Member(db.Base):
                     if key in formData:
                         setattr(member, key, formData[key])
 
+                # pwd필드의 값이 없거나 공백일 경우 pwd값을 변경하지 않음.
                 if 'pwd' in formData and formData['pwd'] is not None and formData['pwd'] != '':
                     member.pwd = formData['pwd']
 
@@ -200,6 +208,7 @@ class Member(db.Base):
 
             db.db_session.commit()
 
+    # 멤버 추가 함수
     @classmethod
     def insert(cls, camp_idx, formData, group_idx, membership_data_list):
         member = cls()

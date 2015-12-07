@@ -187,7 +187,7 @@ def excel_down():
         worksheet.write(r, 6, boolean[member.bus_yn])
         worksheet.write(r, 7, boolean[member.mit_yn])
         worksheet.write(r, 8, boolean[member.newcomer_yn])
-        worksheet.write(r, 9, boolean[member.fullcamp_yn])
+        worksheet.write(r, 9, boolean[member.fullcamp_yn if member.fullcamp_yn is not None else 1])
         worksheet.write_datetime(r, 10, member.date_of_arrival, date_format)
         worksheet.write_datetime(r, 11, member.date_of_leave, date_format)
 

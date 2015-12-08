@@ -15,6 +15,8 @@
   {{ macros.cbtj_render_stat(stat=stat1.training, title='인터콥 훈련 유형별', param_key='training', cols=3) }}
   <br/>
   {{ macros.cbtj_render_stat(stat=stat1.job, title='직업/직군별', param_key='job', cols=3) }}
+  <br/>
+  {{ macros.cbtj_render_stat(stat=stat1.ages, title='연령별', cols=1)}}
 
   <h2>2차캠프</h2>
   {{ macros.cbtj_render_stat(stat=stat2.summary, title='요약', cols=2, first_row_cols=1, camp='cbtj2') }}
@@ -28,6 +30,8 @@
   {{ macros.cbtj_render_stat(stat=stat2.training, title='인터콥 훈련 유형별', param_key='training', cols=3, camp='cbtj2') }}
   <br/>
   {{ macros.cbtj_render_stat(stat=stat2.job, title='직업/직군별', cols=3, param_key='job', camp='cbtj2') }}
+  <br/>
+  {{ macros.cbtj_render_stat(stat=stat2.ages, title='연령별', cols=1, camp='cbtj2')}}
 
   <h2>종합</h2>
   {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}

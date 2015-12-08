@@ -56,7 +56,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
 
     stat = {
         'summary':[], 'area':[], 'persontype':[], 'group_name':[], 'campus': [],
-        'training':[], 'job': [],
+        'training':[], 'job': [], 'ages': []
     }
     for s in sql:
         results = db.execute(s, query_params)
@@ -129,6 +129,21 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     results = db.execute(query, query_params)
     for r in results:
         stat['job'].append(dict(r))
+
+    #연령별 통계
+    query = text("""
+        SELECT CONCAT(`ages`,'대') `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        FROM (
+            SELECT LEFT(2015-(MID(`m`.`birth`,1,4)),1)*10 AS `ages`, `p`.`amount` `amount`, `m`.`attend_yn` `attend_yn` 
+            FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
+            WHERE (`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0
+        ) `mem` 
+        GROUP BY `mem`.`ages`
+    """ % query_option)
+
+    results = db.execute(query, query_params)
+    for r in results:
+        stat['ages'].append(dict(r))
 
     return stat
 

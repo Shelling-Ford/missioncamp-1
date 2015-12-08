@@ -17,6 +17,10 @@ class Area(db.Base):
     camp = Column(String)
 
     @classmethod
+    def get(cls, idx):
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
+
+    @classmethod
     def get_list(cls, camp):
         result = []
         if camp == '*':
@@ -35,6 +39,26 @@ class Area(db.Base):
     def get_name(cls, idx):
         area = db.db_session.query(cls).filter(cls.idx == idx).one()
         return area.name
+
+    @classmethod
+    def insert(cls,name,type,camp):
+        area = cls()
+        area.name = name
+        area.type = type
+        area.camp = camp
+
+        db.db_session.add(area)
+        db.db_session.commit()
+        pass
+
+    @classmethod
+    def update(cls,idx,name,type,camp):
+        area = cls.get(idx)
+        area.name = name
+        area.type = type
+        area.camp = camp
+
+        db.db_session.commit()
 
 # 캠프
 class Camp(db.Base):
@@ -129,10 +153,13 @@ class Member(db.Base):
         return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
 
     @classmethod
-    def get_list(cls, camp_idx=None, **kwargs):
+    def get_list(cls, camp_idx=None, name=None, **kwargs):
         result = db.db_session.query(cls)
         if camp_idx is not None:
             result = result.filter(cls.camp_idx == camp_idx)
+
+        if name is not None:
+            result = result.filter(cls.name.like("%"+name+"%") )
 
         for key, value in kwargs.iteritems():
             if value is not None and value != '':
@@ -562,4 +589,4 @@ class Room(db.Base):
 
     @classmethod
     def get_list(cls):
-        return db.db_session.query(cls).all()
+        return db.db_session.query(cls).order_by(cls.building, cls.number).all()

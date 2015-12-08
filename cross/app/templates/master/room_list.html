@@ -1,0 +1,27 @@
+{% extends 'master/page.html' %}
+
+{% block content %}
+<div class="container">
+  {% set i = 0 %}
+  {% set building = room_list[0].building %}
+  <h3>{{ building }}</h3>
+  <table class="table1">
+    <tr>
+      {% for room in room_list %}
+        {% if room.building != building %}
+          </tr></table>
+          {% set i = 0 %}
+          {% set building = room.building %}
+          <h3>{{ building }}</h3>
+          <table class="table1"><tr>
+        {% endif %}
+        <td style="width:80px; height:40px; text-align:center">{{ room.number }}</td>
+        {% set i = i + 1 %}
+        {% if i % 15 == 0 %}
+        </tr><tr>
+        {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+{% endblock %}

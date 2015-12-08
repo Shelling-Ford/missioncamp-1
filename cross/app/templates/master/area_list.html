@@ -2,23 +2,32 @@
 
 {% block content %}
 <div class="container">
-  <table class="table1">
-    <thead>
-      <tr>
-        <th>지부명</th>
-        <th>유형</th>
-        <th>캠프</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for area in area_list %}
-      <tr>
-        <td>{{ area.name }}</td>
-        <td>{{ area.type }}</td>
-        <td>{{ area.camp }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="col-sm-2">
+    {% set i = 0 %}
+    <table class="table1">
+      <thead>
+        <tr>
+          <th>지부명</th>
+          <th>유형</th>
+          <th>캠프</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for area in area_list %}
+        <tr>
+          <td><a href="{{ url_for('.area', area_idx=area.idx) }}">{{ area.name }}</a></td>
+          <td>{{ area.type }}</td>
+          <td>{{ area.camp }}</td>
+        </tr>
+        {% set i = i + 1 %}
+        {% if i % 30 == 0 %}
+        </tbody></table></div><div class="col-sm-2"><table class="table1"><thead><tr><th>지부명</th><th>유형</th><th>캠프</th></tr></thead><tbody>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+    <br/>
+    <a href="{{ url_for('.area') }}" class="btn btn-success">지부 추가</a>
+  </div>
 </div>
 {% endblock %}

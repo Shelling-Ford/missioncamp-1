@@ -48,8 +48,9 @@ def member_list():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
+    persontype = request.args.get('persontype', None)
 
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
     return render_template('youth/list.html', members=member_list)
 
 # 홍보물 신청 목록

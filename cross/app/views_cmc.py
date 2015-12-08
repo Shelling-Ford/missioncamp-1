@@ -49,12 +49,9 @@ def member_list():
     area_idx = request.args.get('area_idx', None)
     member_name = request.args.get('name', None)
     group_idx = request.args.get('group_idx', None)
+    persontype = request.args.get('persontype', None)
 
-    #if current_user.role == 'branch' and current_user.area_idx != area_idx:
-    #    flash(u'지부 신청자 명단만 열람 가능합니다.')
-    #    area_idx = current_user.area_idx
-
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
+    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
     group = Group.get(group_idx) if group_idx is not None else None
     count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))

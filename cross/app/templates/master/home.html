@@ -2,6 +2,24 @@
 
 {% block content %}
 <div class="container">
-
+  <table class="table1">
+  	<tr>
+  	  <td>현재 년도</td>
+  	  <td><input type="text" class="form-control" name="current_year" value="{{ current_year }}"/></td>
+  	</tr>
+  	<tr>
+  	  <td>현재 학기</td>
+  	  <td>
+  	  	<select name="current_term" class="form-control">
+  	  	  <option value="1" {% if current_term == 1 %} selected {% endif %}>겨울</option>
+  	  	  <option vaule="2" {% if current_term == 2 %} selected {% endif %}>여름</option>
+  	  	</select>
+  	  </td>
+  	</tr>
+  	<tr>
+  	  <td></td>
+  	  <td><a href="#" class="btn btn-primary">저장</a></td>
+  	</tr>
+  </table>
 </div>
 {% endblock %}

@@ -2,7 +2,7 @@
 {% block navs %}
 <ul class="nav navbar-nav">
 	<li><a href="{{ url_for('kids.home') }}">통계</a></li>
-	<li><a href="{{ url_for('kids.member_list') }}">신청자목록</a></li>
+	<li><a href="{{ url_for('kids.member_list', cancel_yn=0) }}">신청자목록</a></li>
 	<li><a href="{{ url_for('kids.member_list', cancel_yn=1) }}">취소자목록</a></li>
 	<!--
 	<li class="dropdown">

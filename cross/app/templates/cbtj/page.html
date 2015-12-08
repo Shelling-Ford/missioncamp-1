@@ -7,9 +7,9 @@
 			신청자목록&nbsp;<span class="caret">
 		</a>
 		<ul class="dropdown-menu">
-			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj') }}">청대청직(1차)</a></li>
-			<li><a href="{{ url_for('cbtj.member_list', camp='cbtj2') }}">여남시청직(2차)</a></li>
-			<li><a href="{{ url_for('cbtj.member_list') }}">전체목록</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=0, camp='cbtj') }}">청대청직(1차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=0, camp='cbtj2') }}">여남시청직(2차)</a></li>
+			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=0) }}">전체목록</a></li>
 		</ul>
 	</li>
 	<li class="dropdown">

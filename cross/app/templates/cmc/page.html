@@ -2,7 +2,7 @@
 {% block navs %}
 <ul class="nav navbar-nav">
 	<li><a href="{{ url_for('cmc.home') }}">통계</a></li>
-	<li><a href="{{ url_for('cmc.member_list') }}">신청자목록</a></li>
+	<li><a href="{{ url_for('cmc.member_list', cancel_yn=0) }}">신청자목록</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=1) }}">취소자목록</a></li>
 	<li><a href="{{ url_for('cmc.old_stat', year=2015, term=2) }}">지난통계</a></li>
 	<li><a href="{{ url_for('cmc.old_list', campcode='cmc_2015_1') }}">지난신청자목록</a></li>

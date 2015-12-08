@@ -153,13 +153,16 @@ class Member(db.Base):
         return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
 
     @classmethod
-    def get_list(cls, camp_idx=None, name=None, **kwargs):
+    def get_list(cls, camp_idx=None, name=None, campus=None, **kwargs):
         result = db.db_session.query(cls)
         if camp_idx is not None:
             result = result.filter(cls.camp_idx == camp_idx)
 
         if name is not None:
             result = result.filter(cls.name.like("%"+name+"%") )
+
+        if campus is not None:
+            result = result.filter(cls.membership.any(value=campus))
 
         for key, value in kwargs.iteritems():
             if value is not None and value != '':

@@ -75,8 +75,10 @@ def member():
         payment = get_payment(member_idx)
         room_list = get_room_list()
         area_name = getAreaName(member['area_idx'])
+        area_list = getAreaList('cbtj')
+        group_list = Group.get_list(camp_idx)
 
-    return render_template('cbtj/member.html', member=member, camp=camp, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name)
+    return render_template('cbtj/member.html', member=member, camp=camp, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name, area_list=area_list, group_list=group_list)
 
 # 입금 정보 입력
 @cbtj.route('/pay', methods=['POST'])
@@ -113,6 +115,29 @@ def room_setting():
     member_idx = request.form.get('member_idx', 0)
     room_idx = request.form.get('idx', 0)
     set_member_room(member_idx=member_idx, room_idx=room_idx)
+    return redirect(url_for('.member', member_idx=member_idx))
+
+
+# 지부 변경
+@cbtj.route('/area_setting', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
+@cbtj_permission.require(http_exception=403)
+def area_setting():
+    member_idx = request.form.get('member_idx', 0)
+    area_idx = request.form.get('area_idx', 0)
+    Member.update(member_idx=member_idx, area_idx=area_idx)
+    return redirect(url_for('.member', member_idx=member_idx))
+
+# 단체 변경
+@cbtj.route('/group_setting', methods=['POST'])
+@login_required
+@hq_permission.require(http_exception=403)
+@cbtj_permission.require(http_exception=403)
+def group_setting():
+    member_idx = request.form.get('member_idx', 0)
+    group_idx = request.form.get('group_idx', 0)
+    Member.update(member_idx=member_idx, group_idx=group_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 엑셀 다운로드

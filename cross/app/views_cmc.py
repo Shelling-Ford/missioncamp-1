@@ -52,7 +52,7 @@ def member_list():
     persontype = request.args.get('persontype', None)
     campus = request.args.get('campus', None)
 
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype, campus=campus)
+    member_list = Member.get_list(camp_idx, **request.args)
     group = Group.get(group_idx) if group_idx is not None else None
     count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
     return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))

@@ -13,8 +13,8 @@
   <br/>
   {{ macros.render_stat(stat=stat.campus, title='캠퍼스별', param_key='campus')}}
   <br/>
-  {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', cols=3)}}
+  {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key="training", cols=3)}}
   <br/>
-  {{ macros.render_stat(stat=stat.job, title='직군별', cols=3)}}
+  {{ macros.render_stat(stat=stat.job, title='직군별', param_key="job", cols=3)}}
 </div>
 {% endblock %}

@@ -106,8 +106,9 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['campus'].append(dict(r))
 
+    #인터콥훈련여부별
     query = text("""
-        SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
         WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'training' GROUP BY `ms`.`value`
@@ -117,8 +118,9 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['training'].append(dict(r))
 
+    #직업/직군별
     query = text("""
-        SELECT `ms`.`value` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
+        SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
         WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'job' GROUP BY `ms`.`value`

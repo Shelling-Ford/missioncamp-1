@@ -52,7 +52,7 @@ def member_list():
 
     group = Group.get(group_idx) if group_idx is not None else None
 
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
+    member_list = Member.get_list(camp_idx, **request.args)
     count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx, persontype=persontype)
     return render_template('ws/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))
 

@@ -165,7 +165,7 @@ class Member(db.Base):
                     result = result.filter(cls.membership.any(value=value))
                 elif key == 'name':
                     attr = getattr(cls, key)
-                    result = result.filter(attr.like("%"+value+"%") )
+                    result = result.filter(attr.like('%' + value[0] + '%') )
                 elif key == 'camp':
                     pass     
                 else:

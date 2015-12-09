@@ -1,5 +1,5 @@
 #-*-coding:utf-8-*-
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
 
 from flask.helpers import make_response
 from flask_login import login_required, current_user
@@ -122,3 +122,37 @@ def group_setting():
     group_idx = request.form.get('group_idx', 0)
     Member.update(member_idx=member_idx, group_idx=group_idx)
     return redirect(url_for('.member', member_idx=member_idx))
+
+# 신청 취소
+@kids.route('/member-cancel')
+@login_required
+@branch_permission.require(http_exception=403)
+@kids_permission.require(http_exception=403)
+def member_cancel():
+    member_idx = request.args.get('member_idx', 0)
+    session['idx'] = member_idx
+
+    return render_template('kids/member_cancel.html')
+
+# 신청 취소 적용
+@kids.route('/member-cancel', methods=['POST'])
+@login_required
+@branch_permission.require(http_exception=403)
+@kids_permission.require(http_exception=403)
+def member_cancel_proc():
+    cancel_reason = request.form.get('cancel_reason', None)
+    idx = session['idx']
+    cancelIndividual(idx, cancel_reason)
+    flash(u'신청이 취소되었습니다')
+    return redirect(url_for('.member_list'))
+
+# 신청 취소 복원
+@kids.route('/member-recover')
+@login_required
+@branch_permission.require(http_exception=403)
+@kids_permission.require(http_exception=403)
+def member_recover():
+    member_idx = request.args.get('member_idx')
+    Member.update(member_idx, cancel_yn=0)
+    flash(u'신청이 복원되었습니다')
+    return redirect(url_for('.member_list'))

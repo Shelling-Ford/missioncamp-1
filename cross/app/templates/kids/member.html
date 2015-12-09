@@ -177,13 +177,14 @@
         <td>메모</td>
         <td>{{ member.memo }}</td>
       </tr>
-<!--{#
+
       <tr>
         <td colspan="2">
 
           <p style="text-align:center">
+          <!--{#
           <a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>&nbsp;&nbsp;
-
+          #} -->
           {% if member.cancel_yn == 0 %}
               <a class="btn btn-default" href="{{ url_for('.member_cancel', member_idx=member.idx) }}">신청취소</a>
           {% elif member.cancel_yn == 1 %}
@@ -191,7 +192,7 @@
           {% endif %}
         </p>
         </td>
-      </tr>#}-->
+      </tr>
     </table>
     <br/>
   </section>

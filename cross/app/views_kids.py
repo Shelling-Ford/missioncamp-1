@@ -1,10 +1,11 @@
 #-*-coding:utf-8-*-
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
 from flask.helpers import make_response
 from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 
+from core.functions import cancelIndividual
 from core.models import Camp, Member, Group, Payment, Area, Room
 
 from functions import get_basic_stat

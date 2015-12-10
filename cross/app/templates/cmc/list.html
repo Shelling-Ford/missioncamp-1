@@ -30,7 +30,10 @@
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>
     <button type="submit" class="btn btn-default">검색</button>
-    <a class="btn btn-primary" href="{{ url_for('.excel_down', cancel_yn=cancel_yn, area_idx=area_idx, name=name) }}">엑셀 다운</a>
+    {% for key, value in request.args.iteritems() %}
+    {% if key != 'name' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+    {% endfor %}
+    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
   </form>
   <br/>
   <br/>
@@ -50,7 +53,7 @@
         <th>재정클레임</th>
         <th>입금액</th>
         <th>상태</th>
-        {% if cancel_yn == 0 %}
+        {% if request.args.get('cancel_yn',0)|int == 0 %}
         <th>단체버스</th>
         <th>전체참석</th>
         <th>오는날</th>
@@ -64,14 +67,14 @@
       </tr>
     </thead>
     <tbody>
-      {% set i = members|length %}
+      {% set i = count %}
       {% for m in members %}
       <tr>
         <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
         <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
         <td>{{ m.persontype }}</td>
-        <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+        <td><a href="{{ url_for('.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>
         <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
         <td>{{ m.sex }}</td>
@@ -79,7 +82,7 @@
         <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment.amount == None %} 0 {% else %} {{ m.payment.amount }} {% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
-        {% if cancel_yn == 0 %}
+        {% if request.args.get('cancel_yn',0)|int == 0 %}
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
         <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
         <td>{{ m.date_of_arrival }}</td>
@@ -94,6 +97,21 @@
       {% set i = i - 1 %}
       {% endfor %}
     </tbody>
+  </table>
+  <br/>
+  <table class="table1">
+    <tr>
+      {% set params = request.args.to_dict() %}
+      <!--{% set page = params.pop('page', none) %}-->
+      {% for i in nav %}
+      {% if i == page|int %}
+      <td>{{ i }}</td>
+      {% else %}
+      <td><a href="{{ url_for('.member_list', page=i, **params) }}">{{ i }}</a></td>
+      {% endif %}
+      {% if i % 30 == 0 %}</tr><tr>{% endif %}
+      {% endfor %}
+    </tr>
   </table>
 </div>
 {% endblock %}

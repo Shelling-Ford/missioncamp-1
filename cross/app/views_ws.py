@@ -91,7 +91,7 @@ def pay():
     staff_name = request.form.get('staff_name')
 
     save_payment(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
-    return redirect(url_for('.member_list'))
+    return redirect(url_for('.member_list', cancel_yn=0))
 
 # 입금 정보 삭제
 @ws.route('/delpay')

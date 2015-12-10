@@ -7,10 +7,11 @@ from jinja2 import TemplateNotFound
 
 from core.functions import *
 from core.functions.cmc import *
-from core.models import Group, Member, Camp
+from core.models import Group, Member, Camp, Area, Room, Payment
 
 from functions import *
 import functions_mongo as mongo
+import functions_xlsx as xlsx
 import xlsxwriter
 
 # Blueprint 초기화
@@ -28,60 +29,41 @@ cmc_permission = Permission(RoleNeed('cmc'))
 def home():
     year = int(request.args.get('year', 0))
     term = int(request.args.get('term', 0))
-
-    if year == 0 or term == 0:
-        camp_idx = getCampIdx('cmc')
-    else:
-        camp_idx = getCampIdx('cmc', year, term)
-
+    camp_idx = Camp.get_idx('cmc', year, term)
     stat = get_basic_stat(camp_idx)
     return render_template('cmc/home.html', stat=stat)
-
 
 # 신청자 목록
 @cmc.route('/list')
 @login_required
 @branch_permission.require(http_exception=403)
 def member_list():
-    camp_idx = getCampIdx('cmc')
-
-    cancel_yn = int(request.args.get('cancel_yn', 0))
-    area_idx = request.args.get('area_idx', None)
-    member_name = request.args.get('name', None)
+    camp_idx = Camp.get_idx('cmc')
     group_idx = request.args.get('group_idx', None)
-    persontype = request.args.get('persontype', None)
-    campus = request.args.get('campus', None)
-
-    member_list = Member.get_list(camp_idx, **request.args)
+    page = int(request.args.get('page', 1))
     group = Group.get(group_idx) if group_idx is not None else None
-    count = Member.count(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group_idx=group_idx)
-    return render_template('cmc/list.html', members=member_list, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name, group=group, loop=range(count))
-
-#@cmc.route('/cancel-list')
-#@login_required
-#@branch_permission.require(http_exception=403)
-#def cancel_list():
-
+    member_list = Member.get_list(camp_idx, **request.args.to_dict())
+    count = Member.count(camp_idx, **request.args.to_dict())
+    return render_template('cmc/list.html', members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2))
 
 # 신청자 상세
 @cmc.route('/member')
 @login_required
 @branch_permission.require(http_exception=403)
 def member():
-    camp_idx = getCampIdx('cmc')
+    camp_idx = Camp.get_idx('cmc')
 
     member_idx = request.args.get('member_idx', 0)
 
     if member_idx != 0:
-        member = get_member(member_idx)
-        member['membership'] = get_membership(member_idx)
-        payment = get_payment(member_idx)
-        room_list = get_room_list()
-        area_name = getAreaName(member['area_idx'])
-        area_list = getAreaList('cmc')
+        member = Member.get(member_idx)
+        room_list = Room.get_list()
+        area_list = Area.get_list('cmc')
         group_list = Group.get_list(camp_idx)
 
-    return render_template('cmc/member.html', member=member, payment=payment, role=current_user.role, rooms=room_list, area_name=area_name, area_list=area_list, group_list=group_list)
+        return render_template('cmc/member.html', member=member, room_list=room_list, area_list=area_list, group_list=group_list)
+    else:
+        abort(404)
 
 # 입금 정보 입력
 @cmc.route('/pay', methods=['POST'])
@@ -96,7 +78,7 @@ def pay():
     paydate = request.form.get('paydate')
     staff_name = request.form.get('staff_name')
 
-    save_payment(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
+    Payment.save(member_idx=member_idx, amount=amount, complete=complete, claim=claim, paydate=paydate, staff_name=staff_name)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 입금 정보 삭제
@@ -106,7 +88,7 @@ def pay():
 @cmc_permission.require(http_exception=403)
 def delpay():
     member_idx = request.args.get('member_idx', 0)
-    delete_payment(member_idx)
+    Payment.delete(member_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 숙소 정보 입력
@@ -117,7 +99,7 @@ def delpay():
 def room_setting():
     member_idx = request.form.get('member_idx', 0)
     room_idx = request.form.get('idx', 0)
-    set_member_room(member_idx=member_idx, room_idx=room_idx)
+    Member.update(member_idx=member_idx, room_idx=room_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
 # 지부 변경
@@ -142,114 +124,18 @@ def group_setting():
     Member.update(member_idx=member_idx, group_idx=group_idx)
     return redirect(url_for('.member', member_idx=member_idx))
 
-# 엑셀 다운로드
 @cmc.route('/excel-down', methods=['GET'])
 @login_required
 @hq_permission.require(http_exception=403)
 @cmc_permission.require(http_exception=403)
 def excel_down():
     camp_idx = getCampIdx('cmc')
-
-    cancel_yn = int(request.args.get('cancel_yn', 0))
-    area_idx = request.args.get('area_idx', None)
-    member_name = request.args.get('name', None)
-
-    member_list = Member.get_list(camp_idx, cancel_yn=cancel_yn, area_idx=area_idx, name=member_name)
-
-    try:
-        import cStringIO as StringIO
-    except:
-        import StringIO
-
-    output = StringIO.StringIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet()
-    worksheet.set_column('C:C', 15)
-    worksheet.set_column('E:E', 10)
-    worksheet.set_column('F:F', 8)
-    worksheet.set_column('G:G', 8)
-    worksheet.set_column('H:H', 8)
-    worksheet.set_column('I:I', 8)
-    worksheet.set_column('J:J', 8)
-    worksheet.set_column('K:K', 10)
-    worksheet.set_column('L:L', 10)
-    worksheet.set_column('M:M', 15)
-    worksheet.set_column('P:P', 20)
-    worksheet.set_column('R:R', 10)
-    worksheet.set_column('S:S', 20)
-
-
-    r = 0
-    c = 0
-    worksheet.write(r, 0, u'이름')
-    worksheet.write(r, 1, u'지부')
-    worksheet.write(r, 2, u'연락처')
-    worksheet.write(r, 3, u'출석교회')
-    worksheet.write(r, 4, u'생년월일')
-    worksheet.write(r, 5, u'성별')
-    worksheet.write(r, 6, u'단체버스')
-    worksheet.write(r, 7, u'MIT')
-    worksheet.write(r, 8, u'선캠뉴커머')
-    worksheet.write(r, 9, u'전체참석')
-    worksheet.write(r, 10, u'캠프도착')
-    worksheet.write(r, 11, u'귀가')
-    worksheet.write(r, 12, u'직업')
-    worksheet.write(r, 13, u'캠퍼스')
-    worksheet.write(r, 14, u'전공')
-    worksheet.write(r, 15, u'인터콥 훈련 여부')
-    worksheet.write(r, 16, u'통역필요')
-    worksheet.write(r, 17, u'등록날자')
-    worksheet.write(r, 18, u'메모')
-    r += 1
-
-    date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
-
-    boolean = [u'아니오', u'예']
-
-    for member in member_list:
-        worksheet.write(r, 0, member.name)
-        worksheet.write(r, 1, member.area.name)
-        worksheet.write(r, 2, member.contact)
-        worksheet.write(r, 3, member.church)
-        worksheet.write(r, 4, member.birth)
-        worksheet.write(r, 5, member.sex)
-        worksheet.write(r, 6, boolean[member.bus_yn])
-        worksheet.write(r, 7, boolean[member.mit_yn])
-        worksheet.write(r, 8, boolean[member.newcomer_yn])
-        worksheet.write(r, 9, boolean[member.fullcamp_yn])
-        worksheet.write_datetime(r, 10, member.date_of_arrival, date_format)
-        worksheet.write_datetime(r, 11, member.date_of_leave, date_format)
-
-        job = ''
-        campus = ''
-        major = ''
-        training = ''
-        for membership in member.membership:
-            if membership.key == 'job':
-                job = membership.value
-            elif membership.key == 'campus':
-                campus = membership.value
-            elif membership.key == 'major':
-                major = membership.value
-            elif membership.key == 'training':
-                training += '%s,' % membership.value
-
-        worksheet.write(r, 12, job)
-        worksheet.write(r, 13, campus)
-        worksheet.write(r, 14, major)
-        worksheet.write(r, 15, training)
-        worksheet.write(r, 16, member.language)
-        worksheet.write_datetime(r, 17, member.regdate, date_format)
-        worksheet.write(r, 18, member.memo)
-        r += 1
-
-    workbook.close()
-
-    output.seek(0)
+    output = xlsx.get_document(camp_idx, **request.args)
     response = make_response(output.read())
     response.headers["Content-Disposition"] = "attachment; filename=member.xlsx"
     return response
 
+#**수정필요!!
 # 개인 신청 수정
 @cmc.route('/member-edit')
 @login_required
@@ -268,6 +154,7 @@ def member_edit():
     return render_template('cmc/member_edit.html', camp='cmc', campidx=campidx, member=member, membership=member['membership'],
         area_list=area_list, date_select_list=date_select_list, group_yn=group_yn)
 
+#**수정필요!!
 # 수정된 신청서 저장
 @cmc.route('/member-edit', methods=['POST'])
 @login_required
@@ -310,7 +197,8 @@ def member_cancel():
 def member_cancel_proc():
     cancel_reason = request.form.get('cancel_reason', None)
     idx = session['idx']
-    cancelIndividual(idx, cancel_reason)
+    Member.update(idx, cancel_yn=1, cancel_reason=cancel_reason)
+    #cancelIndividual(idx, cancel_reason)
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.member_list'))
 

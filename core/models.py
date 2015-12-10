@@ -72,6 +72,10 @@ class Camp(db.Base):
     campday = Column(Integer)
     name = Column(String)
 
+    @classmethod
+    def get(cls, idx):
+        return db.db_session.query(cls).filter(cls.idx == idx).first()
+
     # camp_idx 반환, year와 term을 파라메터로 넘겨줄 경우 해당 연도와 학기의 camp_idx를 반환해주고
     # year와 term파라메터가 없을 경우 GlobalOptions에 등록되어있는 year와 term을 현재 활성화되어있는 캠프의 camp_idx를 반환해줌.
     @classmethod
@@ -91,7 +95,8 @@ class Camp(db.Base):
 
         datelist = []
         for i in range(campday):
-            datelist.append(startday + datetime.timedelta(days=(i-1)))
+            date = startday + datetime.timedelta(days=(i))
+            datelist.append((date, date))
 
         return datelist
 
@@ -158,21 +163,26 @@ class Member(db.Base):
         if camp_idx is not None:
             result = result.filter(cls.camp_idx == camp_idx)
 
+        page = int(kwargs.pop('page', 0))
+        kwargs.pop('camp', None)
+
         membership_keys = ['training', 'campus', 'job']
         for key, value in kwargs.iteritems():
+            value = value[0] if type(value) is list and len(value) == 1 else value
             if value is not None and value != '':
                 if key in membership_keys:
                     result = result.filter(cls.membership.any(value=value))
                 elif key == 'name':
                     attr = getattr(cls, key)
-                    result = result.filter(attr.like('%' + value[0] + '%') )
-                elif key == 'camp':
-                    pass     
+                    result = result.filter(attr.like('%' + value + '%') )
                 else:
                     attr = getattr(cls, key)
                     result = result.filter(attr == value)
 
-        return result.order_by(desc(cls.idx)).all()
+        result  = result.order_by(desc(cls.idx))
+
+        
+        return result.all() if page == 0 else result.limit(50).offset((page-1)*50).all()
 
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
@@ -183,16 +193,33 @@ class Member(db.Base):
                 result = result.filter(attr == value)
 
         result = result.order_by(desc(cls.idx))
-        return result.limit(50).offset(offset).all() if offset is not None else result.all()
+
+        member_list = result.limit(50).offset(offset).all() if offset is not None else result.all()
+        return member_list 
 
     # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
     @classmethod
-    def count(cls, camp_idx, **kwargs):
-        result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
+    def count(cls, camp_idx=None, **kwargs):
+        if camp_idx is not None:
+            result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
+        else:
+            result = db.db_session.query(cls)
+
+        kwargs.pop('page', None)
+        kwargs.pop('camp', None)
+
+        membership_keys = ['training', 'campus', 'job']
         for key, value in kwargs.iteritems():
+            value = value[0] if type(value) is list and len(value) == 1 else value
             if value is not None and value != '':
-                attr = getattr(cls, key)
-                result = result.filter(attr == value)
+                if key in membership_keys:
+                    result = result.filter(cls.membership.any(value=value))
+                elif key == 'name':
+                    attr = getattr(cls, key)
+                    result = result.filter(attr.like('%' + value + '%') )
+                else:
+                    attr = getattr(cls, key)
+                    result = result.filter(attr == value)
 
         return result.count()
 
@@ -234,10 +261,43 @@ class Member(db.Base):
                         membership.key = membership_data['key']
                         membership.value = membership_data['value']
                         db.db_session.add(membership)
+            else:
+                if 'date_of_arrival' in kwargs and 'date_of_leave' in kwargs:
+                    attend = member.get_attend_array(kwargs.get('date_of_arrival')[0], kwargs.get('date_of_leave')[0])
+                    member.attend1 = attend[0]
+                    member.attend2 = attend[1]
+                    member.attend3 = attend[2]
+                    member.attend4 = attend[3]                
 
+            membership_keys = ['job', 'campus', 'major', 'sm_yn', 'training', 'route', 'stafftype', 'pname', 'sch1', 'sch2']
+            membership_list = []
             for key, value in kwargs.iteritems():
+                value = value[0] if type(value) is list and len(value) == 1 else value
                 if value is not None and value != '':
-                    setattr(member, key, value)
+                    if key == 'pwd':
+                        setattr(member, key, hashlib.sha224(pwd).hexdigest())
+                    elif key == 'hp2' or key == 'hp3':
+                        pass
+                    elif key == 'hp':
+                        setattr(member, 'contact', '-'.join(kwargs.get('hp') + kwargs.get('hp2') + kwargs.get('hp3')))
+                    elif key in membership_keys:
+                        if key == 'training' or key == 'route':
+                            for v in value:
+                                membership_list.append((key, v))        
+                        else:
+                            membership_list.append((key, value))
+                    else:
+                        setattr(member, key, value)            
+
+            if len(membership_list) > 0:
+                db.db_session.query(Membership).filter(Membership.member_idx == member_idx).delete()
+                for key, value in membership_list:
+                    membership = Membership()
+                    membership.camp_idx = member.camp_idx
+                    membership.member_idx = member.idx
+                    membership.key = key
+                    membership.value = value
+                    db.db_session.add(membership)
 
             db.db_session.commit()
 
@@ -309,6 +369,33 @@ class Member(db.Base):
         db.db_session.query(Membership).filter(Membership.member_idx == idx).delete()
         db.db_session.query(cls).filter(cls.idx == idx).delete()
 
+    def get_membership_data(self):
+        membership_data = dict()
+
+        for t in self.membership:
+            if t.key == 'training' or t.key == 'route':
+                if t.key in membership_data:
+                    membership_data[t.key].append(t.value)
+                else:
+                    membership_data[t.key] = [t.value]
+            else:
+                membership_data[t.key] = t.value
+
+        return membership_data
+
+    def get_attend_array(self, date_of_arrival, date_of_leave):
+        camp = Camp.get(self.camp_idx)
+
+        date_of_arrival = datetime.datetime.strptime(date_of_arrival, '%Y-%m-%d').date()
+        date_of_leave = datetime.datetime.strptime(date_of_leave, '%Y-%m-%d').date()
+
+        i = (date_of_arrival-camp.startday).days
+        interval = range(0, (date_of_leave - date_of_arrival).days+1)
+        attend = [ 0, 0, 0, 0 ]
+        for j in interval:
+            attend[i+j] = 1
+
+        return attend
 
 # 세대별 기타 정보
 class Membership(db.Base):

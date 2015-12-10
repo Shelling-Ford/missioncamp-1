@@ -30,7 +30,7 @@
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>
     {% for key, value in request.args.iteritems() %}
-    <input type="hidden" name="{{ key }}" value="{{ value }}"/>
+    {% if key != 'name' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
     <button type="submit" class="btn btn-default">검색</button>
     <a class="btn btn-primary" href="{{ url_for('.excel_down', cancel_yn=cancel_yn, area_idx=area_idx, name=name) }}">엑셀 다운</a>

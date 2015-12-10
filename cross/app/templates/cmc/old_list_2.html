@@ -4,7 +4,7 @@
 <div class="container">
   <div class="col-md-2 col-sm-3">
     <ul>
-      <li><a href="{{ url_for('.old_list', camp='cmc', year=2015, term=2)}}">2015년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', camptype='cmc', year=2015, term=2)}}">2015년 여름</a></li>
       <li><a href="{{ url_for('.old_list', campcode='cmc_2015_1')}}">2015년 겨울</a></li>
       <li><a href="{{ url_for('.old_list', campcode='cmc_2014_2')}}">2014년 여름</a></li>
       <li><a href="{{ url_for('.old_list', campcode='cmc_2014')}}">2014년 겨울</a></li>
@@ -14,7 +14,7 @@
 
     <h4>청소년</h4>
     <ul>
-      <li><a href="{{ url_for('.old_list', camp='youth', year=2015, term=2)}}">2015년 여름</a></li>
+      <li><a href="{{ url_for('.old_list', camptype='youth', year=2015, term=2)}}">2015년 여름</a></li>
       <li><a href="{{ url_for('.old_list', campcode='youth_2015_1')}}">2015년 겨울</a></li>
       <li><a href="{{ url_for('.old_list', campcode='youth_2014_2')}}">2014년 여름</a></li>
       <li><a href="{{ url_for('.old_list', campcode='youth_2014')}}">2014년 겨울</a></li>
@@ -26,7 +26,7 @@
     <form class="form-inline" action="{{ url_for('.old_list') }}" method="GET">
       <input type="text" name="name" class="form-control" placeholder="이름"/>
       <button type="submit" class="btn btn-default">검색</button>
-      <a class="btn btn-primary" href="{{ url_for('.old_excel_down', camp=camp, year=year, term=term, area=area, name=name) }}">엑셀 다운</a>
+      <a class="btn btn-primary" href="{{ url_for('.old_excel_down', **request.args.to_dict()) }}">엑셀 다운</a>
     </form>
     <br/>
     <table class="table1">
@@ -80,8 +80,14 @@
     <br/>
     <table class="table1">
       <tr>
+        {% set params = request.args.to_dict() %}
+        <!--{% set page = params.pop('page', none) %}-->
         {% for i in count %}
-        <td><a href="{{ url_for('.old_list', year=year, term=term, area=area, camp=camp, page=i) }}">{{ i }}</a></td>
+        {% if i == page|int %}
+        <td>{{ i }}</td>
+        {% else %}
+        <td><a href="{{ url_for('.old_list', page=i, **params) }}">{{ i }}</a></td>
+        {% endif %}
         {% if i % 30 == 0 %}</tr><tr>{% endif %}
         {% endfor %}
       </tr>

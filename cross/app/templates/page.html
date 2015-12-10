@@ -41,6 +41,7 @@ ul {
 						{% if 'master' not in request.url_rule.rule %}
 						<form class="navbar-form" action="{{ url_for('.member_list') }}" method="GET">
 					    <input type="text" name="name" class="form-control" placeholder="이름으로 검색"/>
+              <input type="hidden" name="cancel_yn" value="0"/>
 					  </form>
 						{% endif %}
 						<li>

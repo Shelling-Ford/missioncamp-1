@@ -1,5 +1,6 @@
 #-*-coding:utf-8-*-
 from core.mongo import db, call_log
+from core.models import Member
 from bson.code import Code
 
 def get_member_list(**kwargs):
@@ -22,6 +23,7 @@ def get_member_list_with_count(**kwargs):
     params = dict()
 
     skip = kwargs['skip'] if 'skip' in kwargs else 0
+    print skip
 
     keys = ['campcode', 'area', 'name', 'camp']
     for k in keys:
@@ -40,13 +42,15 @@ def get_member_list_with_count(**kwargs):
     elif('campcode' in kwargs and kwargs['campcode'] is not None and kwargs['campcode'].split('_')[0] == 'youth'):
         results = results.sort("ssn", -1)
 
-    if skip is not None or skip != 0:
+    if skip is not None and skip != 0:
         results = results.skip(skip).limit(50)
 
     member_list = []
     for r in results:
         item = dict(r)
-        item['count'] = db.count({"hp1": item["hp1"], "name":item["name"], "entry":"Y", "fin":{"$ne":"d"}})
+        count = Member.count(name=item['name'], contact=item['hp1'], attend_yn=1, cancel_yn=0)
+        count += db.count({"hp1": item["hp1"], "name":item["name"], "entry":"Y", "fin":{"$ne":"d"}})
+        item['count'] = count
         item['call_count'] = call_log.count({"name":item["name"], "hp1":item["hp1"]})
         member_list.append(item)
 

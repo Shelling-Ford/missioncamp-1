@@ -12,21 +12,27 @@ from flask import Flask
 context = Flask(__name__)
 context.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
 
-import views
-from views_cmc import cmc
-context.register_blueprint(cmc)
+import views_main
 
-from views_cbtj import cbtj
-context.register_blueprint(cbtj)
+from views.meta import CmcView
+cmc_view = CmcView()
+context.register_blueprint(cmc_view.context)
+
+from views.meta import CbtjView
+cbtj_view = CbtjView()
+context.register_blueprint(cbtj_view.context)
 
 from views_ws import ws
 context.register_blueprint(ws)
 
-from views_youth import youth
-context.register_blueprint(youth)
+from views.meta import YouthView
+youth_view = YouthView()
+context.register_blueprint(youth_view.context)
 
-from views_kids import kids
-context.register_blueprint(kids)
+from views.meta import KidsView
+kids_view = KidsView()
+context.register_blueprint(kids_view.context)
+
 
 from views_master import master
 context.register_blueprint(master)

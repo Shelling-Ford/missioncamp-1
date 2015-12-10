@@ -11,34 +11,35 @@
   <section class="col-lg-4 col-sm-6" style="margin-left:0">
     <h4>재정</h4>
     <form action="{{ url_for('.pay', member_idx=member.idx) }}" method="POST">
+      <input type="hidden" name="next" value="{{ request.args.get('next', none) }}"/>
       <table class="table1">
         <tr>
           <td>등록비</td>
-          <td><input type="number" name="amount" id="amount" size="12" value="{{ payment.amount }}" required/></td>
+          <td><input type="number" name="amount" id="amount" size="12" value="{{ member.payment.amount }}" required/></td>
         </tr>
         <tr>
           <td>납부여부</td>
           <td>
-            <input type="radio" name="complete" id="complete2" {% if payment.complete == 2 %} checked {% endif %} required value="2"/> 완납
-            <input type="radio" name="complete" id="complete1" {% if payment.complete == 1 %} checked {% endif %} value="1"/> 부분납
-            <input type="radio" name="complete" id="complete0" {% if payment.complete == 0 %} checked {% endif %} value="0"/> 미납
+            <input type="radio" name="complete" id="complete2" {% if member.payment.complete == 2 %} checked {% endif %} required value="2"/> 완납
+            <input type="radio" name="complete" id="complete1" {% if member.payment.complete == 1 %} checked {% endif %} value="1"/> 부분납
+            <input type="radio" name="complete" id="complete0" {% if member.payment.complete == 0 %} checked {% endif %} value="0"/> 미납
           </td>
         </tr>
         <tr>
           <td>입금 확인자</td>
-          <td><input type="text" name="staff_name" id="staff_name" size="12" value="{{ payment.staff_name }}" required/></td>
+          <td><input type="text" name="staff_name" id="staff_name" size="12" value="{{ member.payment.staff_name }}" required/></td>
         </tr>
         <tr>
           <td>등록일(최초입금일)<br/>YYYY-MM-DD 형식으로 입력<br/>공란으로 둘 경우 오늘 날자 자동 입력</td>
-          {% if not payment == None %}
-          <td><input type="text" name="paydate" value="{% if not payment.paydate == None %} {{ payment.paydate.strftime('%Y-%m-%d') }}{% endif %}"></td>
+          {% if not member.payment == None %}
+          <td><input type="text" name="paydate" value="{% if not member.payment.paydate == None %} {{ member.payment.paydate.strftime('%Y-%m-%d') }}{% endif %}"></td>
           {% else %}
           <td><input type="text" name="paydate"></td>
           {% endif %}
         </tr>
         <tr>
           <td>클레임/예외사항</td>
-          <td><textarea name="claim" id="claim">{{ payment.claim }}</textarea></td>
+          <td><textarea name="claim" id="claim">{{ member.payment.claim }}</textarea></td>
         </tr>
         <tr>
           <td colspan="2">
@@ -60,7 +61,7 @@
           <td>
             <select name="idx" class="form-control">
               <option value="">숙소</option>
-              {% for r in rooms %}
+              {% for r in room_list %}
               <option value="{{ r.idx }}" {% if r.idx == member.room_idx %} selected {% endif %}>{{ r.building }} {{ r.number }}</option>
               {% endfor %}
             </select>
@@ -81,8 +82,8 @@
           <td>
             <select name="area_idx" id="area_idx" class="form-control">
               <option value="">지부 변경</option>
-              {% for area in area_list %}
-              <option value="{{ area.idx }}" {% if area.idx == member.area_idx %} selected {% endif %}>{{ area.name }}</option>
+              {% for idx, name in area_list %}
+              <option value="{{ idx }}" {% if idx == member.area_idx %} selected {% endif %}>{{ name }}</option>
               {% endfor %}
             </select>
           </td>
@@ -127,7 +128,7 @@
       </tr>
       <tr>
         <td>지부</td>
-        <td>{{ area_name }}</td>
+        <td>{{ member.area.name }}</td>
       </tr>
       <tr>
         <td>연락처</td>
@@ -168,23 +169,35 @@
       {% if member.persontype == '청년' %}
       <tr>
         <td>직업</td>
-        <td>{{ member.membership.job }}</td>
+        <td>
+          {% for t in member.membership %}
+            {% if t.key == 'job' %}{{ t.value }}{% endif %}
+          {% endfor %}
+        </td>
       </tr>
       {% elif member.persontype == '대학생' %}
       <tr>
         <td>캠퍼스</td>
-        <td>{{ member.membership.campus }}</td>
+        <td>
+          {% for t in member.membership %}
+            {% if t.key == 'campus' %}{{ t.value }}{% endif %}
+          {% endfor %}
+        </td>
       </tr>
       <tr>
         <td>전공</td>
-        <td>{{ member.membership.major }}</td>
+        <td>
+          {% for t in member.membership %}
+            {% if t.key == 'major' %}{{ t.value }}{% endif %}
+          {% endfor %}
+        </td>
       </tr>
       {% endif %}
       <tr>
         <td>인터콥 훈련 여부</td>
         <td>
-          {% for t in member.membership.training %}
-            {{ t }},
+          {% for t in member.membership %}
+            {% if t.key == 'training' %}{{ t.value }},{% endif %}
           {% endfor %}
         </td>
       </tr>
@@ -200,7 +213,13 @@
         <td>메모</td>
         <td>{{ member.memo }}</td>
       </tr>
-
+      
+      {% if current_user.role == 'master' %}
+      <tr>
+        <td>통계표</td>
+        <td>{{ member.attend1|string + member.attend2|string + member.attend3|string + member.attend4|string  }}
+      </tr>
+      {% endif %}
       <tr>
         <td colspan="2">
           <p style="text-align:center">
@@ -215,6 +234,7 @@
       </tr>
     </table>
     <br/>
+
   </section>
 </div>
 {% endblock %}

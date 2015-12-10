@@ -282,8 +282,11 @@ class Member(db.Base):
                         setattr(member, 'contact', '-'.join(kwargs.get('hp') + kwargs.get('hp2') + kwargs.get('hp3')))
                     elif key in membership_keys:
                         if key == 'training' or key == 'route':
-                            for v in value:
-                                membership_list.append((key, v))        
+                            if type(value) is list:
+                                for v in value:
+                                    membership_list.append((key, v))        
+                            else:
+                                membership_list.append((key, value))
                         else:
                             membership_list.append((key, value))
                     else:

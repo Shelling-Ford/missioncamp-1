@@ -63,6 +63,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
         for r in results:
             stat['summary'].append(dict(r))
 
+    # 지부별
     query = text("""
         SELECT `a`.`idx` `idx`, `a`.`idx` `param`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
@@ -73,6 +74,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['area'].append(dict(r))
 
+    # 참가구분별
     query = text("""
         SELECT `m`.`persontype` `name`, `m`.`persontype` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
@@ -83,11 +85,12 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['persontype'].append(dict(r))
 
+    # 단체별
     query = text("""
         SELECT `g`.`idx` `idx`, `g`.`idx` `param`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
         LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `g`.`name`
+        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `g`.`idx` ORDER BY `g`.`name`
     """ % query_option)
 
     results = db.execute(query, query_params)
@@ -106,7 +109,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['campus'].append(dict(r))
 
-    #인터콥훈련여부별
+    # 인터콥훈련여부별
     query = text("""
         SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
@@ -118,7 +121,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     for r in results:
         stat['training'].append(dict(r))
 
-    #직업/직군별
+    # 직업/직군별
     query = text("""
         SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
@@ -133,8 +136,7 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     camp = db.select_one("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params)
     year = camp['year']
 
-
-    #연령별 통계
+    # 연령별 통계
     query = text("""
         SELECT CONCAT(`ages`,'대') `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
         FROM (
@@ -152,9 +154,12 @@ def get_basic_stat(camp_idx, camp_idx2=None):
     return stat
 
 from core.models import Member
+
+
 # member 목록 열람
 def get_member_list(camp_idx, **kwargs):
     return Member.get_list(camp_idx, kwargs)
+
 
 # member 정보 열람
 def get_member(member_idx):
@@ -163,6 +168,7 @@ def get_member(member_idx):
     member = db.select_one(query, param)
     return member
 
+
 # membership 정보 열람
 def get_membership(member_idx):
     param = {"member_idx": member_idx}
@@ -170,12 +176,14 @@ def get_membership(member_idx):
     membership = getMembership(db.select_all(query, param))
     return membership
 
+
 # 재정정보 열람
 def get_payment(member_idx):
     param = {"member_idx": member_idx}
     query = text("SELECT * FROM `payment` WHERE `member_idx` = :member_idx")
     payment = db.select_one(query, param)
     return payment
+
 
 # 재정정보 입력
 def save_payment(**kwargs):
@@ -206,15 +214,18 @@ def save_payment(**kwargs):
     db.raw_query(query, kwargs)
     db.commit()
 
+
 # 재정정보 삭제
 def delete_payment(member_idx):
     db.raw_query("DELETE FROM `payment` WHERE `member_idx`= :member_idx", {'member_idx': member_idx})
     db.commit()
 
+
 # 숙소 목록을 불러옴
 def get_room_list():
     results = db.select_all("SELECT * FROM `room` ORDER BY `building`, `number`")
     return results
+
 
 # 신청자에 숙소배치 정보를 등록해줌
 def set_member_room(**kwargs):

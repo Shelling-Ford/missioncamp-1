@@ -38,7 +38,9 @@ class MetaView():
             group = Group.get(group_idx) if group_idx is not None else None
             member_list = Member.get_list(camp_idx, **request.args.to_dict())
             count = Member.count(camp_idx, **request.args.to_dict())
-            return render_template('%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2))
+            area_list = Area.get_list(self.camp)
+            group_list = Group.get_list(camp_idx)
+            return render_template('%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list)
         pass
 
     def __init__(self, camp):

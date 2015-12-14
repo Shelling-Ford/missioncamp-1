@@ -11,6 +11,7 @@ from app.functions import *
 
 from app import functions_mongo as mongo
 from app import functions_xlsx as xlsx
+from app.functions_xlsx import XlsxBuilder
 # import xlsxwriter
 
 
@@ -150,7 +151,9 @@ class MetaView():
         @self.camp_permission.require(http_exception=403)
         def excel_down():
             camp_idx = getCampIdx(self.camp)
-            output = xlsx.get_document(camp_idx, **request.args.to_dict())
+            # output = xlsx.get_document(camp_idx, **request.args.to_dict())
+            xlsx_builder = XlsxBuilder()
+            output = xlsx_builder.get_document(camp_idx, **request.args.to_dict())
             response = make_response(output.read())
             response.headers["Content-Disposition"] = "attachment; filename=member.xlsx"
             return response

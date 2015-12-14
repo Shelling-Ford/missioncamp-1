@@ -41,7 +41,7 @@ class Area(db.Base):
         return area.name
 
     @classmethod
-    def insert(cls,name,type,camp):
+    def insert(cls, name, type, camp):
         area = cls()
         area.name = name
         area.type = type
@@ -52,13 +52,21 @@ class Area(db.Base):
         pass
 
     @classmethod
-    def update(cls,idx,name,type,camp):
+    def update(cls, idx, name, type, camp):
         area = cls.get(idx)
-        area.name = name
-        area.type = type
-        area.camp = camp
+        if area is None:
+            area = cls()
+            area.name = name
+            area.type = type
+            area.camp = camp
+            db.db_session.add(area)
+        else:
+            area.name = name
+            area.type = type
+            area.camp = camp
 
         db.db_session.commit()
+
 
 # 캠프
 class Camp(db.Base):

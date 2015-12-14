@@ -38,7 +38,7 @@ ul {
 
 					<ul class="nav navbar-nav navbar-right">
 						<li>
-						{% if 'master' not in request.url_rule.rule %}
+						{% if 'master' not in request.url_rule.rule and 'parking' not in request.url_rule.rule %}
 						<form class="navbar-form" action="{{ url_for('.member_list') }}" method="GET">
 					    <input type="text" name="name" class="form-control" placeholder="이름으로 검색"/>
               <input type="hidden" name="cancel_yn" value="0"/>

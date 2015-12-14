@@ -47,6 +47,9 @@
         <th>신청날자</th>
         <th>출석</th>
         <th>구분</th>
+        {% if request.args.get('persontype') == '전일스탭' %}
+        <th>스탭구분</th>
+        {% endif %}
         <th>이름</th>
         <th>지부</th>
         <th>단체</th>
@@ -72,11 +75,15 @@
     <tbody>
       {% set i = members|length %}
       {% for m in members %}
+      {% set membership = m.get_membership_data() %}
       <tr>
         <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
         <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
         <td>{{ m.persontype }}</td>
+        {% if request.args.get('persontype') == '전일스탭' %}
+        <td>{{ membership.stafftype }}</td>
+        {% endif %}
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>
         <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>

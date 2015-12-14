@@ -51,17 +51,17 @@ def get_document(camp_idx, **kwargs):
         worksheet.write(r, 3, member.church)
         worksheet.write(r, 4, member.birth)
         worksheet.write(r, 5, member.sex)
-        worksheet.write(r, 6, boolean[member.bus_yn])
-        worksheet.write(r, 7, boolean[member.mit_yn])
-        worksheet.write(r, 8, boolean[member.newcomer_yn])
-        worksheet.write(r, 9, boolean[member.fullcamp_yn])
-        worksheet.write_datetime(r, 10, member.date_of_arrival, date_format)
-        worksheet.write_datetime(r, 11, member.date_of_leave, date_format)
+        worksheet.write(r, 6, boolean[member.bus_yn] if member.bus_yn is not None else '')
+        worksheet.write(r, 7, boolean[member.mit_yn] if member.mit_yn is not None else '')
+        worksheet.write(r, 8, boolean[member.newcomer_yn] if member.newcomer_yn is not None else '')
+        worksheet.write(r, 9, boolean[member.fullcamp_yn] if member.fullcamp_yn is not None else '')
+        worksheet.write_datetime(r, 10, member.date_of_arrival if member.date_of_arrival is not None else '', date_format)
+        worksheet.write_datetime(r, 11, member.date_of_leave if member.date_of_leave is not None else '', date_format)
         worksheet.write(r, 12, membership['job'] if 'job' in membership else '')
         worksheet.write(r, 13, membership['campus'] if 'campus' in membership else '')
         worksheet.write(r, 14, membership['major'] if 'major' in membership else '')
         worksheet.write(r, 15, ','.join(membership['training']) if 'training' in membership else '')
-        worksheet.write(r, 16, member.language)
+        worksheet.write(r, 16, member.language if member.language is not None else '')
         worksheet.write_datetime(r, 17, member.regdate, date_format)
         worksheet.write(r, 18, member.memo)
         r += 1
@@ -78,7 +78,7 @@ def get_old_document(member_list, db_type='mysql'):
     worksheet = workbook.add_worksheet()
 
     r = 0
-    c = 0
+    # c = 0
 
     worksheet.write(r, 0, u'캠프코드')
     worksheet.write(r, 1, u'출석여부')
@@ -95,7 +95,7 @@ def get_old_document(member_list, db_type='mysql'):
 
     r += 1
 
-    date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
+    # date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
     if db_type == 'mysql':
         boolean = [u'아니오', u'예']

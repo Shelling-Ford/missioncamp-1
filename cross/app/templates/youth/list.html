@@ -35,7 +35,7 @@
     {% for key, value in request.args.iteritems() %}
     {% if key != 'name' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
-    <!--<a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>-->
+    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
   </form>
   <br/>
   <br/>

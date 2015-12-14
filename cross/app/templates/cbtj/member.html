@@ -54,7 +54,7 @@
 
     <br/>
     <h4>숙소</h4>
-    <form action = "{{ url_for('.room_setting') }}" method="POST">
+    <form action = "{{ url_for('.room_setting', next=request.url) }}" method="POST">
       <input type="hidden" name="member_idx" value="{{ member.idx }}">
       <table>
         <tr>
@@ -75,7 +75,7 @@
     </form>
     <br/>
     <h4>지부</h4>
-    <form action = "{{ url_for('.area_setting') }}" method="POST">
+    <form action = "{{ url_for('.area_setting', next=request.url) }}" method="POST">
       <input type="hidden" name="member_idx" value="{{ member.idx }}">
       <table>
         <tr>
@@ -96,7 +96,7 @@
     </form>
     <br/>
     <h4>단체</h4>
-    <form action = "{{ url_for('.group_setting') }}" method="POST">
+    <form action = "{{ url_for('.group_setting', next=request.url) }}" method="POST">
       <input type="hidden" name="member_idx" value="{{ member.idx }}">
       <table>
         <tr>

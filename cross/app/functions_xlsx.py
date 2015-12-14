@@ -8,6 +8,28 @@ except:
     import StringIO
 
 
+def multi_getattr(obj, attr, default=None):
+    attributes = attr.split(".")
+    for a in attributes:
+        try:
+            obj = getattr(obj, a)
+            if callable(obj):
+                obj = obj()
+        except AttributeError:
+            return default
+    return obj
+
+
+def get_value(obj):
+    func_map = {
+        u'이름': multi_getattr(obj, 'name', ''),
+        u'지부': multi_getattr(obj, 'area.name', ''),
+        u'참가구분': multi_getattr(obj, 'persontype', ''),
+        u'단체': multi_getattr(obj, 'group.name', ''),
+        u'성별': multi_getattr(obj, 'area.name', ''),
+    }
+
+
 def get_document(camp_idx, **kwargs):
     kwargs.pop('page', None)
     member_list = Member.get_list(camp_idx, **kwargs)
@@ -17,27 +39,44 @@ def get_document(camp_idx, **kwargs):
     worksheet = workbook.add_worksheet()
 
     r = 0
-    # c = 0
-    worksheet.write(r, 0, u'이름')
-    worksheet.write(r, 1, u'지부')
-    worksheet.write(r, 2, u'연락처')
-    worksheet.write(r, 3, u'출석교회')
-    worksheet.write(r, 4, u'생년월일')
-    worksheet.write(r, 5, u'성별')
-    worksheet.write(r, 6, u'단체버스')
-    worksheet.write(r, 7, u'MIT')
-    worksheet.write(r, 8, u'선캠뉴커머')
-    worksheet.write(r, 9, u'전체참석')
-    worksheet.write(r, 10, u'캠프도착')
-    worksheet.write(r, 11, u'귀가')
-    worksheet.write(r, 12, u'직업')
-    worksheet.write(r, 13, u'캠퍼스')
-    worksheet.write(r, 14, u'전공')
-    worksheet.write(r, 15, u'인터콥 훈련 여부')
-    worksheet.write(r, 16, u'통역필요')
-    worksheet.write(r, 17, u'등록날자')
-    worksheet.write(r, 18, u'메모')
+    c = 0
+    label_list = [
+        u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
+        u'재정클레임', u'출석교회', u'생년월일', u'성별', u'단체버스', u'MIT', u'선캠뉴커머여부',
+        u'전체참석여부', u'오는날', u'가는날', u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'통역필요',
+        u'등록날자', u'숙소', u'메모'
+    ]
+
+    for label in label_list:
+        worksheet.write(r, c, label)
+        c += 1
     r += 1
+    # worksheet.write(r, 0, u'이름')
+    # worksheet.write(r, 1, u'지부')
+    # 참가구분
+    # 단체
+    # 성별
+    # worksheet.write(r, 2, u'연락처')
+    # 입금상태
+    # 입금액
+    # 재정클레임
+    # worksheet.write(r, 3, u'출석교회')
+    # worksheet.write(r, 4, u'생년월일')
+    # worksheet.write(r, 5, u'성별')
+    # worksheet.write(r, 6, u'단체버스')
+    # worksheet.write(r, 7, u'MIT')
+    # worksheet.write(r, 8, u'선캠뉴커머')
+    # worksheet.write(r, 9, u'전체참석')
+    # worksheet.write(r, 10, u'캠프도착')
+    # worksheet.write(r, 11, u'귀가')
+    # worksheet.write(r, 12, u'직업')
+    # worksheet.write(r, 13, u'캠퍼스')
+    # worksheet.write(r, 14, u'전공')
+    # worksheet.write(r, 15, u'인터콥 훈련 여부')
+    # worksheet.write(r, 16, u'통역필요')
+    # worksheet.write(r, 17, u'등록날자')
+    # 숙소
+    # worksheet.write(r, 18, u'메모')
 
     date_format = workbook.add_format({'num_format': 'yyyy-mm-dd'})
     boolean = [u'아니오', u'예']

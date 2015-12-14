@@ -107,7 +107,11 @@ class MetaView():
             member_idx = request.form.get('member_idx', 0)
             room_idx = request.form.get('idx', 0)
             Member.update(member_idx=member_idx, room_idx=room_idx)
-            return redirect(url_for('.member', member_idx=member_idx))
+            next = request.args.get('next')
+            if next is not None:
+                return redirect(next)
+            else:
+                return redirect(url_for('.member', member_idx=member_idx))
 
         # 지부 변경
         @self.context.route('/area_setting', methods=['POST'])
@@ -118,7 +122,11 @@ class MetaView():
             member_idx = request.form.get('member_idx', 0)
             area_idx = request.form.get('area_idx', 0)
             Member.update(member_idx=member_idx, area_idx=area_idx)
-            return redirect(url_for('.member', member_idx=member_idx))
+            next = request.args.get('next')
+            if next is not None:
+                return redirect(next)
+            else:
+                return redirect(url_for('.member', member_idx=member_idx))
 
         # 단체 변경
         @self.context.route('/group_setting', methods=['POST'])
@@ -129,7 +137,11 @@ class MetaView():
             member_idx = request.form.get('member_idx', 0)
             group_idx = request.form.get('group_idx', 0)
             Member.update(member_idx=member_idx, group_idx=group_idx)
-            return redirect(url_for('.member', member_idx=member_idx))
+            next = request.args.get('next')
+            if next is not None:
+                return redirect(next)
+            else:
+                return redirect(url_for('.member', member_idx=member_idx))
 
         # 엑셀 다운로드
         @self.context.route('/excel-down', methods=['GET'])

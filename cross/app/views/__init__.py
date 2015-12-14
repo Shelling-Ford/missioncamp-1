@@ -172,6 +172,17 @@ class MetaView():
             flash(u'신청이 복원되었습니다')
             return redirect(url_for('.member_list'))
 
+        # 출석체크
+        @self.context.route('/toggle-attend')
+        @login_required
+        @self.camp_permission.require(http_exception=403)
+        def toggle_attend():
+            member_idx = request.args.get('member_idx')
+            attend = request.args.get('attend', 0)
+            Member.update(member_idx, attend_yn=attend)
+            next = request.args.get('next')
+            return redirect(next)
+
         # 이전 참가자 리스트
         @self.context.route('/old-list')
         @login_required

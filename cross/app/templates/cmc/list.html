@@ -47,8 +47,12 @@
     {% for key, value in request.args.iteritems() %}
     {% if key != 'name' and key != 'page' and key != 'area_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
-    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>&nbsp;<span>** 검색을 먼저 하고 엑셀 다운을 눌러야 필터가 됩니다.</span>
+    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>&nbsp;
   </form>
+  <br/>
+  <br/>
+  <span>** 지부 및 단체별 명단을 다운받으실 경우 필터를 선택하시고 검색을 눌러주세요. 안그러면 전체명단이 다운로드 됩니다.</span><br/>
+  <span>** 녹색 [체크] 버튼을 누르면 출석체크가 되면서 붉은색 [취소] 버튼으로 바뀝니다. [취소] 버튼을 다시 누르면 출첵이 취소됩니다.</span>
   <br/>
   <br/>
 
@@ -87,9 +91,8 @@
         <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
         <td>
-          {% if not m.attend_yn %}<button class="btn btn-success btn-xs">체크</button>{% else %}<button class="btn btn-danger btn-xs">취소</button>{% endif %}
-          <!--{#<input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} />#}-->
-          
+          {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
+          {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
         </td>
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>

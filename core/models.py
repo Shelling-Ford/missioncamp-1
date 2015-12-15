@@ -108,6 +108,7 @@ class Camp(db.Base):
 
         return datelist
 
+
 # 개인 신청서 / 단체 멤버 신청서
 class Member(db.Base):
     __tablename__ = 'member'
@@ -182,14 +183,12 @@ class Member(db.Base):
                     result = result.filter(cls.membership.any(value=value))
                 elif key == 'name':
                     attr = getattr(cls, key)
-                    result = result.filter(attr.like('%' + value + '%') )
+                    result = result.filter(attr.like('%' + value + '%'))
                 else:
                     attr = getattr(cls, key)
                     result = result.filter(attr == value)
 
-        result  = result.order_by(desc(cls.idx))
-
-        
+        result = result.order_by(desc(cls.idx))
         return result.all() if page == 0 else result.limit(50).offset((page-1)*50).all()
 
     @classmethod
@@ -203,7 +202,7 @@ class Member(db.Base):
         result = result.order_by(desc(cls.idx))
 
         member_list = result.limit(50).offset(offset).all() if offset is not None else result.all()
-        return member_list 
+        return member_list
 
     # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
     @classmethod
@@ -224,7 +223,7 @@ class Member(db.Base):
                     result = result.filter(cls.membership.any(value=value))
                 elif key == 'name':
                     attr = getattr(cls, key)
-                    result = result.filter(attr.like('%' + value + '%') )
+                    result = result.filter(attr.like('%' + value + '%'))
                 else:
                     attr = getattr(cls, key)
                     result = result.filter(attr == value)
@@ -275,7 +274,7 @@ class Member(db.Base):
                     member.attend1 = attend[0]
                     member.attend2 = attend[1]
                     member.attend3 = attend[2]
-                    member.attend4 = attend[3]                
+                    member.attend4 = attend[3]
 
             membership_keys = ['job', 'campus', 'major', 'sm_yn', 'training', 'route', 'stafftype', 'pname', 'sch1', 'sch2']
             membership_list = []
@@ -283,7 +282,7 @@ class Member(db.Base):
                 value = value[0] if type(value) is list and len(value) == 1 else value
                 if value is not None and value != '':
                     if key == 'pwd':
-                        setattr(member, key, hashlib.sha224(pwd).hexdigest())
+                        setattr(member, key, hashlib.sha224(value).hexdigest())
                     elif key == 'hp2' or key == 'hp3':
                         pass
                     elif key == 'hp':
@@ -292,13 +291,13 @@ class Member(db.Base):
                         if key == 'training' or key == 'route':
                             if type(value) is list:
                                 for v in value:
-                                    membership_list.append((key, v))        
+                                    membership_list.append((key, v))
                             else:
                                 membership_list.append((key, value))
                         else:
                             membership_list.append((key, value))
                     else:
-                        setattr(member, key, value)            
+                        setattr(member, key, value)
 
             if len(membership_list) > 0:
                 db.db_session.query(Membership).filter(Membership.member_idx == member_idx).delete()
@@ -402,11 +401,12 @@ class Member(db.Base):
 
         i = (date_of_arrival-camp.startday).days
         interval = range(0, (date_of_leave - date_of_arrival).days+1)
-        attend = [ 0, 0, 0, 0 ]
+        attend = [0, 0, 0, 0]
         for j in interval:
             attend[i+j] = 1
 
         return attend
+
 
 # 세대별 기타 정보
 class Membership(db.Base):

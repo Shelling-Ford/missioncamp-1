@@ -37,11 +37,19 @@ class MetaView():
             group_idx = request.args.get('group_idx', None)
             page = int(request.args.get('page', 1))
             group = Group.get(group_idx) if group_idx is not None else None
-            member_list = Member.get_list(camp_idx, **request.args.to_dict())
-            count = Member.count(camp_idx, **request.args.to_dict())
+
+            params = request.args.to_dict()
+            if 'page' not in params:
+                params['page'] = page
+
+            member_list = Member.get_list(camp_idx, **params)
+            count = Member.count(camp_idx, **params)
             area_list = Area.get_list(self.camp)
             group_list = Group.get_list(camp_idx)
-            return render_template('%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list)
+            return render_template(
+                '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50,
+                nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list
+            )
         pass
 
     def __init__(self, camp):
@@ -64,7 +72,10 @@ class MetaView():
                 area_list = Area.get_list(self.camp)
                 group_list = Group.get_list(camp_idx)
 
-                return render_template('%s/member.html' % self.camp, member=member, room_list=room_list, area_list=area_list, group_list=group_list)
+                return render_template(
+                    '%s/member.html' % self.camp, member=member, room_list=room_list, area_list=area_list,
+                    group_list=group_list, membership=member.get_membership_data()
+                )
             else:
                 abort(404)
 
@@ -216,7 +227,9 @@ class MetaView():
                 campcode = request.args.get('campcode', None)
                 member_list = mongo.get_member_list_with_count(skip=skip, campcode=campcode, name=name, area=area, camp=camp)
                 count = mongo.get_member_count(campcode=campcode, name=name, area=area, camp=camp)
-                return render_template("%s/old_list.html" % self.camp, members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/50)+2))
+                return render_template(
+                    "%s/old_list.html" % self.camp, members=member_list, name=name, area=area, campcode=campcode, count=range(1, int(count/50)+2)
+                )
             else:
                 camp_idx = Camp.get_idx(camp, year, term)
                 area_idx = request.args.get('area_idx', None)
@@ -224,11 +237,14 @@ class MetaView():
                 member_count = Member.count(camp_idx=camp_idx, name=name, area_idx=area_idx)
 
                 for member in member_list:
-                    count = mongo.db.count({"hp1": member.contact, "name":member.name, "entry":"Y", "fin":{"$ne":"d"}})
+                    count = mongo.db.count({"hp1": member.contact, "name": member.name, "entry": "Y", "fin": {"$ne": "d"}})
                     count += Member.count(camp_idx=camp_idx, name=member.name, contact=member.contact, attend_yn=1, cancel_yn=0)
                     setattr(member, 'count', count)
 
-                return render_template("%s/old_list_2.html" % self.camp, members=member_list, camp=camp, year=year, term=term, name=name, count=range(1, int(member_count/50)+2))
+                return render_template(
+                    "%s/old_list_2.html" % self.camp, members=member_list, camp=camp, year=year, term=term, name=name,
+                    count=range(1, int(member_count/50)+2)
+                )
 
         # 이전 참가자 상세
         @self.context.route('/old-member')
@@ -331,7 +347,7 @@ class CmcView(MetaView):
             form = RegistrationForm()
             form.set_member_data(member)
 
-            return render_template('%s/form.html' % self.camp, form=form, editmode=True)
+            return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
 
         # **수정필요!!
         # 수정된 신청서 저장
@@ -372,7 +388,6 @@ class CbtjView(MetaView):
 
             stat = get_basic_stat(camp_idx, camp_idx2)
             return render_template('%s/home.html' % self.camp, stat1=stat1, stat2=stat2, stat=stat)
-        pass
 
     def init_member_list(self):
         # 신청자 목록
@@ -392,8 +407,9 @@ class CbtjView(MetaView):
                 camp_idx = Camp.get_idx(camp)
                 member_list = Member.get_list(camp_idx, **request.args.to_dict())
                 count = Member.count(camp_idx, **request.args.to_dict())
-            return render_template('%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2))
-        pass
+            return render_template(
+                '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2)
+            )
 
     def __init__(self):
         MetaView.__init__(self, 'cbtj')
@@ -415,7 +431,7 @@ class CbtjView(MetaView):
             form = RegForm1() if camp == 'cbtj' else RegForm2()
             form.set_member_data(member)
 
-            return render_template('%s/form.html' % self.camp, form=form, editmode=True)
+            return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
 
         # **수정필요!!
         # 수정된 신청서 저장
@@ -460,3 +476,64 @@ class YouthView(MetaView):
             camp_idx = Camp.get_idx('youth')
             promotion_list = Promotion.get_list(camp_idx)
             return render_template('%s/promotion_list.html' % self.camp, promotions=promotion_list)
+
+
+class WsView(MetaView):
+    def __init__(self):
+        MetaView.__init__(self, 'ws')
+        self.init_home()
+        self.init_member_list()
+
+        # 개인 신청 수정
+        @self.context.route('/member-edit')
+        @login_required
+        @self.camp_permission.require(http_exception=403)
+        def member_edit():
+            idx = request.args.get('member_idx', 0)
+            session['idx'] = idx
+            # member = getIndividualData(idx)
+            member = Member.get(idx)
+            campidx = Camp.get_idx('ws')
+            area_list = getAreaList('ws')  # form에 들어갈 지부 목록
+            date_select_list = getDateSelectList()  # form 생년월일에 들어갈 날자 목록
+
+            group_yn = member.group is not None
+
+            return render_template(
+                'ws/member_edit.html', camp='ws', campidx=campidx, member=member, membership=member.get_membership_data(),
+                area_list=area_list, date_select_list=date_select_list, group_yn=group_yn
+            )
+
+        # 수정된 신청서 저장
+        @self.context.route('/member-edit', methods=['POST'])
+        @login_required
+        @self.camp_permission.require(http_exception=403)
+        def member_edit_proc():
+            idx = session['idx']
+
+            date_of_arrival = datetime.datetime.strptime(request.form.get('date_of_arrival'), '%Y-%m-%d')
+            date_of_leave = datetime.datetime.strptime(request.form.get('date_of_leave'), '%Y-%m-%d')
+            td = (date_of_leave - date_of_arrival)
+
+            if td.days < 0:
+                flash(u'참석 기간을 잘못 선택하셨습니다.')
+                return redirect(url_for('.member_edit', member_idx=idx))
+            else:
+                Member.update(idx, **request.form)
+                flash(u'신청서 수정이 완료되었습니다.')
+                return redirect(url_for('.member', member_idx=idx))
+            # formData = getIndividualFormData()
+            # camp_idx = Camp.get_idx('ws')
+
+            # idx = session['idx']
+
+            # date_of_arrival = datetime.datetime.strptime(formData['date_of_arrival'], '%Y-%m-%d')
+            # date_of_leave = datetime.datetime.strptime(formData['date_of_leave'], '%Y-%m-%d')
+            # td = date_of_leave - date_of_arrival
+            # if td.days < 0:
+            #    flash(u'참석 기간을 잘못 선택하셨습니다.')
+            #    return redirect(url_for('.member_edit', idx=idx))
+            # else:
+            #    editIndividual(camp_idx, idx, formData)
+            #    flash(u'신청서 수정이 완료되었습니다.')
+            #    return redirect(url_for('.member', member_idx=idx))

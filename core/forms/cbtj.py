@@ -1,9 +1,9 @@
-#-*-coding:utf-8-*-
-from wtforms import Form, StringField, SelectField, RadioField, SelectMultipleField, PasswordField, HiddenField
-from wtforms.widgets import TextArea, ListWidget, CheckboxInput
+# -*-coding:utf-8-*-
+from wtforms import Form, StringField, SelectField, RadioField, PasswordField
+from wtforms.widgets import TextArea
 from core.models import Area, Camp
 from core.forms import ContactField, MultiCheckboxField
-import datetime
+
 
 class RegistrationForm(Form):
     def set_member_data(self, member):
@@ -28,6 +28,7 @@ class RegistrationForm(Form):
         self.language.data = member.language
         self.memo.data = member.memo
 
+
 class RegForm1(RegistrationForm):
     userid = StringField(u'아이디')
     pwd = PasswordField(u'비밀번호')
@@ -38,7 +39,7 @@ class RegForm1(RegistrationForm):
     birth = SelectField(u'출생년도', choices=[(unicode(i), unicode(i)) for i in range(2015, 1940, -1)])
     contact = ContactField(u'연락처')
     church = StringField(u'소속교회')
-    persontype = RadioField(u'참가구분', choices=[(u'청년',u'청년'), (u'스탭',u'청년스탭')])
+    persontype = RadioField(u'참가구분', choices=[(u'청년', u'청년'), (u'스탭', u'청년스탭')])
     job = SelectField(u'직업/직종', choices=[(u'정치행정', u'정치행정'), (u'법률', u'법률'), (u'보건의료',u'보건의료'), (u'종교', u'종교'), (u'사회복지', u'사회복지'), (u'문화예술스포츠', u'문화예술스포츠'), (u'정치행정', u'정치행정'), (u'경제금융', u'경제금융'), (u'연구기술', u'연구기술'), (u'교육', u'교육'), (u'사무관리', u'사무관리'), (u'판매서비스', u'판매서비스'), (u'기곅능', u'기계기능'), (u'취업준비', u'취업준비'), (u'군인', u'군인'), (u'기타', u'기타'), ])
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
     mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
@@ -50,6 +51,7 @@ class RegForm1(RegistrationForm):
     language = SelectField(u'통역필요', choices=[(u'필요없음', u'필요없음'), (u'영어', u'영어'), (u'중국어', u'중국어'), (u'일본어', u'일본어')])
     memo = StringField(u'남기고싶은 말', widget=TextArea())
 
+
 class RegForm2(RegistrationForm):
     userid = StringField(u'아이디')
     pwd = PasswordField(u'비밀번호')
@@ -60,7 +62,7 @@ class RegForm2(RegistrationForm):
     birth = SelectField(u'출생년도', choices=[(unicode(i), unicode(i)) for i in range(2015, 1940, -1)])
     contact = ContactField(u'연락처')
     church = StringField(u'소속교회')
-    persontype = RadioField(u'참가구분', choices=[(u'청년',u'청년'), (u'스탭',u'청년스탭')])
+    persontype = RadioField(u'참가구분', choices=[(u'청년', u'청년'), (u'스탭', u'청년스탭')])
     job = SelectField(u'직업/직종', choices=[(u'정치행정', u'정치행정'), (u'법률', u'법률'), (u'보건의료',u'보건의료'), (u'종교', u'종교'), (u'사회복지', u'사회복지'), (u'문화예술스포츠', u'문화예술스포츠'), (u'정치행정', u'정치행정'), (u'경제금융', u'경제금융'), (u'연구기술', u'연구기술'), (u'교육', u'교육'), (u'사무관리', u'사무관리'), (u'판매서비스', u'판매서비스'), (u'기곅능', u'기계기능'), (u'취업준비', u'취업준비'), (u'군인', u'군인'), (u'기타', u'기타'), ])
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
     mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])

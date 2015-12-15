@@ -14,31 +14,31 @@
       <table class="table1">
         <tr>
           <td>등록비</td>
-          <td><input type="number" name="amount" id="amount" size="12" value="{{ payment.amount }}" required/></td>
+          <td><input type="number" name="amount" id="amount" size="12" value="{{ member.payment.amount }}" required/></td>
         </tr>
         <tr>
           <td>납부여부</td>
           <td>
-            <input type="radio" name="complete" id="complete2" {% if payment.complete == 2 %} checked {% endif %} required value="2"/> 완납
-            <input type="radio" name="complete" id="complete1" {% if payment.complete == 1 %} checked {% endif %} value="1"/> 부분납
-            <input type="radio" name="complete" id="complete0" {% if payment.complete == 0 %} checked {% endif %} value="0"/> 미납
+            <input type="radio" name="complete" id="complete2" {% if member.payment.complete == 2 %} checked {% endif %} required value="2"/> 완납
+            <input type="radio" name="complete" id="complete1" {% if member.payment.complete == 1 %} checked {% endif %} value="1"/> 부분납
+            <input type="radio" name="complete" id="complete0" {% if member.payment.complete == 0 %} checked {% endif %} value="0"/> 미납
           </td>
         </tr>
         <tr>
           <td>입금 확인자</td>
-          <td><input type="text" name="staff_name" id="staff_name" size="12" value="{{ payment.staff_name }}" required/></td>
+          <td><input type="text" name="staff_name" id="staff_name" size="12" value="{{ member.payment.staff_name }}" required/></td>
         </tr>
         <tr>
           <td>등록일(최초입금일)<br/>YYYY-MM-DD 형식으로 입력<br/>공란으로 둘 경우 오늘 날자 자동 입력</td>
-          {% if not payment == None %}
-          <td><input type="text" name="paydate" value="{% if not payment.paydate == None %} {{ payment.paydate.strftime('%Y-%m-%d') }}{% endif %}"></td>
+          {% if member.payment is not none %}
+          <td><input type="text" name="paydate" value="{% if member.payment.paydate is not none %} {{ member.payment.paydate.strftime('%Y-%m-%d') }}{% endif %}"></td>
           {% else %}
           <td><input type="text" name="paydate"></td>
           {% endif %}
         </tr>
         <tr>
           <td>클레임/예외사항</td>
-          <td><textarea name="claim" id="claim">{{ payment.claim }}</textarea></td>
+          <td><textarea name="claim" id="claim">{{ member.payment.claim }}</textarea></td>
         </tr>
         <tr>
           <td colspan="2">
@@ -81,8 +81,8 @@
           <td>
             <select name="area_idx" id="area_idx" class="form-control">
               <option value="">지부 변경</option>
-              {% for area in area_list %}
-              <option value="{{ area.idx }}" {% if area.idx == member.area_idx %} selected {% endif %}>{{ area.name }}</option>
+              {% for idx, name in area_list %}
+              <option value="{{ idx }}" {% if idx == member.area_idx %} selected {% endif %}>{{ name }}</option>
               {% endfor %}
             </select>
           </td>
@@ -127,7 +127,7 @@
       </tr>
       <tr>
         <td>지부</td>
-        <td>{{ area_name }}</td>
+        <td>{{ member.area.name }}</td>
       </tr>
       <tr>
         <td>연락처</td>
@@ -168,28 +168,24 @@
       {% if member.persontype == '일반' %}
       <tr>
         <td>교회직분</td>
-        <td>{{ member.membership.job }}</td>
+        <td>{{ membership.job }}</td>
       </tr>
 
       {% elif member.persontype == '전일스탭' %}
       <tr>
         <td>스탭구분</td>
-        <td>{{ member.membership.stafftype }}</td>
+        <td>{{ membership.stafftype }}</td>
       </tr>
 
       {% elif member.persontype == '어린이' or member.persontype == '키즈' %}
       <tr>
         <td>보호자 이름</td>
-        <td>{{ member.membership.pname }}</td>
+        <td>{{ membership.pname }}</td>
       </tr>
       {% endif %}
       <tr>
         <td>인터콥 훈련 여부</td>
-        <td>
-          {% for t in member.membership.training %}
-            {{ t }},
-          {% endfor %}
-        </td>
+        <td>{{ ','.join(membership.training) }}</td>
       </tr>
       <tr>
         <td>등록 날자</td>

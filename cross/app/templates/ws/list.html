@@ -110,7 +110,7 @@
         <td>{% if m.contact is not none %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.claim is not none %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment is none %} 0 {% else %} {{ '{:,}'.format(m.payment.amount) }} {% endif %}</td>
-        <td>{% if m.payment is not none %}{{ m.payment.paydate.strftime('%Y-%m-%d') }}{% endif %}</td>
+        <td>{% if m.payment is not none and m.payment.paydate is not none %}{{ m.payment.paydate.strftime('%Y-%m-%d') }}{% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
         {% if request.args.get('cancel_yn')|int != 1 %}
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>

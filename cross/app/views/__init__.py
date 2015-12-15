@@ -42,10 +42,22 @@ class MetaView():
             if 'page' not in params:
                 params['page'] = page
 
+            receptionmode = bool(params.pop('receptionmode', False))
+            if receptionmode:
+                if self.camp == 'cmc':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj')]
+                elif self.camp == 'ws':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+
             member_list = Member.get_list(camp_idx, **params)
             count = Member.count(camp_idx, **params)
             area_list = Area.get_list(self.camp)
-            group_list = Group.get_list(camp_idx)
+            if type(camp_idx) is list:
+                group_list = []
+                for idx in camp_idx:
+                    group_list.extend(Group.get_list(idx))
+            else:
+                group_list = Group.get_list(camp_idx)
             return render_template(
                 '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50,
                 nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list

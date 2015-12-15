@@ -27,9 +27,6 @@ from views import WsView
 ws_view = WsView()
 context.register_blueprint(ws_view.context)
 
-# from views_ws import ws
-# context.register_blueprint(ws)
-
 from views import YouthView
 youth_view = YouthView()
 context.register_blueprint(youth_view.context)

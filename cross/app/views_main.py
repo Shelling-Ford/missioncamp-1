@@ -1,11 +1,9 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 from app import context
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, identity_loaded, RoleNeed
-from collections import namedtuple
 
-from jinja2 import TemplateNotFound
 from core.functions import *
 from functions import *
 from models import AdminUser
@@ -48,7 +46,10 @@ def on_identity_loaded(sender, identity):
         if current_user.role == 'hq':
             identity.provides.add(RoleNeed('hq'))
             identity.provides.add(RoleNeed('branch'))
-            identity.provides.add(RoleNeed(current_user.camp))
+            camp_list = current_user.camp.split(',')
+            print camp_list
+            for camp in camp_list:
+                identity.provides.add(RoleNeed(camp))
         if current_user.role == 'branch':
             identity.provides.add(RoleNeed('branch'))
             identity.provides.add(RoleNeed(current_user.camp))
@@ -59,6 +60,7 @@ def on_identity_loaded(sender, identity):
 def home():
     return render_template('home.html')
 
+
 # 로그인 검증
 @context.route('/', methods=['POST'])
 def login_proc():
@@ -68,10 +70,12 @@ def login_proc():
     adminuser = AdminUser.get(userid)
     if adminuser is not None and pwd == adminuser.adminpw:
         login_user(adminuser)
-        return redirect(url_for('%s.home' % adminuser.camp))
+        camp = adminuser.camp.split(',')[0]
+        return redirect(url_for('%s.home' % camp))
     else:
         flash(u"아이디 또는 비밀번호가 잘못되었습니다.")
         return redirect(url_for('home'))
+
 
 # 로그아웃
 @context.route('/logout')

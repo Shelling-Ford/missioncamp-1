@@ -34,18 +34,18 @@
     <select name="area_idx" id="area_idx" class="form-control">
       <option value="">지부</option>
       {% for idx, name in area_list %}
-      <option value="{{ idx }}">{{ name }}</option>
+      <option value="{{ idx }}" {% if idx == request.args.get('area_idx', 0)|int %} selected {% endif %}>{{ name }}</option>
       {% endfor %}
     </select>
     <select name="group_idx" id="group_idx" class="form-control">
       <option value="">단체</option>
       {% for group in group_list %}
-      <option value="{{ group.idx }}">{{ group.name }}</option>
+      <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
       {% endfor %}
     </select>
     <button type="submit" class="btn btn-default">검색</button>
     {% for key, value in request.args.iteritems() %}
-    {% if key != 'name' and key != 'page' and key != 'area_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+    {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
     <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>&nbsp;
   </form>

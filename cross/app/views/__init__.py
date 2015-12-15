@@ -161,8 +161,15 @@ class MetaView():
         @self.hq_permission.require(http_exception=403)
         @self.camp_permission.require(http_exception=403)
         def excel_down():
-            camp_idx = getCampIdx(self.camp)
-            # output = xlsx.get_document(camp_idx, **request.args.to_dict())
+            if self.camp == 'cbtj':
+                camp = request.args.get('camp')
+                if camp is None:
+                    camp_idx = [Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')]
+                else:
+                    camp_idx = Camp.get_idx(camp)
+            else:
+                camp_idx = Camp.get_idx(self.camp)
+
             xlsx_builder = XlsxBuilder()
             output = xlsx_builder.get_document(camp_idx, **request.args.to_dict())
             response = make_response(output.read())
@@ -399,16 +406,25 @@ class CbtjView(MetaView):
             page = int(request.args.get('page', 1))
             group = Group.get(group_idx) if group_idx is not None else None
 
+            params = request.args.to_dict()
+            if 'page' not in params:
+                params['page'] = page
+
+            area_list = Area.get_list(self.camp)
+
             if camp is None or camp == 'None':
-                member_list = Member.get_list(Camp.get_idx('cbtj'), **request.args.to_dict())
-                member_list.extend(Member.get_list(Camp.get_idx('cbtj2'), **request.args.to_dict()))
-                count = Member.count(Camp.get_idx('cbtj'), **request.args.to_dict()) + Member.count(Camp.get_idx('cbtj2'), **request.args.to_dict())
+                member_list = Member.get_list([Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')], **params)
+                count = Member.count([Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')], **params)
+                group_list = Group.get_list(Camp.get_idx('cbtj'))
+                group_list.extend(Group.get_list(Camp.get_idx('cbtj2')))
             else:
                 camp_idx = Camp.get_idx(camp)
-                member_list = Member.get_list(camp_idx, **request.args.to_dict())
-                count = Member.count(camp_idx, **request.args.to_dict())
+                member_list = Member.get_list(camp_idx, **params)
+                count = Member.count(camp_idx, **params)
+                group_list = Group.get_list(camp_idx)
             return render_template(
-                '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2)
+                '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2),
+                area_list=area_list, group_list=group_list
             )
 
     def __init__(self):
@@ -522,18 +538,3 @@ class WsView(MetaView):
                 Member.update(idx, **request.form)
                 flash(u'신청서 수정이 완료되었습니다.')
                 return redirect(url_for('.member', member_idx=idx))
-            # formData = getIndividualFormData()
-            # camp_idx = Camp.get_idx('ws')
-
-            # idx = session['idx']
-
-            # date_of_arrival = datetime.datetime.strptime(formData['date_of_arrival'], '%Y-%m-%d')
-            # date_of_leave = datetime.datetime.strptime(formData['date_of_leave'], '%Y-%m-%d')
-            # td = date_of_leave - date_of_arrival
-            # if td.days < 0:
-            #    flash(u'참석 기간을 잘못 선택하셨습니다.')
-            #    return redirect(url_for('.member_edit', idx=idx))
-            # else:
-            #    editIndividual(camp_idx, idx, formData)
-            #    flash(u'신청서 수정이 완료되었습니다.')
-            #    return redirect(url_for('.member', member_idx=idx))

@@ -169,8 +169,12 @@ class Member(db.Base):
     @classmethod
     def get_list(cls, camp_idx=None, **kwargs):
         result = db.db_session.query(cls)
-        if camp_idx is not None:
-            result = result.filter(cls.camp_idx == camp_idx)
+        if type(camp_idx) is not list:
+            if camp_idx is not None:
+                result = result.filter(cls.camp_idx == camp_idx)
+        else:
+            filter_list = [cls.camp_idx == idx for idx in camp_idx]
+            result = result.filter(or_(*filter_list))
 
         page = int(kwargs.pop('page', 0))
         kwargs.pop('camp', None)
@@ -207,10 +211,13 @@ class Member(db.Base):
     # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
     @classmethod
     def count(cls, camp_idx=None, **kwargs):
-        if camp_idx is not None:
-            result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
+        result = db.db_session.query(cls)
+        if type(camp_idx) is not list:
+            if camp_idx is not None:
+                result = result.filter(cls.camp_idx == camp_idx)
         else:
-            result = db.db_session.query(cls)
+            filter_list = [cls.camp_idx == idx for idx in camp_idx]
+            result = result.filter(or_(*filter_list))
 
         kwargs.pop('page', None)
         kwargs.pop('camp', None)

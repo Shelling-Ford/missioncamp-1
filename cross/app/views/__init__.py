@@ -74,12 +74,13 @@ class MetaView():
         @self.context.route('/member')
         @login_required
         def member():
-            camp_idx = Camp.get_idx(self.camp) if self.camp != 'cbtj' else Camp.get_idx(request.args.get('camp'))
+            # camp_idx = Camp.get_idx(self.camp) if self.camp != 'cbtj' else Camp.get_idx(request.args.get('camp'))
 
             member_idx = request.args.get('member_idx', 0)
 
             if member_idx != 0:
                 member = Member.get(member_idx)
+                camp_idx = member.camp_idx
                 room_list = Room.get_list()
                 area_list = Area.get_list(self.camp)
                 group_list = Group.get_list(camp_idx)

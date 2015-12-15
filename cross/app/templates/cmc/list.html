@@ -101,9 +101,9 @@
           {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
         </td>
         <td>{{ m.persontype }}</td>
-        <td><a href="{{ url_for('.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+        <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>
-        <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+        <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
         <td>{{ m.sex }}</td>
         <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>

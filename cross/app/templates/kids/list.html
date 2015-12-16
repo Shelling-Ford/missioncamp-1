@@ -55,7 +55,7 @@
         <th>재정클레임</th>
         <th>입금액</th>
         <th>상태</th>
-        {% if cancel_yn != 1 %}
+        {% if request.args.get('cancel_yn',0)|int != 1 %}
         <th>단체버스</th>
         <th>숙소</th>
         <th>메모</th>
@@ -81,7 +81,7 @@
         <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment.amount == None %} 0 {% else %} {{ m.payment.amount }} {% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
-        {% if cancel_yn != 1 %}
+        {% if request.args.get('cancel_yn',0)|int != 1 %}
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
         <td>{{ m.room.building }} {{ m.room.number }}</td>
         <td>{{ m.memo|striptags|truncate(20) }}</td>

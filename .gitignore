@@ -1,2 +1,4 @@
 .DS_store
 *.pyc
+cross/cross.wsgi
+site/missioncamp.wsgi

@@ -31,9 +31,21 @@
   </section>
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>
+    <select name="area_idx" id="area_idx" class="form-control">
+      <option value="">지부</option>
+      {% for idx, name in area_list %}
+      <option value="{{ idx }}" {% if idx == request.args.get('area_idx', 0)|int %} selected {% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="group_idx" id="group_idx" class="form-control">
+      <option value="">단체</option>
+      {% for group in group_list %}
+      <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
+      {% endfor %}
+    </select>
     <button type="submit" class="btn btn-default">검색</button>
     {% for key, value in request.args.iteritems() %}
-    {% if key != 'name' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+    {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
     <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
   </form>
@@ -44,7 +56,9 @@
       <tr>
         <th>No.</th>
         <th>신청날자</th>
+        {% if request.args.get('cancel_yn', 0)|int != 1 %}
         <th>출석</th>
+        {% endif %}
         <th>구분</th>
         <th>이름</th>
         <th>지부</th>
@@ -55,7 +69,7 @@
         <th>재정클레임</th>
         <th>입금액</th>
         <th>상태</th>
-        {% if cancel_yn != 1 %}
+        {% if request.args.get('cancel_yn', 0)|int != 1 %}
         <th>단체버스</th>
         <th>숙소</th>
         <th>메모</th>
@@ -71,7 +85,13 @@
       <tr>
         <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
-        <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
+        {% if request.args.get('cancel_yn', 0)|int != 1 %}
+        <td>
+          {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
+          {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
+        </td>
+        <!--{#<td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>#}-->
+        {% endif %}
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>
@@ -82,7 +102,7 @@
         <td>{% if not m.claim == None %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment.amount == None %} 0 {% else %} {{ m.payment.amount }} {% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
-        {% if cancel_yn != 1 %}
+        {% if request.args.get('cancel_yn', 0)|int != 1 %}
         <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
         <td>{{ m.room.building }} {{ m.room.number }}</td>
         <td>{{ m.memo|striptags|truncate(20) }}</td>

@@ -60,7 +60,7 @@
           <td>
             <select name="idx" class="form-control">
               <option value="">숙소</option>
-              {% for r in rooms %}
+              {% for r in room_list %}
               <option value="{{ r.idx }}" {% if r.idx == member.room_idx %} selected {% endif %}>{{ r.building }} {{ r.number }}</option>
               {% endfor %}
             </select>
@@ -155,19 +155,11 @@
       </tr>
       <tr>
         <td>인터콥 훈련 여부</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'training' %}{{ t.value }},{% endif %}
-          {% endfor %}
-        </td>
+        <td>{{ ','.join(membership.training) }}</td>
       </tr>
       <tr>
         <td>참여 경로</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'route' %}{{ t.value }},{% endif %}
-          {% endfor %}
-        </td>
+        <td>{{ ','.join(membership.route) }}</td>
       </tr>
       <tr>
         <td>등록 날자</td>
@@ -182,8 +174,7 @@
         <td colspan="2">
 
           <p style="text-align:center">
-          <!--{#<a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>&nbsp;&nbsp;#}-->
-
+          <a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>&nbsp;&nbsp;
           {% if member.cancel_yn == 0 %}
               <a class="btn btn-default" href="{{ url_for('.member_cancel', member_idx=member.idx) }}">신청취소</a>
           {% elif member.cancel_yn == 1 %}

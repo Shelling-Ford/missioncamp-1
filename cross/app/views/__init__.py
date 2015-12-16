@@ -506,6 +506,40 @@ class YouthView(MetaView):
             promotion_list = Promotion.get_list(camp_idx)
             return render_template('%s/promotion_list.html' % self.camp, promotions=promotion_list)
 
+        # 개인 신청 수정
+        @self.context.route('/member-edit')
+        @login_required
+        @self.camp_permission.require(http_exception=403)
+        def member_edit():
+            idx = request.args.get('member_idx', 0)
+            session['idx'] = idx
+            member = Member.get(idx)
+
+            from core.forms.youth import RegistrationForm, RegMemberForm, RegMemberForm2
+            group_yn = member.group_idx is not None
+            if group_yn:
+                if int(member.group.grouptype) == 3:
+                    form = RegMemberForm2()
+                else:
+                    form = RegMemberForm()
+            else:
+                form = RegistrationForm()
+
+            form.set_member_data(member)
+
+            return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
+
+        # **수정필요!!
+        # 수정된 신청서 저장
+        @self.context.route('/member-edit', methods=['POST'])
+        @login_required
+        @self.camp_permission.require(http_exception=403)
+        def member_edit_proc():
+            idx = session['idx']
+            Member.update(idx, **request.form)
+            flash(u'신청서 수정이 완료되었습니다.')
+            return redirect(url_for('.member', member_idx=idx))
+
 
 class WsView(MetaView):
     def __init__(self):

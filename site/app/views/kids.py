@@ -145,7 +145,7 @@ def cancel_individual():
 def cancel_individual_proc():
     cancel_reason = request.form.get('cancel_reason', None)
     idx = session['idx']
-    Member.cancle(idx, reason)
+    Member.cancle(idx, cancel_reason)
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.home')+'#content')
 
@@ -278,7 +278,7 @@ def member_edit(member_idx):
     form = GroupMemberRegForm()
     group = Group.get(idx)
     member = Member.get(member_idx)
-    form.set_member_data(idx, member)
+    form.set_member_data(member)
     form.set_area_idx(group.area_idx)
     return render_template('kids/form.html', form=form, page_header="멤버 수정", script=url_for('static', filename='kids/js/reg-individual-edit.js'), editmode=True)
 

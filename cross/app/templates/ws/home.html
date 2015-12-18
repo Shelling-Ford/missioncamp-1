@@ -33,10 +33,10 @@
     </tr>
   </table>
   <br/>
-  <p>참석일수별 통계(시험중)</p>
+  <p>참석일수별 통계</p>
   <table class="table1">
     <tr>
-      <th>0일</th>
+      <th>취소</th>
       <th>1일</th>
       <th>2일</th>
       <th>3일</th>
@@ -47,5 +47,9 @@
     {% endfor %}
     </tr>
   </table>
+  <br/>
+  {% if current_user.role == 'master' %}
+  <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날자 선택 오류 수정</a>
+  {% endif %}
 </div>
 {% endblock %}

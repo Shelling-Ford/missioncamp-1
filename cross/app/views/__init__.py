@@ -447,6 +447,19 @@ class MetaView():
                     nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list, room_stat=room_stat
                 )
 
+        @self.context.route('/fix-attend-error')
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def fix_attend_error():
+            if self.camp != 'cbtj':
+                Member.fix_attend_error(Camp.get_idx(self.camp))
+            else:
+                camp = request.args.get('camp', 'cbtj')
+                Member.fix_attend_error(Camp.get_idx(camp))
+            next = request.args.get('next', url_for('.home'))
+            return redirect(next)
+
         @self.context.errorhandler(403)
         def forbidden(e):
             flash(u'권한이 없습니다.')
@@ -508,12 +521,19 @@ class CbtjView(MetaView):
         def home():
             camp_idx = getCampIdx('cbtj')
             stat1 = get_basic_stat(camp_idx)
+            attend_stat1 = Member.get_attend_stat(camp_idx)
+            partial_stat1 = Member.get_partial_stat(camp_idx)
 
             camp_idx2 = getCampIdx('cbtj2')
             stat2 = get_basic_stat(camp_idx2)
+            attend_stat2 = Member.get_attend_stat(camp_idx2)
+            partial_stat2 = Member.get_partial_stat(camp_idx2)
 
             stat = get_basic_stat(camp_idx, camp_idx2)
-            return render_template('%s/home.html' % self.camp, stat1=stat1, stat2=stat2, stat=stat)
+            return render_template(
+                '%s/home.html' % self.camp, stat1=stat1, stat2=stat2, stat=stat, attend_stat1=attend_stat1,
+                partial_stat1=partial_stat1, attend_stat2=attend_stat2, partial_stat2=partial_stat2
+            )
 
     def init_member_list(self):
         # 신청자 목록

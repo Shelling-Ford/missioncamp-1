@@ -430,12 +430,14 @@ class Member(db.Base):
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
         count = db.db_session.query(
-            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).one()
+            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
+        ).filter(*filter_list).filter(cls.cancel_yn == 0).one()
         r_count = db.db_session.query(
             func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
-            ).filter(*filter_list).filter(cls.payment != None).one()
+        ).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment != None).one()
         a_count = db.db_session.query(func.sum(
-            cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.attend_yn == 1).one()
+            cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
+        ).filter(*filter_list).filter(cls.attend_yn == 1).one()
 
         stat = [
             {'cnt': count[0], 'r_cnt': r_count[0] if r_count[0] is not None else 0, 'a_cnt': a_count[0] if a_count[0] is not None else 0},
@@ -455,6 +457,43 @@ class Member(db.Base):
         stmt = db.db_session.query((cls.attend1 + cls.attend2 + cls.attend3 + cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
         count = db.db_session.query(stmt, func.count('partial')).group_by('partial').all()
         return count
+
+    @classmethod
+    def fix_attend_error(cls, camp_idx):
+        member_list = cls.get_list(camp_idx)
+        for member in member_list:
+            if member.fullcamp_yn == 1:
+                date_list = Camp.get_date_list(member.camp_idx)
+                member.date_of_arrival = date_list[0][0]
+                member.date_of_leave = date_list[-1][0]
+
+            if member.cancel_yn == 1:
+                member.attend1 = 0
+                member.attend2 = 0
+                member.attend3 = 0
+                member.attend4 = 0
+            else:
+                # attend = member.get_attend_array(member.date_of_arrival, member.date_of_leave)
+                camp = Camp.get(member.camp_idx)
+                if camp.code == 'ws' or camp.code == 'youth' or camp.code == 'kids' or camp.code == 'cbtj2':
+                    if member.date_of_arrival.year == 2015:
+                        member.date_of_arrival = member.date_of_arrival.replace(year=2016)
+
+                    if member.date_of_leave.year == 2015:
+                        member.date_of_leave = member.date_of_leave.replace(year=2016)
+
+                i = (member.date_of_arrival-camp.startday).days
+                interval = range(0, (member.date_of_leave - member.date_of_arrival).days+1)
+                attend = [0, 0, 0, 0]
+                for j in interval:
+                    attend[i+j] = 1
+
+                member.attend1 = attend[0]
+                member.attend2 = attend[1]
+                member.attend3 = attend[2]
+                member.attend4 = attend[3]
+
+            db.commit()
 
 
 # 세대별 기타 정보

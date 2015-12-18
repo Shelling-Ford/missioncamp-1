@@ -16,5 +16,42 @@
   {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key="training", cols=3)}}
   <br/>
   {{ macros.render_stat(stat=stat.job, title='직군별', param_key="job", cols=3)}}
+  <br/>
+  <p>일자별 통계</p>
+  <table class="table1">
+    <tr>
+      <th>12월 28일</th>
+      <th>12월 29일</th>
+      <th>12월 30일</th>
+      <th>12월 31일</th>
+    </tr>
+    <tr>
+    {% for s in attend_stat %}
+      {% if s.cnt != 0 %}
+      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
+      {% endif %}
+    {% endfor %}
+    </tr>
+  </table>
+  <br/>
+  <p>참석일수별 통계</p>
+  <table class="table1">
+    <tr>
+      <th>취소</th>
+      <th>1일</th>
+      <th>2일</th>
+      <th>3일</th>
+      <th>4일</th>
+    </tr>
+    <tr>
+    {% for s in partial_stat %}
+      <td>{{ s[1] }}</td>
+    {% endfor %}
+    </tr>
+  </table>
+  <br/>
+  {% if current_user.role == 'master' %}
+  <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날자 선택 오류 수정</a>
+  {% endif %}
 </div>
 {% endblock %}

@@ -473,7 +473,6 @@ class Member(db.Base):
                 member.attend3 = 0
                 member.attend4 = 0
             else:
-                # attend = member.get_attend_array(member.date_of_arrival, member.date_of_leave)
                 camp = Camp.get(member.camp_idx)
                 if camp.code == 'ws' or camp.code == 'youth' or camp.code == 'kids' or camp.code == 'cbtj2':
                     if member.date_of_arrival.year == 2015:
@@ -488,10 +487,11 @@ class Member(db.Base):
                 for j in interval:
                     attend[i+j] = 1
 
-                member.attend1 = attend[0]
-                member.attend2 = attend[1]
-                member.attend3 = attend[2]
-                member.attend4 = attend[3]
+                if not attend == [member.attend1, member.attend2, member.attend3, member.attend4]:
+                    member.attend1 = attend[0]
+                    member.attend2 = attend[1]
+                    member.attend3 = attend[2]
+                    member.attend4 = attend[3]
 
             db.commit()
 

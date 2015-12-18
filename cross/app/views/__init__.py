@@ -460,6 +460,31 @@ class MetaView():
             next = request.args.get('next', url_for('.home'))
             return redirect(next)
 
+        @self.context.route('/group-edit', methods=['POST', 'GET'])
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def group_edit():
+            if request.method == 'POST':
+                idx = request.form.get('group_idx')
+                if idx is None:
+                    raise Exception
+                Group.update(idx, **request.form.to_dict())
+                next = request.args.get('next', url_for('.home'))
+                flash(u'단체 수정이 완료되었습니다.')
+                return redirect(next)
+            else:
+                group_idx = request.args.get('group_idx')
+                if group_idx is not None:
+                    group = Group.get(group_idx)
+                else:
+                    raise Exception
+                from core.forms import GroupForm
+                form = GroupForm()
+                form.set_group_data(group)
+
+                return render_template('%s/form.html' % self.camp, form=form, editmode=True)
+
         @self.context.errorhandler(403)
         def forbidden(e):
             flash(u'권한이 없습니다.')

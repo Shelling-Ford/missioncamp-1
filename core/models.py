@@ -681,6 +681,7 @@ class Group(db.Base):
                 if 'pwd' in formData and formData['pwd'] is not None and formData['pwd'] != '':
                     group.pwd = formData['pwd']
 
+            kwargs.pop('group_idx', None)
             for key, value in kwargs.iteritems():
                 if value is not None and value != '':
                     setattr(group, key, value)

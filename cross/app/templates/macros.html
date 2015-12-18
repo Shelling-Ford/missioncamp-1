@@ -195,7 +195,7 @@
     #}
 {% macro render_form(form, action_url='', action_text='Submit', class_='', btn_class='btn btn-default', editmode=false) -%}
 
-    <form method="POST" action="{{ action_url }}" role="form" class="{{ class_ }}" id="form1">
+    <form method="POST" action="{{ action_url }}?next={{ request.url }}" role="form" class="{{ class_ }}" id="form1">
         {{ form.hidden_tag() if form.hidden_tag }}
         {% if caller %}
             {{ caller() }}

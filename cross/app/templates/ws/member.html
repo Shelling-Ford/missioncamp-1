@@ -60,14 +60,14 @@
           <td>
             <select name="idx" class="form-control">
               <option value="">숙소</option>
-              {% for r in rooms %}
+              {% for r in room_list %}
               <option value="{{ r.idx }}" {% if r.idx == member.room_idx %} selected {% endif %}>{{ r.building }} {{ r.number }}</option>
               {% endfor %}
             </select>
           </td>
           <td>&nbsp;</td>
           <td>
-            <input type="submit" value="배치" class="btn btn-primary">
+            <input type="submit" value="배치" class="btn btn-primary">&nbsp;<a href="{{ url_for('.room_cancel', member_idx=member.idx) }}" class="btn btn-default">취소</a>
           </td>
         </tr>
       </table>

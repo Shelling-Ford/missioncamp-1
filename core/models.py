@@ -798,7 +798,6 @@ class Room(db.Base):
         room_list = cls.get_list()
         stat = dict()
         for room in room_list:
-            # stat[room.idx] = Member.count(camp_idx=camp_idx, room_idx=room.idx)
             stat[room.idx] = 0
 
         camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx

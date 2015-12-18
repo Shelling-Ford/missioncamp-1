@@ -95,7 +95,7 @@
                   <input type="radio" name="persontype" id="persontype2" value="어린이" {% if member.persontype == "어린이" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;어린이</label><br/>
                   <input type="radio" name="persontype" id="persontype3" value="키즈" {% if member.persontype == "키즈" %} checked {% endif %}/><label for="persontype3">&nbsp;&nbsp;키즈</label><br/>
                   <input type="radio" name="persontype" id="persontype4" value="중보방" {% if member.persontype == "중보방" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;중보방</label><br/>
-                  <input type="radio" name="persontype" id="persontype5" value="전일스탭" {% if member.persontype == "전일캠프" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;전일스탭(2박3일)</label><br/>
+                  <input type="radio" name="persontype" id="persontype5" value="전일스탭" {% if member.persontype == "전일스탭" %} checked {% endif %}/><label for="persontype2">&nbsp;&nbsp;전일스탭(2박3일)</label><br/>
               </td>
           </tr>
 
@@ -117,6 +117,7 @@
           <tr id="job">
               <td><label for="young_job">교회 직분</label></td>
               <td colspan="3"><select name="job" id="job">
+                  <option value="">==선택하세요==</option>
                   <option value="목회자" {% if membership.job == '목회자' %} selected {% endif %}>목회자</option>
                   <option value="장로" {% if membership.job == '장로' %} selected {% endif %}>장로</option>
                   <option value="권사" {% if membership.job == '권사' %} selected {% endif %}>권사</option>

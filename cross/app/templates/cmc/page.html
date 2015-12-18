@@ -6,6 +6,7 @@
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=1) }}">취소자목록</a></li>
 	<li><a href="{{ url_for('cmc.old_stat', year=2015, term=2) }}">지난통계</a></li>
 	<li><a href="{{ url_for('.old_list', camptype='cmc', year=2015, term=2)}}">지난신청자목록</a></li>
+	<li><a href="{{ url_for('cmc.roomassign') }}">숙소배치</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=0, page=1, receptionmode=1) }}">등록대</a></li>
 	<!--
 	<li class="dropdown">

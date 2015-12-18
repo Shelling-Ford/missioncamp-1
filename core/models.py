@@ -1,11 +1,11 @@
-#-*-coding:utf-8-*-
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, desc, or_
+# -*-coding:utf-8-*-
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, desc, or_, func
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm.exc import NoResultFound
 from core.database import db
 from core.functions import getAttendArray
 import datetime
 import hashlib
+
 
 # 지부
 class Area(db.Base):
@@ -167,33 +167,66 @@ class Member(db.Base):
         return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
 
     @classmethod
-    def get_list(cls, camp_idx=None, **kwargs):
-        result = db.db_session.query(cls)
-        if type(camp_idx) is not list:
-            if camp_idx is not None:
-                result = result.filter(cls.camp_idx == camp_idx)
+    def get_filtered_result(cls, result, orderby=None, isnull=None, **kwargs):
+        membership_keys = ['training', 'campus', 'job']
+        payment_keys = ['complete']
+        for key, value in kwargs.iteritems():
+            if value is not None and value != '':
+                value = [value] if type(value) is not list else value
+                if key in membership_keys:
+                    filter_list = [cls.membership.any(value=v) for v in value]
+                elif key in payment_keys:
+                    filter_list = [getattr(Payment, key) == v for v in value]
+                elif key == 'name':
+                    filter_list = [getattr(cls, key).like('%' + v + '%') for v in value]
+                else:
+                    filter_list = [getattr(cls, key) == v for v in value]
+                result = result.filter(or_(*filter_list))
+
+        if isnull is not None:
+            isnull = [isnull] if type(isnull) is not list else isnull
+            for i in isnull:
+                attr = getattr(cls, i)
+                result = result.filter(or_(attr.is_(None), attr == ''))
+
+        if orderby is None:
+            result = result.order_by(desc(cls.idx))
         else:
+            orderby = [orderby] if type(orderby) is not list else orderby
+            for o in orderby:
+                result = result.order_by(desc(getattr(cls, o)))
+
+        return result
+
+    @classmethod
+    def get_list(cls, camp_idx=None, orderby=None, isnull=None, **kwargs):
+        result = db.db_session.query(cls)
+        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
             result = result.filter(or_(*filter_list))
 
         page = int(kwargs.pop('page', 0))
         kwargs.pop('camp', None)
 
-        membership_keys = ['training', 'campus', 'job']
-        for key, value in kwargs.iteritems():
-            value = value[0] if type(value) is list and len(value) == 1 else value
-            if value is not None and value != '':
-                if key in membership_keys:
-                    result = result.filter(cls.membership.any(value=value))
-                elif key == 'name':
-                    attr = getattr(cls, key)
-                    result = result.filter(attr.like('%' + value + '%'))
-                else:
-                    attr = getattr(cls, key)
-                    result = result.filter(attr == value)
-
-        result = result.order_by(desc(cls.idx))
+        result = cls.get_filtered_result(result, orderby=orderby, isnull=isnull, **kwargs)
         return result.all() if page == 0 else result.limit(50).offset((page-1)*50).all()
+
+    # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
+    @classmethod
+    def count(cls, camp_idx=None, isnull=None, **kwargs):
+        result = db.db_session.query(cls)
+        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        if camp_idx is not None:
+            filter_list = [cls.camp_idx == idx for idx in camp_idx]
+            result = result.filter(or_(*filter_list))
+
+        kwargs.pop('page', None)
+        kwargs.pop('camp', None)
+
+        result = cls.get_filtered_result(result, isnull=isnull, **kwargs)
+
+        return result.count()
 
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
@@ -207,35 +240,6 @@ class Member(db.Base):
 
         member_list = result.limit(50).offset(offset).all() if offset is not None else result.all()
         return member_list
-
-    # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
-    @classmethod
-    def count(cls, camp_idx=None, **kwargs):
-        result = db.db_session.query(cls)
-        if type(camp_idx) is not list:
-            if camp_idx is not None:
-                result = result.filter(cls.camp_idx == camp_idx)
-        else:
-            filter_list = [cls.camp_idx == idx for idx in camp_idx]
-            result = result.filter(or_(*filter_list))
-
-        kwargs.pop('page', None)
-        kwargs.pop('camp', None)
-
-        membership_keys = ['training', 'campus', 'job']
-        for key, value in kwargs.iteritems():
-            value = value[0] if type(value) is list and len(value) == 1 else value
-            if value is not None and value != '':
-                if key in membership_keys:
-                    result = result.filter(cls.membership.any(value=value))
-                elif key == 'name':
-                    attr = getattr(cls, key)
-                    result = result.filter(attr.like('%' + value + '%'))
-                else:
-                    attr = getattr(cls, key)
-                    result = result.filter(attr == value)
-
-        return result.count()
 
     # 멤버 정보 수정
     @classmethod
@@ -287,24 +291,25 @@ class Member(db.Base):
             membership_list = []
             for key, value in kwargs.iteritems():
                 value = value[0] if type(value) is list and len(value) == 1 else value
-                if value is not None and value != '':
-                    if key == 'pwd':
+                # if value is not None and value != '':
+                if key == 'pwd':
+                    if value is not None and value != '':
                         setattr(member, key, hashlib.sha224(value).hexdigest())
-                    elif key == 'hp2' or key == 'hp3':
-                        pass
-                    elif key == 'hp':
-                        setattr(member, 'contact', '-'.join(kwargs.get('hp') + kwargs.get('hp2') + kwargs.get('hp3')))
-                    elif key in membership_keys:
-                        if key == 'training' or key == 'route':
-                            if type(value) is list:
-                                for v in value:
-                                    membership_list.append((key, v))
-                            else:
-                                membership_list.append((key, value))
+                elif key == 'hp2' or key == 'hp3':
+                    pass
+                elif key == 'hp':
+                    setattr(member, 'contact', '-'.join(kwargs.get('hp') + kwargs.get('hp2') + kwargs.get('hp3')))
+                elif key in membership_keys:
+                    if key == 'training' or key == 'route':
+                        if type(value) is list:
+                            for v in value:
+                                membership_list.append((key, v))
                         else:
                             membership_list.append((key, value))
                     else:
-                        setattr(member, key, value)
+                        membership_list.append((key, value))
+                else:
+                    setattr(member, key, value)
 
             if len(membership_list) > 0:
                 db.db_session.query(Membership).filter(Membership.member_idx == member_idx).delete()
@@ -369,7 +374,11 @@ class Member(db.Base):
 
     @classmethod
     def login_check(cls, camp_idx, userid, pwd):
-        count = db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid, cls.pwd == hashlib.sha224(pwd).hexdigest(), cls.cancel_yn == 0).count()
+        count = db.db_session.query(cls).filter(
+            cls.camp_idx == camp_idx, cls.userid == userid,
+            cls.pwd == hashlib.sha224(pwd).hexdigest(),
+            cls.cancel_yn == 0
+        ).count()
         return True if count > 0 else False
 
     @classmethod
@@ -414,6 +423,39 @@ class Member(db.Base):
 
         return attend
 
+    @classmethod
+    def get_attend_stat(cls, camp_idx):
+        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        if camp_idx is not None:
+            filter_list = [cls.camp_idx == idx for idx in camp_idx]
+
+        count = db.db_session.query(
+            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).one()
+        r_count = db.db_session.query(
+            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
+            ).filter(*filter_list).filter(cls.payment != None).one()
+        a_count = db.db_session.query(func.sum(
+            cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.attend_yn == 1).one()
+
+        stat = [
+            {'cnt': count[0], 'r_cnt': r_count[0] if r_count[0] is not None else 0, 'a_cnt': a_count[0] if a_count[0] is not None else 0},
+            {'cnt': count[1], 'r_cnt': r_count[1] if r_count[1] is not None else 0, 'a_cnt': a_count[1] if a_count[1] is not None else 0},
+            {'cnt': count[2], 'r_cnt': r_count[2] if r_count[2] is not None else 0, 'a_cnt': a_count[2] if a_count[2] is not None else 0},
+            {'cnt': count[3], 'r_cnt': r_count[3] if r_count[3] is not None else 0, 'a_cnt': a_count[3] if a_count[3] is not None else 0},
+        ]
+
+        return stat
+
+    @classmethod
+    def get_partial_stat(cls, camp_idx):
+        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        if camp_idx is not None:
+            filter_list = [cls.camp_idx == idx for idx in camp_idx]
+
+        stmt = db.db_session.query((cls.attend1 + cls.attend2 + cls.attend3 + cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
+        count = db.db_session.query(stmt, func.count('partial')).group_by('partial').all()
+        return count
+
 
 # 세대별 기타 정보
 class Membership(db.Base):
@@ -437,6 +479,7 @@ class Membership(db.Base):
     @classmethod
     def get_list(cls, member_idx):
         return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
+
 
 # 입금 정보
 class Payment(db.Base):
@@ -464,11 +507,11 @@ class Payment(db.Base):
 
     @classmethod
     def save(cls, member_idx, amount, complete, claim, staff_name, paydate=None):
-        if paydate == None or paydate == '':
+        if paydate is None or paydate == '':
             paydate = "%s" % datetime.datetime.today().date()
 
         payment = cls.find(member_idx)
-        if payment == None:
+        if payment is None:
             payment = cls()
             payment.member_idx = member_idx
             payment.amount = amount
@@ -490,6 +533,7 @@ class Payment(db.Base):
     def delete(cls, member_idx):
         db.db_session.query(cls).filter(cls.member_idx == member_idx).delete()
         db.db_session.commit()
+
 
 # 단체
 class Group(db.Base):
@@ -532,7 +576,7 @@ class Group(db.Base):
 
     @classmethod
     def get_list(cls, camp_idx):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.cancel_yn == 0).all()
 
     @classmethod
     def check_groupid(cls, camp_idx, groupid):
@@ -540,7 +584,11 @@ class Group(db.Base):
 
     @classmethod
     def login_check(cls, camp_idx, groupid, pwd):
-        count = db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid, cls.pwd == hashlib.sha224(pwd).hexdigest(), cls.cancel_yn == 0).count()
+        count = db.db_session.query(cls).filter(
+            cls.camp_idx == camp_idx, cls.groupid == groupid,
+            cls.pwd == hashlib.sha224(pwd).hexdigest(),
+            cls.cancel_yn == 0
+        ).count()
         return True if count > 0 else False
 
     @classmethod
@@ -591,7 +639,7 @@ class Group(db.Base):
                     setattr(group, key, formData[key] if key in formData else None)
 
                 group.leadercontact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
-                if 'pwd' in formData and formData['pwd'] != None and formData['pwd'] != '':
+                if 'pwd' in formData and formData['pwd'] is not None and formData['pwd'] != '':
                     group.pwd = formData['pwd']
 
             for key, value in kwargs.iteritems():
@@ -614,6 +662,7 @@ class Group(db.Base):
                 member.cancel_reason = reason
                 member.canceldate = datetime.datetime.today()
         db.db_session.commit()
+
 
 # 청소년 홍보물
 class Promotion(db.Base):
@@ -644,7 +693,7 @@ class Promotion(db.Base):
         return db.db_session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
-    def get(cls, camp_idx, church_name):
+    def find(cls, camp_idx, church_name):
         return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.church_name == church_name).first()
 
     @classmethod
@@ -656,6 +705,7 @@ class Promotion(db.Base):
         promotion = cls(camp_idx, church_name, name, address, contact, memo)
         db.db_session.add(promotion)
         db.db_session.commit()
+
 
 class GlobalOptions(db.Base):
     __tablename__ = 'global_options'
@@ -670,6 +720,7 @@ class GlobalOptions(db.Base):
     @classmethod
     def get_term(cls):
         return int(db.db_session.query(cls).filter(cls.key == 'current_term').one().value)
+
 
 class Options(db.Base):
     __tablename__ = 'options'
@@ -687,6 +738,7 @@ class Options(db.Base):
     def get_value(cls, camp_idx, key):
         return db.db_session.query(cls).filteR(cls.camp_idx == camp_idx, cls.key == key).one().value
 
+
 class Room(db.Base):
     __tablename__ = 'room'
 
@@ -701,3 +753,23 @@ class Room(db.Base):
     @classmethod
     def get_list(cls):
         return db.db_session.query(cls).order_by(cls.building, cls.number).all()
+
+    @classmethod
+    def get_stat(cls, camp_idx):
+        room_list = cls.get_list()
+        stat = dict()
+        for room in room_list:
+            # stat[room.idx] = Member.count(camp_idx=camp_idx, room_idx=room.idx)
+            stat[room.idx] = 0
+
+        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        if camp_idx is not None:
+            filter_list = [Member.camp_idx == idx for idx in camp_idx]
+
+        count = db.db_session.query(Member.room_idx, func.count(Member.idx)).filter(or_(*filter_list)).group_by(Member.room_idx)
+
+        for room_idx, cnt in count.all():
+            if room_idx is not None:
+                stat[room_idx] = cnt
+
+        return stat

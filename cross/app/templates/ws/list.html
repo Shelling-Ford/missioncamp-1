@@ -27,7 +27,11 @@
   {% endif %}
 
   <section class="page-header">
+    {% if request.args.get('cancel_yn', 0)|int == 1 %}
+    <h2>취소자 목록</h2>
+    {% else %}
     <h2>신청자 목록</h2>
+    {% endif %}
   </section>
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>
@@ -70,6 +74,9 @@
         <th>지부</th>
         <th>단체</th>
         <th>성별</th>
+        {% if request.args.get('persontype') == '어린이' or request.args.get('persontype') == '키즈' %}
+        <th>출생년도</th>
+        {% endif %}
         <th>연락처</th>
         <th>재정클레임</th>
         <th>입금액</th>
@@ -107,6 +114,9 @@
         <td>{{ m.area.name }}</td>
         <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
         <td>{{ m.sex }}</td>
+        {% if request.args.get('persontype') == '어린이' or request.args.get('persontype') == '키즈' %}
+        <th>{{ m.birth.split('-')[0] }}</th>
+        {% endif %}
         <td>{% if m.contact is not none %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.claim is not none %}{{ m.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment is none %} 0 {% else %} {{ '{:,}'.format(m.payment.amount) }} {% endif %}</td>

@@ -17,7 +17,7 @@ def multi_getattr(obj, attr, default=None):
                 obj = obj()
         except AttributeError:
             return default
-    return obj
+    return obj if obj is not None else default
 
 
 class XlsxBuilder():
@@ -221,7 +221,7 @@ def get_old_document(member_list, db_type='mysql'):
             r += 1
 
     elif db_type == 'mongo':
-        boolean = {'N':u'아니오', 'Y':u'예'}
+        boolean = {'N': u'아니오', 'Y': u'예'}
 
         for member in member_list:
             worksheet.write(r, 0, member['campcode'])
@@ -242,6 +242,3 @@ def get_old_document(member_list, db_type='mysql'):
     output.seek(0)
 
     return output
-
-
-

@@ -16,5 +16,36 @@
   {{ macros.render_stat(stat=stat.job, title='직분별', param_key='job', cols=3)}}
   <br/>
   {{ macros.render_stat(stat=stat.ages, title='연령별', cols=1)}}
+  <br/>
+  <p>일자별 통계</p>
+  <table class="table1">
+    <tr>
+      <th>1월 7일</th>
+      <th>1월 8일</th>
+      <th>1월 9일</th>
+    </tr>
+    <tr>
+    {% for s in attend_stat %}
+      {% if s.cnt != 0 %}
+      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
+      {% endif %}
+    {% endfor %}
+    </tr>
+  </table>
+  <br/>
+  <p>참석일수별 통계(시험중)</p>
+  <table class="table1">
+    <tr>
+      <th>0일</th>
+      <th>1일</th>
+      <th>2일</th>
+      <th>3일</th>
+    </tr>
+    <tr>
+    {% for s in partial_stat %}
+      <td>{{ s[1] }}</td>
+    {% endfor %}
+    </tr>
+  </table>
 </div>
 {% endblock %}

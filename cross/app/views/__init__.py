@@ -25,7 +25,9 @@ class MetaView():
             term = int(request.args.get('term', 0))
             camp_idx = Camp.get_idx(self.camp, year, term)
             stat = get_basic_stat(camp_idx)
-            return render_template('%s/home.html' % self.camp, stat=stat)
+            attend_stat = Member.get_attend_stat(camp_idx)
+            partial_stat = Member.get_partial_stat(camp_idx)
+            return render_template('%s/home.html' % self.camp, stat=stat, attend_stat=attend_stat, partial_stat=partial_stat)
         pass
 
     def init_member_list(self):
@@ -132,6 +134,19 @@ class MetaView():
             member_idx = request.form.get('member_idx', 0)
             room_idx = request.form.get('idx', 0)
             Member.update(member_idx=member_idx, room_idx=room_idx)
+            next = request.args.get('next')
+            if next is not None:
+                return redirect(next)
+            else:
+                return redirect(url_for('.member', member_idx=member_idx))
+
+        @self.context.route('/room_cancel')
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def room_cancel():
+            member_idx = request.args.get('member_idx', 0)
+            Member.update(member_idx=member_idx, room_idx=None)
             next = request.args.get('next')
             if next is not None:
                 return redirect(next)
@@ -340,6 +355,97 @@ class MetaView():
             response = make_response(output.read())
             response.headers["Content-Disposition"] = "attachment; filename=member.xlsx"
             return response
+
+        @self.context.route('/roomasign', methods=['POST', 'GET'])
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def roomassign():
+            if request.method == 'POST':
+                pass
+                member_list = request.form.getlist('member_idx')
+                room_idx = request.form.get('room_idx')
+
+                for member_idx in member_list:
+                    Member.update(member_idx, room_idx=room_idx)
+
+                next = request.args.get('next')
+                if next is not None:
+                    return redirect(next)
+                else:
+                    return redirect(url_for('.roomassign'))
+            else:
+                camp_idx = Camp.get_idx(self.camp)
+                page = int(request.args.get('page', 1))
+
+                params = request.args.to_dict()
+                params.pop('room_idx', None)
+
+                if 'page' not in params:
+                    params['page'] = page
+
+                if self.camp == 'cmc':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj')]
+                elif self.camp == 'ws':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+
+                member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], isnull='room_idx', **params)
+                count = Member.count(camp_idx, isnull='room_idx', **params)
+                area_list = Area.get_list(self.camp)
+                if type(camp_idx) is list:
+                    group_list = []
+                    for idx in camp_idx:
+                        group_list.extend(Group.get_list(idx))
+                else:
+                    group_list = Group.get_list(camp_idx)
+
+                room_list = Room.get_list()
+                room_stat = Room.get_stat(camp_idx=camp_idx)
+                return render_template(
+                    '%s/room_list.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
+                    nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list, room_stat=room_stat
+                )
+
+        @self.context.route('/room', methods=['POST', 'GET'])
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def room():
+            if request.mtthod == 'POST':
+                pass
+            else:
+                room_idx = request.args.get('room_idx')
+
+                camp_idx = Camp.get_idx(self.camp)
+                page = int(request.args.get('page', 1))
+
+                params = request.args.to_dict()
+                params.pop('room_idx', None)
+
+                if 'page' not in params:
+                    params['page'] = page
+
+                if self.camp == 'cmc':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj')]
+                elif self.camp == 'ws':
+                    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+
+                member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, **params)
+                count = Member.count(camp_idx, room_idx=room_idx, **params)
+                area_list = Area.get_list(self.camp)
+                if type(camp_idx) is list:
+                    group_list = []
+                    for idx in camp_idx:
+                        group_list.extend(Group.get_list(idx))
+                else:
+                    group_list = Group.get_list(camp_idx)
+
+                room_list = Room.get_list()
+                room_stat = Room.get_stat(camp_idx=camp_idx)
+                return render_template(
+                    '%s/room_list.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
+                    nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list, room_stat=room_stat
+                )
 
         @self.context.errorhandler(403)
         def forbidden(e):

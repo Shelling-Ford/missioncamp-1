@@ -27,7 +27,11 @@
   {% endif %}
 
   <section class="page-header">
+    {% if request.args.get('cancel_yn', 0)|int == 1 %}
+    <h2>취소자 목록</h2>
+    {% else %}
     <h2>신청자 목록</h2>
+    {% endif %}
   </section>
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>

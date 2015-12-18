@@ -46,7 +46,7 @@ class SQLDriver():
             r = dict((col, getattr(row, col)) for col in result._metadata.keys)
         else:
             r = None
-            
+           
         return r
 
     def raw_query(self, query, params=None):

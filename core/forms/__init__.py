@@ -20,7 +20,7 @@ class GroupForm(Form):
     name = StringField(u'단체이름')
     # grouptype = RadioField(u'단체 유형', choices=[('1', '다니엘과 세친구'), ('2', '예수님과 열두제자'), ('3', '단체교회')])
     leadername = StringField(u'담당자 이름')
-    # leadercontact = ContactField(u'담당자 연락처')
+    leadercontact = ContactField(u'담당자 연락처')
     leaderjob = StringField(u'담당자 직업')
     area_idx = SelectField(u'등록지부', choices=Area.get_list('kids'))
     memo = StringField(u'남기고싶은 말', widget=TextArea())
@@ -30,7 +30,7 @@ class GroupForm(Form):
         self.groupid.data = group.groupid
         self.name.data = group.name
         self.leadername.data = group.leadername
-        # self.leadercontact.data = group.leadercontact
+        self.leadercontact.data = group.leadercontact
         self.leaderjob.data = group.leaderjob
         self.area_idx.data = group.area_idx
         self.memo.data = group.memo

@@ -298,7 +298,7 @@ class Member(db.Base):
                 elif key == 'hp2' or key == 'hp3':
                     pass
                 elif key == 'hp':
-                    setattr(member, 'contact', '-'.join(kwargs.get('hp') + kwargs.get('hp2') + kwargs.get('hp3')))
+                    setattr(member, 'contact', '-'.join([kwargs.get('hp'), kwargs.get('hp2'), kwargs.get('hp3')]))
                 elif key in membership_keys:
                     if key == 'training' or key == 'route':
                         if type(value) is list:
@@ -683,7 +683,14 @@ class Group(db.Base):
 
             kwargs.pop('group_idx', None)
             for key, value in kwargs.iteritems():
-                if value is not None and value != '':
+                if key == 'pwd':
+                    if value is not None and value != '':
+                        setattr(group, key, hashlib.sha224(value).hexdigest())
+                elif key == 'hp2' or key == 'hp3':
+                    pass
+                elif key == 'hp':
+                    setattr(group, 'leadercontact', '-'.join([kwargs.get('hp'), kwargs.get('hp2'), kwargs.get('hp3')]))
+                else:
                     setattr(group, key, value)
 
         db.db_session.commit()

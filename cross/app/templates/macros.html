@@ -153,7 +153,7 @@
 {%- endmacro %}
 
 {% macro render_contact_field(field) -%}
-    {% if field.data is not none %}{% set hp = field.data.split('-') %}{% else %}{% set hp = ['','',''] %}{% endif %}
+    {% if field.data is not none %}{% set contact = field.data.replace('-', '') %}{% set hp = [contact[0:3], contact[3:7], contact[7:12]] %}{% else %}{% set hp = ['','',''] %}{% endif %}
     <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
         <label id="{{ field.id }}_label" for="hp" class="col-sm-4 control-label">{{ field.label }}</label>
         <div class="col-sm-8">

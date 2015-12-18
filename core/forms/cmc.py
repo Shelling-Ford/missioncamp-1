@@ -1,11 +1,13 @@
 # -*-coding:utf-8-*-
-from wtforms import Form, StringField, SelectField, RadioField, PasswordField
+from wtforms import Form, StringField, SelectField, RadioField, PasswordField, HiddenField
 from wtforms.widgets import TextArea
 from core.models import Area, Camp
 from core.forms import ContactField, MultiCheckboxField
 
 
 class RegistrationForm(Form):
+    idx = HiddenField()
+    camp_idx = HiddenField()
     userid = StringField(u'아이디')
     pwd = PasswordField(u'비밀번호')
     pwd2 = PasswordField(u'비밀번호 확인')
@@ -46,6 +48,8 @@ class RegistrationForm(Form):
     def set_member_data(self, member):
         membership_data = member.get_membership_data()
 
+        self.idx.data = member.idx
+        self.camp_idx.data = member.camp_idx
         self.userid.data = member.userid
         self.name.data = member.name
         self.area_idx.data = member.area_idx

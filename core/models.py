@@ -281,7 +281,7 @@ class Member(db.Base):
                         db.db_session.add(membership)
             else:
                 if 'date_of_arrival' in kwargs and 'date_of_leave' in kwargs:
-                    attend = member.get_attend_array(kwargs.get('date_of_arrival')[0], kwargs.get('date_of_leave')[0])
+                    attend = member.get_attend_array(kwargs.get('date_of_arrival'), kwargs.get('date_of_leave'))
                     member.attend1 = attend[0]
                     member.attend2 = attend[1]
                     member.attend3 = attend[2]

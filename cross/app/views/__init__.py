@@ -220,7 +220,7 @@ class MetaView():
         def member_cancel_proc():
             cancel_reason = request.form.get('cancel_reason', None)
             idx = session['idx']
-            Member.update(idx, cancel_yn=1, cancel_reason=cancel_reason)
+            Member.update(idx, cancel_yn=1, cancel_reason=cancel_reason, attend1=0, attend2=0, attend3=0, attend4=0)
             flash(u'신청이 취소되었습니다')
             return redirect(url_for('.member_list', cancel_yn=1))
 
@@ -519,20 +519,27 @@ class CmcView(MetaView):
         @login_required
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
-            formData = getIndividualFormData()
-            # camp_idx = Camp.get_idx(self.camp)
-
             idx = session['idx']
+            camp_idx = request.form.get('camp_idx')
+            fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
 
-            date_of_arrival = datetime.datetime.strptime(formData['date_of_arrival'], '%Y-%m-%d')
-            date_of_leave = datetime.datetime.strptime(formData['date_of_leave'], '%Y-%m-%d')
+            params = request.form.to_dict()
+
+            if fullcamp_yn == 1:
+                date_list = Camp.get_date_list(camp_idx)
+                params['date_of_arrival'] = str(date_list[0][0])
+                params['date_of_leave'] = str(date_list[-1][0])
+
+            date_of_arrival = datetime.datetime.strptime(params.get('date_of_arrival'), '%Y-%m-%d')
+            date_of_leave = datetime.datetime.strptime(params.get('date_of_leave'), '%Y-%m-%d')
+
             td = (date_of_leave - date_of_arrival)
 
             if td.days < 0:
                 flash(u'참석 기간을 잘못 선택하셨습니다.')
-                return redirect(url_for('.member_edit', idx=idx))
+                return redirect(url_for('.member_edit', member_idx=idx))
             else:
-                Member.update(idx, **request.form)
+                Member.update(idx, **params)
                 flash(u'신청서 수정이 완료되었습니다.')
                 return redirect(url_for('.member', member_idx=idx))
 
@@ -619,19 +626,27 @@ class CbtjView(MetaView):
         @login_required
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
-            # camp_idx = Camp.get_idx(self.camp)
-
             idx = session['idx']
+            camp_idx = request.form.get('camp_idx')
+            fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
 
-            date_of_arrival = datetime.datetime.strptime(request.form.get('date_of_arrival'), '%Y-%m-%d')
-            date_of_leave = datetime.datetime.strptime(request.form.get('date_of_leave'), '%Y-%m-%d')
+            params = request.form.to_dict()
+
+            if fullcamp_yn == 1:
+                date_list = Camp.get_date_list(camp_idx)
+                params['date_of_arrival'] = str(date_list[0][0])
+                params['date_of_leave'] = str(date_list[-1][0])
+
+            date_of_arrival = datetime.datetime.strptime(params.get('date_of_arrival'), '%Y-%m-%d')
+            date_of_leave = datetime.datetime.strptime(params.get('date_of_leave'), '%Y-%m-%d')
+
             td = (date_of_leave - date_of_arrival)
 
             if td.days < 0:
                 flash(u'참석 기간을 잘못 선택하셨습니다.')
                 return redirect(url_for('.member_edit', member_idx=idx))
             else:
-                Member.update(idx, **request.form)
+                Member.update(idx, **params)
                 flash(u'신청서 수정이 완료되었습니다.')
                 return redirect(url_for('.member', member_idx=idx))
 
@@ -668,7 +683,7 @@ class KidsView(MetaView):
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
-            Member.update(idx, **request.form)
+            Member.update(idx, **request.form.to_dict())
             flash(u'신청서 수정이 완료되었습니다.')
             return redirect(url_for('.member', member_idx=idx))
 
@@ -716,7 +731,7 @@ class YouthView(MetaView):
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
-            Member.update(idx, **request.form)
+            Member.update(idx, **request.form.to_dict())
             flash(u'신청서 수정이 완료되었습니다.')
             return redirect(url_for('.member', member_idx=idx))
 
@@ -734,7 +749,6 @@ class WsView(MetaView):
         def member_edit():
             idx = request.args.get('member_idx', 0)
             session['idx'] = idx
-            # member = getIndividualData(idx)
             member = Member.get(idx)
             campidx = Camp.get_idx('ws')
             area_list = getAreaList('ws')  # form에 들어갈 지부 목록
@@ -753,15 +767,25 @@ class WsView(MetaView):
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
+            camp_idx = request.form.get('camp_idx')
+            fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
 
-            date_of_arrival = datetime.datetime.strptime(request.form.get('date_of_arrival'), '%Y-%m-%d')
-            date_of_leave = datetime.datetime.strptime(request.form.get('date_of_leave'), '%Y-%m-%d')
+            params = request.form.to_dict()
+
+            if fullcamp_yn == 1:
+                date_list = Camp.get_date_list(camp_idx)
+                params['date_of_arrival'] = str(date_list[0][0])
+                params['date_of_leave'] = str(date_list[-1][0])
+
+            date_of_arrival = datetime.datetime.strptime(params.get('date_of_arrival'), '%Y-%m-%d')
+            date_of_leave = datetime.datetime.strptime(params.get('date_of_leave'), '%Y-%m-%d')
+
             td = (date_of_leave - date_of_arrival)
 
             if td.days < 0:
                 flash(u'참석 기간을 잘못 선택하셨습니다.')
                 return redirect(url_for('.member_edit', member_idx=idx))
             else:
-                Member.update(idx, **request.form)
+                Member.update(idx, **params)
                 flash(u'신청서 수정이 완료되었습니다.')
                 return redirect(url_for('.member', member_idx=idx))

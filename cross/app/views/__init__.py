@@ -35,7 +35,14 @@ class MetaView():
         @self.context.route('/list')
         @login_required
         def member_list():
-            camp_idx = Camp.get_idx(self.camp)
+            year = request.args.get('year', 0)
+            term = request.args.get('term', 0)
+
+            if year != 0 and term != 0:
+                camp_idx = Camp.get_idx(self.camp, year=year, term=term)
+            else:
+                camp_idx = Camp.get_idx(self.camp)
+
             group_idx = request.args.get('group_idx', None)
             page = int(request.args.get('page', 1))
             group = Group.get(group_idx) if group_idx is not None else None
@@ -43,6 +50,9 @@ class MetaView():
             params = request.args.to_dict()
             if 'page' not in params:
                 params['page'] = page
+
+            params.pop('year', None)
+            params.pop('term', None)
 
             receptionmode = bool(params.pop('receptionmode', False))
             if receptionmode:
@@ -189,14 +199,21 @@ class MetaView():
         @self.hq_permission.require(http_exception=403)
         @self.camp_permission.require(http_exception=403)
         def excel_down():
-            if self.camp == 'cbtj':
-                camp = request.args.get('camp')
-                if camp is None:
-                    camp_idx = [Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')]
-                else:
-                    camp_idx = Camp.get_idx(camp)
+
+            year = request.args.get('year', 0)
+            term = request.args.get('term', 0)
+
+            if year != 0 and term != 0:
+                camp_idx = Camp.get_idx(self.camp, year=year, term=term)
             else:
-                camp_idx = Camp.get_idx(self.camp)
+                if self.camp == 'cbtj':
+                    camp = request.args.get('camp')
+                    if camp is None:
+                        camp_idx = [Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')]
+                    else:
+                        camp_idx = Camp.get_idx(camp)
+                else:
+                    camp_idx = Camp.get_idx(self.camp)
 
             xlsx_builder = XlsxBuilder()
             output = xlsx_builder.get_document(camp_idx, **request.args.to_dict())

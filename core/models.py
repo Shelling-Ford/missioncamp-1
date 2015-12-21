@@ -170,18 +170,31 @@ class Member(db.Base):
     def get_filtered_result(cls, result, orderby=None, isnull=None, **kwargs):
         membership_keys = ['training', 'campus', 'job']
         payment_keys = ['complete']
+        pass_keys = ['page', 'year', 'term']
         for key, value in kwargs.iteritems():
+            filter_list = None
             if value is not None and value != '':
                 value = [value] if type(value) is not list else value
                 if key in membership_keys:
                     filter_list = [cls.membership.any(value=v) for v in value]
                 elif key in payment_keys:
                     filter_list = [getattr(Payment, key) == v for v in value]
+                elif key in pass_keys:
+                    pass
                 elif key == 'name':
                     filter_list = [getattr(cls, key).like('%' + v + '%') for v in value]
                 else:
-                    filter_list = [getattr(cls, key) == v for v in value]
-                result = result.filter(or_(*filter_list))
+                    filter_list = []
+                    for v in value:
+                        if v == 'none' or v == 'None':
+                            filter_list.append(getattr(cls, key) == None)
+                        elif v == 'not_none' or v == "not_None":
+                            filter_list.append(getattr(cls, key) != None)
+                        else:
+                            filter_list.append(getattr(cls, key) == v)
+
+                if filter_list is not None:
+                    result = result.filter(or_(*filter_list))
 
         if isnull is not None:
             isnull = [isnull] if type(isnull) is not list else isnull

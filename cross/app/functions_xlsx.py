@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 import xlsxwriter
-from core.models import Member
+from core.models import Member, Camp
 
 try:
     import cStringIO as StringIO
@@ -29,7 +29,7 @@ class XlsxBuilder():
         self.date_format = self.workbook.add_format({'num_format': 'yyyy-mm-dd'})
 
     def get_value(self, obj, label):
-        boolean = [u'아니오', u'예']
+        boolean = [u'아니오', u'예', u'??']
         sex = {'M': u'남', 'F': u'여'}
         complete = [u'미납', u'부분납', u'완납']
         func_map = {
@@ -70,16 +70,29 @@ class XlsxBuilder():
 
     def get_document(self, camp_idx, **kwargs):
         kwargs.pop('page', None)
+        kwargs.pop('year', None)
+        kwargs.pop('term', None)
+
+        camp = Camp.get(camp_idx[0]) if type(camp_idx) is list else Camp.get(camp_idx)
+
+        if camp.code == 'youth' or camp.code == 'kids':
+            label_list = [
+                u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
+                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'MIT', u'뉴커머',
+                u'전체참석', u'인터콥훈련여부', u'등록날자', u'숙소', u'메모'
+            ]
+        else:
+            label_list = [
+                u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
+                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'MIT', u'뉴커머',
+                u'전체참석', u'오는날', u'가는날', u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'통역필요',
+                u'등록날자', u'숙소', u'메모'
+            ]
+
         member_list = Member.get_list(camp_idx, **kwargs)
 
         r = 0
         c = 0
-        label_list = [
-            u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
-            u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'MIT', u'뉴커머',
-            u'전체참석', u'오는날', u'가는날', u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'통역필요',
-            u'등록날자', u'숙소', u'메모'
-        ]
 
         date_type_label = [
             u'오는날', u'가는날', u'등록날자'

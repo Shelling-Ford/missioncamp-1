@@ -627,7 +627,8 @@ class CbtjView(MetaView):
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
-            camp_idx = request.form.get('camp_idx')
+            member = Member.get(idx)
+            camp_idx = member.camp_idx
             fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
 
             params = request.form.to_dict()
@@ -767,7 +768,7 @@ class WsView(MetaView):
         @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
-            camp_idx = request.form.get('camp_idx')
+            camp_idx = Camp.get_idx('ws')
             fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
 
             params = request.form.to_dict()

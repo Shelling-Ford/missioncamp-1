@@ -16,6 +16,10 @@ def home():
 def invitation():
     return render_template('cmc/invitation.html')
 
+@context.route('/charyang')
+def charyang():
+    return render_template('cmc/charyang.html')
+
 @context.route('/recommendation')
 def recommendation():
     return render_template('cmc/recommendation.html')

@@ -10,6 +10,7 @@
         <th>받는분 주소</th>
         <th>받는분 연락처</th>
         <th>요청사항</th>
+        <th>신청날자</th>
       </tr>
     </thead>
     <tbody>
@@ -20,6 +21,7 @@
         <td>{{ p.address }}</td>
         <td>{{ p.contact }}</td>
         <td>{{ p.memo }}</td>
+        <td>{{ p.created }}</td>
       </tr>
       {% endfor %}
     </tbody>

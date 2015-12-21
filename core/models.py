@@ -721,6 +721,7 @@ class Promotion(db.Base):
     name = Column(String)
     address = Column(String)
     contact = Column(String)
+    created = Column(DateTime)
     memo = Column(String)
 
     def __init__(self, camp_idx, church_name, name, address, contact, memo, idx=None):
@@ -750,6 +751,7 @@ class Promotion(db.Base):
     @classmethod
     def insert(cls, camp_idx, church_name, name, address, contact, memo):
         promotion = cls(camp_idx, church_name, name, address, contact, memo)
+        promotion.created = datetime.datetime.now()
         db.db_session.add(promotion)
         db.db_session.commit()
 

@@ -35,3 +35,8 @@ class GroupForm(Form):
         self.area_idx.data = group.area_idx
         self.memo.data = group.memo
         self.group_idx.data = group.idx
+
+
+class RoomCheckForm(Form):
+    contact = ContactField(u'연락처')
+    name = StringField(u'이름')

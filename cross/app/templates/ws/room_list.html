@@ -1,4 +1,4 @@
-{% extends 'cmc/page.html' %}
+{% extends 'ws/page.html' %}
 
 {% block head %}
 {{ super() }}
@@ -93,12 +93,20 @@
           <tr>
             <td>{{ i }}</td>
             <td><input type="checkbox" name="member_idx" value="{{ m.idx }}"/></td>
-            <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
+            <td>{% if m.camp.code == 'cbtj2' %}<span style="color:green">청직</span>{% elif m.camp.code == 'ws' %}<span style="color:orange">여남시</span>{% endif %}</td>
             <td>{{ m.regdate }}</td>
             <td>{{ m.persontype }}</td>
+            {% if m.camp.code == 'cbtj2' %}
+            <td><a href="{{ url_for('cbtj.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+            {% else %}
             <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+            {% endif %}
             <td>{{ m.area.name }}</td>
+            {% if m.camp.code == 'cbtj2' %}
+            <td>{% if not m.group.name == None %} <a href="{{ url_for('cbtj.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+            {% else %}
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+            {% endif %}
             <td>{{ m.sex }}</td>
             <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
             <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>

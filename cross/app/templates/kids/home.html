@@ -10,5 +10,9 @@
   {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
   <br/>
   {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
+  <br/>
+  {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key='training', cols=3)}}
+  <br/>
 </div>
+
 {% endblock %}

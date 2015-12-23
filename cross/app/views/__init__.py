@@ -5,7 +5,7 @@ from flask_login import login_required  # , current_user
 from flask_principal import Permission, RoleNeed
 # from jinja2 import TemplateNotFound
 
-from core.models import Group, Member, Camp, Area, Room, Payment, Promotion
+from core.models import Group, Member, Camp, Area, Room, Payment, Promotion, Roomsetting
 from core.functions import *
 from app.functions import *
 
@@ -394,9 +394,14 @@ class MetaView():
             else:
                 camp_idx = Camp.get_idx(self.camp)
                 page = int(request.args.get('page', 1))
+                complete_list = request.args.getlist('complete')
 
                 params = request.args.to_dict()
                 params.pop('room_idx', None)
+                params.pop('complete', None)
+
+                if complete_list is not None:
+                    params['complete'] = complete_list
 
                 if 'page' not in params:
                     params['page'] = page
@@ -416,7 +421,7 @@ class MetaView():
                 else:
                     group_list = Group.get_list(camp_idx)
 
-                room_list = Room.get_list()
+                room_list = Roomsetting.get_list(Camp.get_idx(self.camp))
                 room_stat = Room.get_stat(camp_idx=camp_idx)
                 return render_template(
                     '%s/room_assign.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
@@ -440,9 +445,13 @@ class MetaView():
                     return redirect(url_for('.room'))
             else:
                 camp_idx = Camp.get_idx(self.camp)
-
+                complete_list = request.args.getlist('complete')
                 params = request.args.to_dict()
                 room_idx = params.pop('room_idx', None)
+                params.pop('complete', None)
+
+                if complete_list is not None:
+                    params['complete'] = complete_list
 
                 if self.camp == 'cmc':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
@@ -464,12 +473,33 @@ class MetaView():
                 else:
                     group_list = Group.get_list(camp_idx)
 
-                room_list = Room.get_list()
+                room_list = Roomsetting.get_list(Camp.get_idx(self.camp))
                 room_stat = Room.get_stat(camp_idx=camp_idx)
                 return render_template(
                     '%s/room.html' % self.camp, room_list=room_list, members=member_list, count=count,
                     area_list=area_list, group_list=group_list, room_stat=room_stat
                 )
+
+        @self.context.route('/roomsetting', methods=['POST', 'GET'])
+        @login_required
+        @self.hq_permission.require(http_exception=403)
+        @self.camp_permission.require(http_exception=403)
+        def roomsetting():
+            if request.method == 'POST':
+                params = request.form.to_dict()
+                for key, value in params.iteritems():
+                    k = key.split('-')
+                    roomsetting = Roomsetting.get(k[1])
+                    setattr(roomsetting, k[0], value)
+                    roomsetting.save()
+
+            camp_idx = Camp.get_idx(self.camp)
+            room_list = Roomsetting.get_list(camp_idx)
+            if room_list is None or len(room_list) == 0:
+                Roomsetting.init(camp_idx)
+                room_list = Roomsetting.get_list(camp_idx)
+
+            return render_template('%s/room_setting.html' % self.camp, room_list=room_list)
 
         @self.context.route('/fix-attend-error')
         @login_required

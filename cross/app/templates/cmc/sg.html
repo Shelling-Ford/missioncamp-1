@@ -9,25 +9,15 @@
 {% block content %}
 <div class="container">
   {% set i = 0 %}
-  {% set building = room_list[0].building %}
-  <div class="row">
-    <div class="col-sm-1">{{ building }}</div>
+  <div class="row">  
     <div class="col-sm-11">
       <table class="table1">
         <tr>
-          {% for room in room_list %}
-            {% if room.room.building != building %}
-              </tr></table></div></div>
-              {% set i = 0 %}
-              {% set building = room.room.building %}
-              <div class="row"><div class="col-sm-1" style="margin-top:11px;">{{ building }}</div>
-              <div class="col-sm-11"><table class="table1" style="margin-top:11px;"><tr>
-            {% endif %}
-            <td style="text-align:center"><a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>{{ room_stat[room.room.idx] }} / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}</td>
+          {% for sg in sg_list %}
+            <td style="text-align:center"><a id="{{ sg }}" class="btn btn-default btn-xs sgassign">{{ sg }}조</a></td>
             {% set i = i + 1 %}
-            {% if i % 15 == 0 %}
+            {% if i % 30 == 0 %}
             </tr><tr>
-            {% endif %}
           {% endfor %}
         </tr>
       </table>

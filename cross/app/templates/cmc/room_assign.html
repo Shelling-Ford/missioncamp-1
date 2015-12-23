@@ -25,5 +25,12 @@ $('.roomassign').click(function() {
   $('#room_idx').val($(this).attr('id'));
   $('#form1').attr('action', "{{ url_for('.roomassign', next=request.url) }}").submit()
 });
+
+$("#check_all").click(function() {
+	var checkedStatus = this.checked;
+	$("input[name=member_idx]:checkbox").each(function() {
+		$(this).prop('checked', checkedStatus);
+	});
+});
 </script>
 {% endblock %}

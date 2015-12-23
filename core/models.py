@@ -139,6 +139,7 @@ class Member(db.Base):
     cancel_reason = Column(String)
     memo = Column(String)
     room_idx = Column(Integer, ForeignKey('room.idx'))
+    smallgroup_num = Column(Integer)
     attend1 = Column(Integer)
     attend2 = Column(Integer)
     attend3 = Column(Integer)
@@ -178,7 +179,11 @@ class Member(db.Base):
                 if key in membership_keys:
                     filter_list = [cls.membership.any(value=v) for v in value]
                 elif key in payment_keys:
-                    filter_list = [getattr(Payment, key) == v for v in value]
+                    filter_list = list()
+                    for v in value:
+                        param = dict()
+                        param[key] = v
+                        filter_list.append(cls.payment.has(**param))
                 elif key in pass_keys:
                     pass
                 elif key == 'name':
@@ -834,3 +839,39 @@ class Room(db.Base):
                 stat[room_idx] = cnt
 
         return stat
+
+
+class Roomsetting(db.Base):
+    __tablename__ = 'roomsetting'
+
+    idx = Column(Integer, primary_key=True)
+    camp_idx = Column(Integer, ForeignKey('camp.idx'))
+    room_idx = Column(Integer, ForeignKey('room.idx'))
+    cap = Column(Integer)
+    memo = Column(String)
+
+    camp = relationship("Camp", backref=backref("camp_roomsetting", lazy='dynamic'))
+    room = relationship("Room", backref=backref("room_roomsetting", lazy='dynamic'))
+
+    @classmethod
+    def get_list(cls, camp_idx):
+        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
+
+    @classmethod
+    def init(cls, camp_idx):
+        room_list = Room.get_list()
+        for room in room_list:
+            roomsetting = cls()
+            roomsetting.camp_idx = camp_idx
+            roomsetting.room_idx = room.idx
+            roomsetting.cap = 0
+            roomsetting.memo = ''
+            db.db_session.add(roomsetting)
+        db.db_session.commit()
+
+    @classmethod
+    def get(cls, idx):
+        return db.db_session.query(cls).filter(cls.idx == idx).one()
+
+    def save(self):
+        db.db_session.commit()

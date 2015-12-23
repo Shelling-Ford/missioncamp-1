@@ -1,4 +1,4 @@
-#-*-coding:utf8-*-
+# -*-coding:utf8-*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -7,6 +7,7 @@ import collections
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
+
 
 class SQLDriver():
     def __init__(self, uri):
@@ -29,7 +30,7 @@ class SQLDriver():
         row = result.fetchone()
         rows = []
         while row is not None:
-            #rows.append(collections.OrderedDict((col, getattr(row, col)) for col in result._metadata.keys))
+            # rows.append(collections.OrderedDict((col, getattr(row, col)) for col in result._metadata.keys))
             rows.append(dict((col, getattr(row, col)) for col in result._metadata.keys))
             row = result.fetchone()
 
@@ -46,7 +47,7 @@ class SQLDriver():
             r = dict((col, getattr(row, col)) for col in result._metadata.keys)
         else:
             r = None
-           
+
         return r
 
     def raw_query(self, query, params=None):
@@ -61,4 +62,4 @@ class SQLDriver():
         s.commit()
 
 db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/mcampadm?charset=utf8")
-#intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")
+# intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")

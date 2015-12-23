@@ -419,7 +419,7 @@ class MetaView():
                 room_list = Room.get_list()
                 room_stat = Room.get_stat(camp_idx=camp_idx)
                 return render_template(
-                    '%s/room_list.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
+                    '%s/room_assign.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
                     nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list, room_stat=room_stat
                 )
 
@@ -428,27 +428,34 @@ class MetaView():
         @self.hq_permission.require(http_exception=403)
         @self.camp_permission.require(http_exception=403)
         def room():
-            if request.mtthod == 'POST':
-                pass
-            else:
-                room_idx = request.args.get('room_idx')
+            if request.method == 'POST':
+                member_list = request.form.getlist('member_idx')
+                for member_idx in member_list:
+                    Member.update(member_idx, room_idx=None)
 
+                next = request.args.get('next')
+                if next is not None:
+                    return redirect(next)
+                else:
+                    return redirect(url_for('.room'))
+            else:
                 camp_idx = Camp.get_idx(self.camp)
-                page = int(request.args.get('page', 1))
 
                 params = request.args.to_dict()
-                params.pop('room_idx', None)
-
-                if 'page' not in params:
-                    params['page'] = page
+                room_idx = params.pop('room_idx', None)
 
                 if self.camp == 'cmc':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
                 elif self.camp == 'ws':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
-                member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, **params)
-                count = Member.count(camp_idx, room_idx=room_idx, **params)
+                if room_idx is not None:
+                    member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, **params)
+                    count = Member.count(camp_idx, room_idx=room_idx, **params)
+                else:
+                    member_list = []
+                    count = 0
+
                 area_list = Area.get_list(self.camp)
                 if type(camp_idx) is list:
                     group_list = []
@@ -460,8 +467,8 @@ class MetaView():
                 room_list = Room.get_list()
                 room_stat = Room.get_stat(camp_idx=camp_idx)
                 return render_template(
-                    '%s/room_list.html' % self.camp, room_list=room_list, members=member_list, count=count-(page-1)*50,
-                    nav=range(1, int(count/50)+2), area_list=area_list, group_list=group_list, room_stat=room_stat
+                    '%s/room.html' % self.camp, room_list=room_list, members=member_list, count=count,
+                    area_list=area_list, group_list=group_list, room_stat=room_stat
                 )
 
         @self.context.route('/fix-attend-error')

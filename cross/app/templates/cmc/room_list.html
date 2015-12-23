@@ -59,7 +59,7 @@
     <br/>
   </div><!-- row -->
   <div class="row">
-    <form id='form1' action="{{ url_for('.roomassign', next=request.url) }}" method="post">
+    <form id='form1' action="" method="post">
       <table class="table1" style="width:100%">
         <thead>
           <tr>
@@ -120,32 +120,10 @@
     </form>
   </div><!-- row -->
   <br/>
-  <div class="row">
-    <table class="table1">
-      <tr>
-        {% set params = request.args.to_dict() %}
-        <!--{% set page = params.pop('page', none) %}-->
-        {% for i in nav %}
-        {% if i == page|int %}
-        <td>{{ i }}</td>
-        {% else %}
-        <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
-        {% endif %}
-        {% if i % 30 == 0 %}</tr><tr>{% endif %}
-        {% endfor %}
-      </tr>
-    </table>
-  </div><!-- row -->
+  {% block page_nav %}
+  {% endblock %}
 </div><!-- container -->
 
 
 {% endblock %}
 
-{% block script %}
-<script>
-$('.roomassign').click(function() {
-  $('#room_idx').val($(this).attr('id'));
-  $('#form1').submit()
-});
-</script>
-{% endblock %}

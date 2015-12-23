@@ -1,0 +1,10 @@
+{% extends 'cbtj/page.html' %}
+{% import 'macros.html' as macros %}
+
+{% block content %}
+<div class="container">
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+    {{ macros.render_form(form, action_url='', action_text='조회', class_='form-horizontal', editmode=editmode) }}
+  </div>
+</div>
+{% endblock %}

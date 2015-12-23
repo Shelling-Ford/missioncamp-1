@@ -27,6 +27,28 @@ def page(page):
     except TemplateNotFound:
         return render_template('cbtj/404.html')
 
+@context.route('/room-check', methods=['GET', 'POST'])
+def room_check():
+    if request.method == 'POST':
+        contact = '-'.join([request.form.get('hp'), request.form.get('hp2'), request.form.get('hp3')])
+        name = request.form.get('name')
+
+        from core.models import Member, Room
+        from core.database import db
+        member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name).first()
+        room_idx = member.room_idx
+
+        if room_idx is not None:
+            room = Room.get(room_idx)
+        else:
+            room = None
+
+        return render_template('cmc/room-check-result.html', room=room, name=name)
+    else:
+        from core.forms import RoomCheckForm
+        form = RoomCheckForm()
+        return render_template('cmc/room-check.html', form=form)
+
 @context.route('/<camp>/')
 def camp(camp):
     return render_template('cbtj/%s/home.html' % camp)

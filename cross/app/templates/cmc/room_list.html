@@ -49,10 +49,18 @@
         <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
         {% endfor %}
       </select>
-      <div class="form-group"><div class="checkbox"><label><input type="checkbox" name="complete" value="1"/>&nbsp;부분납&nbsp;</label><label><input type="checkbox" name="complete" value="2"/>&nbsp;완납&nbsp;</label></div></div>
+      <div class="form-group">
+        <div class="checkbox">
+          <label><input type="checkbox" name="complete" value="1" {% if 'complete=1' in request.url %} checked {% endif %}/>&nbsp;부분납&nbsp;</label>
+          <label><input type="checkbox" name="complete" value="2" {% if 'complete=2' in request.url %} checked {% endif %}/>&nbsp;완납&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="M"  {% if 'sex=M' in request.url %} checked {% endif %}/>&nbsp;남자&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="F"  {% if 'sex=F' in request.url %} checked {% endif %}/>&nbsp;여자&nbsp;</label>
+        </div>
+      </div>
       <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign') }}" class="btn btn-warning">필터 초기화</a>
+      {% set passlist = ['name', 'page', 'area_idx', 'group_idx', 'cancel_yn', 'complete', 'sex'] %}
       {% for key, value in request.args.iteritems() %}
-      {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' and key != 'cancel_yn' and key != 'complete' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+      {% if key not in passlist %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
       {% endfor %}
       <input type="hidden" name="cancel_yn" value="0"/>
     </form>

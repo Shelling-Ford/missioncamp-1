@@ -1,5 +1,6 @@
 #-*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
+from sqlalchemy.orm.exc import NoResultFound
 from jinja2 import TemplateNotFound
 from core.functions import *
 from core.functions.cbtj import *
@@ -35,19 +36,22 @@ def room_check():
 
         from core.models import Member, Room
         from core.database import db
-        member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name).first()
+        try:
+            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name).one()
+        except NoResultFound:
+            return render_template('cbtj/room-check-result.html', room=None, msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+
         room_idx = member.room_idx
 
         if room_idx is not None:
             room = Room.get(room_idx)
+            return render_template('cbtj/room-check-result.html', room=room, name=name)
         else:
-            room = None
-
-        return render_template('cmc/room-check-result.html', room=room, name=name)
+            return render_template('cbtj/room-check-result.html', room=None, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
     else:
         from core.forms import RoomCheckForm
         form = RoomCheckForm()
-        return render_template('cmc/room-check.html', form=form)
+        return render_template('cbtj/room-check.html', form=form)
 
 @context.route('/<camp>/')
 def camp(camp):

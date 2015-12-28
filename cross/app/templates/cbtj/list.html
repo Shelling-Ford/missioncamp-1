@@ -113,7 +113,7 @@
         <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
         <td>{{ m.date_of_arrival }}</td>
         <td>{{ m.date_of_leave }}</td>
-        <td>{% if not m.building == None %}{{ m.building }}{% endif %} {% if not m.room_number == None %}{{ m.room_number }}{% endif %}</td>
+        <td>{% if m.room is not none %}{{ m.room.building }} {{ m.room.number}}{% endif %}</td>
         <td>{{ m.memo|striptags|truncate(20) }}</td>
         {% else %}
         <td>{{ m.canceldate }}</td>

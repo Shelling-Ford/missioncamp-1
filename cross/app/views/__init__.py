@@ -411,6 +411,9 @@ class MetaView():
                 elif self.camp == 'ws':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
+                print camp_idx
+                print params
+
                 member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], isnull='room_idx', **params)
                 count = Member.count(camp_idx, isnull='room_idx', **params)
                 area_list = Area.get_list(self.camp)

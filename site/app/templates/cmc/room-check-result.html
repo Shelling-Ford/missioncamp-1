@@ -10,7 +10,7 @@
 	  	</tr>
 	  	<tr>
 	  		<td>숙소</td>
-	  		<td>{% if room is not none %}{{ room.building }} {{ room.number }}{% else %}아직 배치되지 않았습니다^^{% endif %}</td>
+	  		<td>{% if room is not none %}{{ room.building }} {{ room.number }}{% else %}{{ msg }}{% endif %}</td>
 	  	</tr>
   	</table>
   </div>

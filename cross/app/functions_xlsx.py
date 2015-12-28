@@ -72,6 +72,7 @@ class XlsxBuilder():
         kwargs.pop('page', None)
         kwargs.pop('year', None)
         kwargs.pop('term', None)
+        kwargs.pop('receptionmode', None)
 
         camp = Camp.get(camp_idx[0]) if type(camp_idx) is list else Camp.get(camp_idx)
 

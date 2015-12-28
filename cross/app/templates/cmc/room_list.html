@@ -23,8 +23,10 @@
               <div class="row"><div class="col-sm-1" style="margin-top:11px;">{{ building }}</div>
               <div class="col-sm-11"><table class="table1" style="margin-top:11px;"><tr>
             {% endif %}
-            <td style="text-align:center"><a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>{{ room_stat[room.room.idx] }} / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}</td>
+            {% if room.cap > 0 %}
+            <td style="text-align:center"><a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>{{ room_stat['cnt'][room.room.idx] }} ({{ room_stat['a_cnt'][room.room.idx]}}) / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}</td>
             {% set i = i + 1 %}
+            {% endif %}
             {% if i % 15 == 0 %}
             </tr><tr>
             {% endif %}

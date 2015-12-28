@@ -825,19 +825,25 @@ class Room(db.Base):
     def get_stat(cls, camp_idx):
         room_list = cls.get_list()
         stat = dict()
+        cnt_stat = dict()
+        a_cnt_stat = dict()
         for room in room_list:
-            stat[room.idx] = 0
+            cnt_stat[room.idx] = 0
+            a_cnt_stat[room.idx] = 0
 
         camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
         if camp_idx is not None:
             filter_list = [Member.camp_idx == idx for idx in camp_idx]
 
-        count = db.db_session.query(Member.room_idx, func.count(Member.idx)).filter(or_(*filter_list)).group_by(Member.room_idx)
+        count = db.db_session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list)).group_by(Member.room_idx)
 
-        for room_idx, cnt in count.all():
+        for room_idx, cnt, a_cnt in count.all():
             if room_idx is not None:
-                stat[room_idx] = cnt
+                cnt_stat[room_idx] = cnt
+                a_cnt_stat[room_idx] = a_cnt
 
+        stat['cnt'] = cnt_stat
+        stat['a_cnt'] = a_cnt_stat
         return stat
 
 

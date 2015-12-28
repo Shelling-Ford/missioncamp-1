@@ -70,7 +70,9 @@
         <th>캠프</th>
         {% endif %}
         <th>신청날자</th>
+        {% if (current_user.role == 'hq' and 'cmc' in current_user.camp) or current_user.role == 'master' %}
         <th>출석</th>
+        {% endif %}
         <th>구분</th>
         <th>이름</th>
         <th>지부</th>
@@ -102,10 +104,12 @@
         <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
         {% endif %}
         <td>{{ m.regdate }}</td>
+        {% if (current_user.role == 'hq' and 'cmc' in current_user.camp) or current_user.role == 'master' %}
         <td>
           {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
           {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
         </td>
+        {% endif %}
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>

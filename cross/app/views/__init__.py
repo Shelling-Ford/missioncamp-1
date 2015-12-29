@@ -462,8 +462,8 @@ class MetaView():
                     camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
                 if room_idx is not None:
-                    member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, **params)
-                    count = Member.count(camp_idx, room_idx=room_idx, **params)
+                    member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, cancel_yn=0, **params)
+                    count = Member.count(camp_idx, room_idx=room_idx, cancel_yn=0, **params)
                 else:
                     member_list = []
                     count = 0

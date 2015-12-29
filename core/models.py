@@ -835,7 +835,7 @@ class Room(db.Base):
         if camp_idx is not None:
             filter_list = [Member.camp_idx == idx for idx in camp_idx]
 
-        count = db.db_session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list)).group_by(Member.room_idx)
+        count = db.db_session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list), Member.cancel_yn==0).group_by(Member.room_idx)
 
         for room_idx, cnt, a_cnt in count.all():
             if room_idx is not None:

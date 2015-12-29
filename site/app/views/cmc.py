@@ -35,18 +35,23 @@ def room_check():
         from core.models import Member, Room
         from core.database import db
         from core.models import Camp
+        from sqlalchemy import or_
+        from sqlalchemy.orm.exc import MultipleResultsFound
+
         try:
-            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, Member.camp_idx == Camp.get_idx('cmc')).one()
+            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('cmc'), Member.camp_idx == Camp.get_idx('cbtj'))).one()
         except NoResultFound:
             return render_template('cmc/room-check-result.html', room=None, msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+        except MultipleResultsFound:
+            return render_template('cmc/room-check-result.html', room=None, msg=u'청대, 청직 중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
 
         room_idx = member.room_idx
 
         if room_idx is not None:
             room = Room.get(room_idx)
-            return render_template('cmc/room-check-result.html', room=room, name=name)
+            return render_template('cmc/room-check-result.html', room=room, camp=member.camp.name, name=name)
         else:
-            return render_template('cmc/room-check-result.html', room=None, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
+            return render_template('cmc/room-check-result.html', room=None, camp=member.camp.name, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
 
     else:
         from core.forms import RoomCheckForm

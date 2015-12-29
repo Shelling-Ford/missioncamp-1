@@ -8,6 +8,12 @@
 	  		<td>이름</td>
 	  		<td>{{ name }}</td>
 	  	</tr>
+	  	{% if camp is not none %}
+	  	<tr>
+	  		<td>캠프</td>
+	  		<td>{{ camp }}</td>
+	  	</tr>
+	  	{% endif %}
 	  	<tr>
 	  		<td>숙소</td>
 	  		<td>{% if room is not none %}{{ room.building }} {{ room.number }}{% else %}{{ msg }}{% endif %}</td>

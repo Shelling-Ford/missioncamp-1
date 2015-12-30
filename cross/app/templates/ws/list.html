@@ -71,6 +71,7 @@
         {% endif %}
         <th>신청날자</th>
         <th>출석</th>
+        <th>출첵시간</th>
         <th>구분</th>
         {% if request.args.get('persontype') == '전일스탭' %}
         <th>스탭구분</th>
@@ -118,6 +119,7 @@
         {% else %}
         <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
         {% endif %}
+        <td>{% if m.attend_time is not none %}{{ m.attend_time }}{% endif %}</td>
         <td>{{ m.persontype }}</td>
         {% if request.args.get('persontype') == '전일스탭' %}
         <td>{{ membership.stafftype }}</td>

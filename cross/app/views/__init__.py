@@ -258,7 +258,10 @@ class MetaView():
         def toggle_attend():
             member_idx = request.args.get('member_idx')
             attend = request.args.get('attend', 0)
-            Member.update(member_idx, attend_yn=attend)
+            if attend == "1":
+                Member.update(member_idx, attend_yn=attend, attend_time=datetime.datetime.today())
+            else:
+                Member.update(member_idx, attend_yn=attend, attend_time=None)
             next = request.args.get('next')
             return redirect(next)
 

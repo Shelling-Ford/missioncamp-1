@@ -1,0 +1,34 @@
+{% extends 'kids/page.html' %}
+
+{% block content %}
+<div class="container">
+    <form method="POST" id="form1">
+        <button class="btn btn-success submit">저장</button><br/><br/>
+        <table class="table1">
+            <tr>
+                <th>건물</th>
+                <th>호수</th>
+                <th>수용인원</th>
+                <th>메모</th>
+            </tr>
+            {% for roomsetting in room_list %}
+            <tr>
+                <td>{{ roomsetting.room.building }}</td>
+                <td>{{ roomsetting.room.number }}</td>
+                <td><input type="text" name="cap-{{ roomsetting.idx }}" value="{{ roomsetting.cap }}"/></td>
+                <td><input type="text" name="memo-{{ roomsetting.idx }}" value="{{ roomsetting.memo }}"/></td>
+            </tr>
+            {% endfor %}
+        </table><br/><br/>
+        <button class="btn btn-success submit">저장</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$('.submit').click(function() {
+    $('#form1').submit();
+});
+</script>
+{% endblock %}

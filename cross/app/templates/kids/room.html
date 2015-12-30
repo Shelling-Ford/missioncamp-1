@@ -1,0 +1,26 @@
+{% extends 'kids/room_list.html' %}
+
+{% block page_nav %}
+<button id="room_cancel" class="btn btn-success">배치취소</button>
+{% endblock %}
+
+{% block script %}
+<script>
+$('.roomassign').click(function() {
+  var room_idx = $(this).attr('id');
+  location.href = "{{ url_for('.room') }}" + "?room_idx=" + room_idx;
+});
+
+$('#room_cancel').click(function() {
+  $('#room_idx').val($(this).attr('id'));
+  $('#form1').attr('action', "{{ url_for('.room', next=request.url) }}").submit()
+});
+
+$("#check_all").click(function() {
+  var checkedStatus = this.checked;
+  $("input[name=member_idx]:checkbox").each(function() {
+    $(this).prop('checked', checkedStatus);
+  });
+});
+</script>
+{% endblock %}

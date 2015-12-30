@@ -67,7 +67,7 @@ class GroupMemberRegForm(Form):
     persontype = RadioField(
         u'참가구분',
         choices=[
-            (u'어린이', u'어린이'), (u'교사', u'교사'), (u'교역자', u'교역자'), (u'기타', u'기타')
+            (u'어린이', u'어린이'), (u'교사', u'교사'), (u'교역자', u'교역자'), (u'어부봐', u'어부봐'), (u'유스탭', u'유스탭'), (u'기타', u'기타')
         ]
     )
     newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])

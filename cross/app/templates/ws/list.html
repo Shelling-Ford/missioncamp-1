@@ -110,10 +110,14 @@
         <td>{% if m.camp.code == 'cbtj2' %}<span style="color:green">청직</span>{% elif m.camp.code == 'ws' %}<span style="color:orange">여남시</span>{% endif %}</td>
         {% endif %}
         <td>{{ m.regdate }}</td>
+        {% if (current_user.role == 'hq' and 'ws' in current_user.camp) or current_user.role == 'master' %}
         <td>
           {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
           {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
         </td>
+        {% else %}
+        <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
+        {% endif %}
         <td>{{ m.persontype }}</td>
         {% if request.args.get('persontype') == '전일스탭' %}
         <td>{{ membership.stafftype }}</td>

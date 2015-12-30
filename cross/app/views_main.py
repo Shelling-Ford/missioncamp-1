@@ -58,6 +58,10 @@ def on_identity_loaded(sender, identity):
 # 로그인 폼
 @context.route('/')
 def home():
+    if current_user.is_authenticated:
+        camp = current_user.camp
+        return redirect(url_for('%s.home' % camp))
+
     return render_template('home.html')
 
 

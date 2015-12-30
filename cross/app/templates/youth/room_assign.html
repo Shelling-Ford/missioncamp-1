@@ -1,0 +1,36 @@
+{% extends 'youth/room_list.html' %}
+
+{% block page_nav %}
+<div class="row">
+<table class="table1">
+  <tr>
+    {% set params = request.args.to_dict() %}
+    <!--{% set page = params.pop('page', none) %}-->
+    {% for i in nav %}
+    {% if i == page|int %}
+    <td>{{ i }}</td>
+    {% else %}
+    <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
+    {% endif %}
+    {% if i % 30 == 0 %}</tr><tr>{% endif %}
+    {% endfor %}
+  </tr>
+</table>
+</div><!-- row -->
+{% endblock %}
+
+{% block script %}
+<script>
+$('.roomassign').click(function() {
+  $('#room_idx').val($(this).attr('id'));
+  $('#form1').attr('action', "{{ url_for('.roomassign', next=request.url) }}").submit()
+});
+
+$("#check_all").click(function() {
+	var checkedStatus = this.checked;
+	$("input[name=member_idx]:checkbox").each(function() {
+		$(this).prop('checked', checkedStatus);
+	});
+});
+</script>
+{% endblock %}

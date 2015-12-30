@@ -6,20 +6,15 @@
 	<li><a href="{{ url_for('youth.member_list', cancel_yn=1) }}">취소자목록</a></li>
 	<li><a href="{{ url_for('youth.promotion_list') }}">홍보물 신청목록</a></li>
 	<li><a href="{{ url_for('youth.home', year=2015, term=2) }}">지난통계(2015여름)</a></li>
-
-	<!--
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			숙소&nbsp;<span class="caret">
 		</a>
 		<ul class="dropdown-menu">
-			<li><a href="#">숙소배치</a></li>
-			<li><a href="#">숙소현황</a></li>
-			<li><a href="#">건물셋팅</a></li>
-			<li><a href="#">캠프숙소셋팅</a></li>
+			<li><a href="{{ url_for('youth.roomassign', cancel_yn=0) }}">숙소배치</a></li>
+			<li><a href="{{ url_for('youth.room', cancel_yn=0) }}">숙소현황</a></li>
+			<li><a href="{{ url_for('youth.roomsetting') }}">숙소셋팅</a></li>
 		</ul>
 	</li>
-	<li><a href="#">통계표</a></li>
--->
 </ul>
 {% endblock %}

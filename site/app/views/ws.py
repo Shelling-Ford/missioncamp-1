@@ -20,6 +20,42 @@ def invitation():
 def recommendation():
     return render_template('ws/recommendation.html')
 
+
+
+@context.route('/room-check', methods=['GET', 'POST'])
+def room_check():
+    if request.method == 'POST':
+        contact = '-'.join([request.form.get('hp'), request.form.get('hp2'), request.form.get('hp3')])
+        name = request.form.get('name')
+
+        from core.models import Member, Room
+        from core.database import db
+        from core.models import Camp
+        from sqlalchemy import or_
+        from sqlalchemy.orm.exc import MultipleResultsFound
+
+        try:
+            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('ws'), Member.camp_idx == Camp.get_idx('cbtj2'))).one()
+        except NoResultFound:
+            return render_template('ws/room-check-result.html', room=None, msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+        except MultipleResultsFound:
+            return render_template('ws/room-check-result.html', room=None, msg=u'청대, 청직 중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
+
+        room_idx = member.room_idx
+
+        if room_idx is not None:
+            room = Room.get(room_idx)
+            return render_template('ws/room-check-result.html', room=room, camp=member.camp.name, name=name)
+        else:
+            return render_template('ws/room-check-result.html', room=None, camp=member.camp.name, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
+
+    else:
+        from core.forms import RoomCheckForm
+        form = RoomCheckForm()
+        return render_template('ws/room-check.html', form=form)
+
+
+
 @context.route('/camp')
 def camp():
     return redirect(url_for('home'))
@@ -125,7 +161,7 @@ def show_individual():
     idx = session['idx']
     member = getIndividualData(idx)
     area_name = getAreaName(member['area_idx'])
-    return render_template('ws/individual/show.html', camp='cmc', member=member, area_name=area_name)
+    return render_template('ws/individual/show.html', camp='ws', member=member, area_name=area_name)
 
 # 개인 신청 수정
 @context.route('/individual/edit')
@@ -190,7 +226,7 @@ def check_groupid():
 @context.route('/group/add')
 def reg_group():
     campidx = getCampIdx('ws')
-    return render_template('ws/group/add.html', camp_idx=campidx, area_list=getAreaList('cmc'))
+    return render_template('ws/group/add.html', camp_idx=campidx, area_list=getAreaList('ws'))
 
 # 단체신청 저장
 @context.route('/group/add', methods=['POST'])
@@ -280,7 +316,7 @@ def member_add():
     campidx = getCampIdx('ws')
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
     group = getGroupData(idx)
-    return render_template('ws/individual/add.html', camp='cmc', campidx=campidx,
+    return render_template('ws/individual/add.html', camp='ws', campidx=campidx,
         date_select_list=date_select_list, group_yn=True, group=group)
 
 # 단체 멤버 추가 적용
@@ -317,7 +353,7 @@ def member_edit(member_idx):
     area_list = getAreaList('ws') # form에 들어갈 지부 목록
     date_select_list = getDateSelectList() # form 생년월일에 들어갈 날자 목록
     group = getGroupData(idx)
-    return render_template('ws/individual/edit.html', camp='cmc', campidx=campidx, member=member, membership=member['membership'],
+    return render_template('ws/individual/edit.html', camp='ws', campidx=campidx, member=member, membership=member['membership'],
         area_list=area_list, date_select_list=date_select_list, group_yn=True, group=group)
 
 # 단체 멤버 수정 저장

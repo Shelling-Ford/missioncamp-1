@@ -1,0 +1,24 @@
+{% extends 'ws/page.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+  	<table class="table">
+	  	<tr>
+	  		<td>이름</td>
+	  		<td>{{ name }}</td>
+	  	</tr>
+	  	{% if camp is not none %}
+	  	<tr>
+	  		<td>캠프</td>
+	  		<td>{{ camp }}</td>
+	  	</tr>
+	  	{% endif %}
+	  	<tr>
+	  		<td>숙소</td>
+	  		<td>{% if room is not none %}{{ room.building }} {{ room.number }}{% else %}{{ msg }}{% endif %}</td>
+	  	</tr>
+  	</table>
+  </div>
+</div>
+{% endblock %}

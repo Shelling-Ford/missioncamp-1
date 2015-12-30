@@ -89,7 +89,14 @@
       <tr>
         <td>{{ i }}</td>
         <td>{{ m.regdate }}</td>
-        <td><input type="checkbox" name="{{ m.idx }}" id="{{ m.idx }}" {% if m.attend_yn %} checked {% endif %} /></td>
+        {% if (current_user.role == 'hq' and 'kids' in current_user.camp) or current_user.role == 'master' %}
+        <td>
+          {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
+          {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
+        </td>
+        {% else %}
+        <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
+        {% endif %}
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>

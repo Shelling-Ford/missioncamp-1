@@ -66,6 +66,7 @@
         <th>캠프</th>
         <th>신청날자</th>
         <th>출석</th>
+        <th>출첵시간</th>
         <th>구분</th>
         <th>이름</th>
         <th>지부</th>
@@ -103,6 +104,7 @@
         {% else %}
         <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
         {% endif %}
+        <td>{% if m.attend_time is not none %}{{ m.attend_time }}{% endif %}</td>
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx, next=request.url, camp=m.camp.code) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>

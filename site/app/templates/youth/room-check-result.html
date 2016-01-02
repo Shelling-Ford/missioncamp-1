@@ -1,7 +1,10 @@
-{% extends 'ws/page.html' %}
+{% extends 'youth/page.html' %}
 
 {% block content %}
 <div class="container">
+  <div class="page-header">
+    <h2>숙소조회</h2>
+  </div>
   <div class="col-xs-12 col-sm-10 col-md-8 well">
   	{% if member_list|length > 0 %}
   	{% if group_name is not none %}

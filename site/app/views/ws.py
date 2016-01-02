@@ -27,27 +27,36 @@ def room_check():
     if request.method == 'POST':
         contact = '-'.join([request.form.get('hp'), request.form.get('hp2'), request.form.get('hp3')])
         name = request.form.get('name')
+        logintype = request.form.get('logintype')
 
-        from core.models import Member, Room
+        from core.models import Member, Room, Group
         from core.database import db
         from core.models import Camp
         from sqlalchemy import or_
-        from sqlalchemy.orm.exc import MultipleResultsFound
+        from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
-        try:
-            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('ws'), Member.camp_idx == Camp.get_idx('cbtj2'))).one()
-        except NoResultFound:
-            return render_template('ws/room-check-result.html', room=None, msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
-        except MultipleResultsFound:
-            return render_template('ws/room-check-result.html', room=None, msg=u'청대, 청직 중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
-
-        room_idx = member.room_idx
-
-        if room_idx is not None:
-            room = Room.get(room_idx)
-            return render_template('ws/room-check-result.html', room=room, camp=member.camp.name, name=name)
+        if logintype == u'개인':
+            try:
+                member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('ws'), Member.camp_idx == Camp.get_idx('cbtj2'))).one()
+                member_list = [member]
+                group_name = None
+            except NoResultFound:
+                return render_template('ws/room-check-result.html', msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+            except MultipleResultsFound:
+                return render_template('ws/room-check-result.html', msg=u'중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
+        elif logintype == u'단체':
+            try:
+                group = db.db_session.query(Group).filter(Group.leadercontact == contact, Group.leadername == name, Group.cancel_yn == 0, or_(Group.camp_idx == Camp.get_idx('ws'), Group.camp_idx == Camp.get_idx('cbtj2'))).one()
+                member_list = Member.get_list(group.camp_idx, group_idx=group.idx)
+                group_name = group.name
+            except NoResultFound:
+                return render_template('ws/room-check-result.html', msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+            except MultipleResultsFound:
+                return render_template('ws/room-check-result.html', msg=u'중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
         else:
-            return render_template('ws/room-check-result.html', room=None, camp=member.camp.name, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
+            pass
+
+        return render_template('ws/room-check-result.html', member_list=member_list, group_name=group_name)
 
     else:
         from core.forms import RoomCheckForm

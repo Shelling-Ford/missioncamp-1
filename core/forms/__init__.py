@@ -1,5 +1,5 @@
 # -*-coding:utf-8-*-
-from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField
+from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField, RadioField
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
 from core.models import Area
 
@@ -40,3 +40,4 @@ class GroupForm(Form):
 class RoomCheckForm(Form):
     contact = ContactField(u'연락처')
     name = StringField(u'이름')
+    logintype = RadioField(u'구분', choices=[(u'개인', u'개인'), (u'단체', u'단체')])

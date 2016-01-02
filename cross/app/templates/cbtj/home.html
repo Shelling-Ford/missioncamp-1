@@ -3,6 +3,7 @@
 
 {% block content %}
 <div class="container">
+  {% if request.args.get('cbtj1') == '1' %}
   <h2>1차캠프</h2>
   {{ macros.cbtj_render_stat(stat=stat1.summary, title='요약', cols=2, first_row_cols=1) }}
   <br/>
@@ -54,7 +55,9 @@
   {% if current_user.role == 'master' %}
   <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날자 선택 오류 수정</a>
   {% endif %}
+  {% endif %}
 
+  {% if request.args.get('cbtj2') == '1' %}
   <h2>2차캠프</h2>
   {{ macros.cbtj_render_stat(stat=stat2.summary, title='요약', cols=2, first_row_cols=1, camp='cbtj2') }}
   <br/>
@@ -104,7 +107,9 @@
   {% if current_user.role == 'master' %}
   <a href="{{ url_for('.fix_attend_error', camp='cbtj2') }}">전체참석 참가자 날자 선택 오류 수정</a>
   {% endif %}
+  {% endif %}
 
+  {% if request.args.get('all') == '1' %}
   <h2>종합</h2>
   {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
   <br/>
@@ -114,5 +119,6 @@
   <br/>
   {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
   <br/>
+  {% endif %}
 </div>
 {% endblock %}

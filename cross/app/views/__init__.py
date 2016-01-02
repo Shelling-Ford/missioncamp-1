@@ -611,6 +611,11 @@ class CbtjView(MetaView):
         @self.context.route('/')
         @login_required
         def home():
+
+            args = request.args.to_dict()
+            if 'cbtj1' not in args and 'cbtj2' not in args:
+                return redirect(url_for('.home', cbtj2='1'))
+
             camp_idx = getCampIdx('cbtj')
             stat1 = get_basic_stat(camp_idx)
             attend_stat1 = Member.get_attend_stat(camp_idx)

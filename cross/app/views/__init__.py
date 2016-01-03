@@ -643,6 +643,11 @@ class CbtjView(MetaView):
             group = Group.get(group_idx) if group_idx is not None else None
 
             params = request.args.to_dict()
+
+            passlist = ['cbtj1', 'cbtj2', 'all']
+            for key in passlist:
+                params.pop(key, None)
+
             if 'page' not in params:
                 params['page'] = page
 

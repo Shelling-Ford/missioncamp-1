@@ -30,7 +30,7 @@ class XlsxBuilder():
 
     def get_value(self, obj, label):
         boolean = [u'아니오', u'예', u'??']
-        sex = {'M': u'남', 'F': u'여'}
+        sex = {'M': u'남', 'F': u'여', '': u'오류(미입력)'}
         complete = [u'미납', u'부분납', u'완납']
         func_map = {
             u'이름': multi_getattr(obj, 'name', ''),

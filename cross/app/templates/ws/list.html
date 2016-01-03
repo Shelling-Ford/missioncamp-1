@@ -53,7 +53,9 @@
     {% for key, value in request.args.iteritems() %}
     {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
+    {% if current_user.role == 'hq' or current_user.role == 'master' %}
     <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>&nbsp;
+    {% endif %}
   </form>
   <br/>
   <br/>

@@ -211,7 +211,7 @@
         action_text - text of submit button
         class_ - sets a class for form
     #}
-{% macro render_form(form, action_url='', action_text='Submit', class_='', btn_class='btn btn-default', editmode=false) -%}
+{% macro render_form(form, action_url='', action_text='Submit', class_='', btn_class='btn btn-default', editmode=false, receptionmode=false) -%}
 
     <form method="POST" action="{{ action_url }}?next={{ request.url }}" role="form" class="{{ class_ }}" id="form1">
         {{ form.hidden_tag() if form.hidden_tag }}
@@ -237,8 +237,15 @@
                             {{ render_field(f) }}
                         {% endif %}
                     {% else %}
-                        {{ render_field(f) }}
+                        {% if receptionmode %}
+                            {% if f.id not in ['userid', 'groupid', 'pwd', 'pwd2'] %}
+                                {{ render_field(f) }}
+                            {% endif %}
+                        {% else %}
+                            {{ render_field(f) }}
+                        {% endif %}
                     {% endif %}
+                    
                 {% endif %}
             {% endfor %}
         {% endif %}

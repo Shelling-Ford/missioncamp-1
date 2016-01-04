@@ -13,6 +13,7 @@ class RegistrationForm(Form):
     area_idx = SelectField(u'지부', choices=Area.get_list('youth'))
     sex = RadioField(u'성별', choices=[('M', u'남자'), ('F', u'여자')])
     birth = SelectField(u'출생년도', choices=[(unicode(i), unicode(i)) for i in range(2015, 1940, -1)])
+    email = StringField(u'이메일')
     contact = ContactField(u'연락처')
     church = StringField(u'소속교회')
     persontype = RadioField(u'참가구분', choices=[(u'중학생', u'중학생'), (u'고등학생', u'고등학생'), (u'교사', u'교사'), (u'교역자', u'교역자'), (u'기타', u'기타')])

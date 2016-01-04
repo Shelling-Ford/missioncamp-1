@@ -773,6 +773,25 @@ class YouthView(MetaView):
             promotion_list = Promotion.get_list(camp_idx)
             return render_template('%s/promotion_list.html' % self.camp, promotions=promotion_list)
 
+        @self.context.route('/member-add', methods=['POST', 'GET'])
+        def addmember():
+            if request.method == 'POST':
+                next = request.args.get('next')
+                from core.functions import getIndividualFormData
+                formData = getIndividualFormData()
+
+                from core.functions.youth import regIndividual
+                regIndividual(Camp.get_idx(self.camp), formData)
+
+
+                return redirect(next)
+            else:
+                next = request.args.get('next', url_for('.home'))
+                from core.forms.youth import RegistrationForm
+
+                form = RegistrationForm()
+                return render_template('%s/form.html' % self.camp, form=form, receptionmode=True, group_yn=False)
+
         # 개인 신청 수정
         @self.context.route('/member-edit')
         @login_required

@@ -83,6 +83,7 @@
             <th>지부</th>
             <th>단체</th>
             <th>성별</th>
+            <th>재정납부</th>
             <th>재정클레임</th>
             <th>상태</th>
             {% if request.args.get('cancel_yn',0)|int == 0 %}
@@ -118,6 +119,7 @@
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
             {% endif %}
             <td>{{ m.sex }}</td>
+            <td>{% if m.payment is not none and m.payment.amount is not none %}{{ m.payment.amount }}{% endif %}</td>
             <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
             <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
             {% if request.args.get('cancel_yn',0)|int == 0 %}

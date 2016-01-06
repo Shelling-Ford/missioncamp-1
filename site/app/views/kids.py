@@ -145,7 +145,7 @@ def cancel_individual():
 def cancel_individual_proc():
     cancel_reason = request.form.get('cancel_reason', None)
     idx = session['idx']
-    Member.cancle(idx, cancel_reason)
+    Member.cancel(idx, cancel_reason)
     flash(u'신청이 취소되었습니다')
     return redirect(url_for('.home')+'#content')
 

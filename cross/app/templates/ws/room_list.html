@@ -78,6 +78,7 @@
             <th><input type="checkbox" class="check_all" id="check_all"/></th>
             <th>캠프</th>
             <th>신청날자</th>
+            <th>출석</th>
             <th>구분</th>
             <th>이름</th>
             <th>지부</th>
@@ -106,6 +107,7 @@
             <td><input type="checkbox" name="member_idx" value="{{ m.idx }}"/></td>
             <td>{% if m.camp.code == 'cbtj2' %}<span style="color:green">청직</span>{% elif m.camp.code == 'ws' %}<span style="color:orange">여남시</span>{% endif %}</td>
             <td>{{ m.regdate }}</td>
+            <td>{% if m.attend_yn %}<span style="color:blue">O</span>{% else %}<span style="color:gray">X</span>{% endif %}</td>
             <td>{{ m.persontype }}</td>
             {% if m.camp.code == 'cbtj2' %}
             <td><a href="{{ url_for('cbtj.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
@@ -147,4 +149,3 @@
 
 
 {% endblock %}
-

@@ -17,6 +17,49 @@ def check_session(logintype):
 def home():
     return render_template('kids/home.html')
 
+
+
+@context.route('/room-check', methods=['GET', 'POST'])
+def room_check():
+    if request.method == 'POST':
+        contact = '-'.join([request.form.get('hp'), request.form.get('hp2'), request.form.get('hp3')])
+        name = request.form.get('name')
+        logintype = request.form.get('logintype')
+
+        from core.models import Member, Room, Group
+        from core.database import db
+        from core.models import Camp
+        from sqlalchemy import or_
+        from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
+
+        if logintype == u'개인':
+            try:
+                member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('kids'))).one()
+                member_list = [member]
+                group_name = None
+            except NoResultFound:
+                return render_template('kids/room-check-result.html', msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+            except MultipleResultsFound:
+                return render_template('kids/room-check-result.html', msg=u'중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
+        elif logintype == u'단체':
+            try:
+                group = db.db_session.query(Group).filter(Group.leadercontact == contact, Group.leadername == name, Group.cancel_yn == 0, or_(Group.camp_idx == Camp.get_idx('kids'))).one()
+                member_list = Member.get_list(group.camp_idx, group_idx=group.idx)
+                group_name = group.name
+            except NoResultFound:
+                return render_template('kids/room-check-result.html', msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+            except MultipleResultsFound:
+                return render_template('kids/room-check-result.html', msg=u'중복신청자입니다. 로비의 숙소배치팀에 문의해주세요.', name=name)
+        else:
+            pass
+
+        return render_template('kids/room-check-result.html', member_list=member_list, group_name=group_name)
+
+    else:
+        from core.forms import RoomCheckForm
+        form = RoomCheckForm()
+        return render_template('kids/room-check.html', form=form)
+
 # 아이디 중복체크
 @context.route('/individual/check-userid', methods=['POST'])
 @context.route('/group/member/check-userid', methods=['POST'])

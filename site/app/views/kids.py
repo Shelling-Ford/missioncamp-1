@@ -44,7 +44,7 @@ def room_check():
         elif logintype == u'단체':
             try:
                 group = db.db_session.query(Group).filter(Group.leadercontact == contact, Group.leadername == name, Group.cancel_yn == 0, or_(Group.camp_idx == Camp.get_idx('kids'))).one()
-                member_list = Member.get_list(group.camp_idx, group_idx=group.idx)
+                member_list = Member.get_list(group.camp_idx, group_idx=group.idx, orderby='room_idx')
                 group_name = group.name
             except NoResultFound:
                 return render_template('kids/room-check-result.html', msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)

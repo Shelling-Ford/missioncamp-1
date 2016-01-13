@@ -100,7 +100,7 @@
         <td>{{ m.persontype }}</td>
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>
         <td>{{ m.area.name }}</td>
-        <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+        <td>{% if not m.group.name == None %} <a href="{{ url_for('.member_list', group_idx=m.group_idx, cancel_yn=0) }}">{{ m.group.name }}</a> {% endif %}</td>
         <td>{{ m.sex }}</td>
         <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>

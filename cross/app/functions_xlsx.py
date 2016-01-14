@@ -30,12 +30,14 @@ class XlsxBuilder():
 
     def get_value(self, obj, label):
         boolean = [u'아니오', u'예', u'??']
+        ox = ['X', 'O', '??']
         sex = {'M': u'남', 'F': u'여', '': u'오류(미입력)'}
         complete = [u'미납', u'부분납', u'완납']
         func_map = {
             u'이름': multi_getattr(obj, 'name', ''),
             u'지부': multi_getattr(obj, 'area.name', ''),
             u'참가구분': multi_getattr(obj, 'persontype', ''),
+            u'출석': ox[multi_getattr(obj, 'attend_yn', 0)],
             u'단체': multi_getattr(obj, 'group.name', ''),
             u'성별': sex[multi_getattr(obj, 'sex', '')],
             u'연락처': multi_getattr(obj, 'contact', ''),
@@ -84,7 +86,7 @@ class XlsxBuilder():
             ]
         else:
             label_list = [
-                u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
+                u'이름', u'지부', u'참가구분', u'출석', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
                 u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'MIT', u'뉴커머',
                 u'전체참석', u'오는날', u'가는날', u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'통역필요',
                 u'등록날자', u'숙소', u'메모'

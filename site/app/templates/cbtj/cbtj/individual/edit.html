@@ -4,9 +4,9 @@
 <div class="container">
   <div class="page-header">
     {% if not group_yn %}
-    <h2>개인 신청 수정(1차캠프: 12.28~31)</h2>
+    <h2>개인 신청 수정</h2>
     {% else %}
-    <h2>멤버 신청서 수정(1차캠프: 12.28~31)</h2>
+    <h2>멤버 신청서 수정</h2>
     {% endif %}
   </div>
   <div class="col-xs-12 col-sm-6">
@@ -93,6 +93,7 @@
 
               <option value="경제금융" {% if membership.job == "경제금융" %} selected {% endif %}>경제금융</option>
               <option value="연구기술" {% if membership.job == "연구기술" %} selected {% endif %}>연구기술</option>
+              <option value="디자인-영상" {% if membership.job == "디자인-영상" %} selected {% endif %}>디자인-영상</option>
               <option value="교육" {% if membership.job == "교육" %} selected {% endif %}>교육</option>
               <option value="사무관리" {% if membership.job == "사무관리" %} selected {% endif %}>사무관리</option>
               <option value="판매서비스" {% if membership.job == "판매서비스" %} selected {% endif %}>판매서비스</option>
@@ -127,16 +128,16 @@
           <tr id="bubun">
             <td>캠프참석기간</td>
             <td colspan="3"><select name="date_of_arrival" id="date_of_arrival">
-              <option value="2015-12-28" {% if member['date_of_arrival']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
-              <option value="2015-12-29" {% if member['date_of_arrival']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
-              <option value="2015-12-30" {% if member['date_of_arrival']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
-              <option value="2015-12-31" {% if member['date_of_arrival']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
+              <option value="2016-06-22" {% if member['date_of_arrival']|string() == "2016-06-22" %} selected {% endif %}>2016-06-22</option>
+              <option value="2016-06-23" {% if member['date_of_arrival']|string() == "2016-06-23" %} selected {% endif %}>2016-06-23</option>
+              <option value="2016-06-24" {% if member['date_of_arrival']|string() == "2016-06-24" %} selected {% endif %}>2016-06-24</option>
+              <option value="2016-06-25" {% if member['date_of_arrival']|string() == "2016-06-25" %} selected {% endif %}>2016-06-25</option>
             </select>&nbsp;~&nbsp;
             <select name="date_of_leave" id="date_of_leave">
-              <option value="2015-12-28" {% if member['date_of_leave']|string() == "2015-12-28" %} selected {% endif %}>2015-12-28</option>
-              <option value="2015-12-29" {% if member['date_of_leave']|string() == "2015-12-29" %} selected {% endif %}>2015-12-29</option>
-              <option value="2015-12-30" {% if member['date_of_leave']|string() == "2015-12-30" %} selected {% endif %}>2015-12-30</option>
-              <option value="2015-12-31" {% if member['date_of_leave']|string() == "2015-12-31" %} selected {% endif %}>2015-12-31</option>
+              <option value="2016-06-22" {% if member['date_of_leave']|string() == "2016-06-22" %} selected {% endif %}>2016-06-22</option>
+              <option value="2016-06-23" {% if member['date_of_leave']|string() == "2016-06-23" %} selected {% endif %}>2016-06-23</option>
+              <option value="2016-06-24" {% if member['date_of_leave']|string() == "2016-06-24" %} selected {% endif %}>2016-06-24</option>
+              <option value="2016-06-25" {% if member['date_of_leave']|string() == "2016-06-25" %} selected {% endif %}>2016-06-25</option>
             </select></td>
           </tr>
           <tr>
@@ -149,7 +150,7 @@
 
           </tr>
           <tr>
-            <td>인터콥 훈련여부</td>
+            <td><strong>인터콥 훈련여부</strong></td>
             <td colspan="3">
               <table>
                 <tr>
@@ -164,10 +165,11 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" name="training" class="membership" id="cbtj" value="C-BTJ" {% if "C-BTJ" in membership.training %} checked {% endif %}/> &nbsp;<label for="cbtj">C-BTJ</label>&nbsp;&nbsp;</td>
-                  <td><input type="checkbox" name="training" class="membership" id="ytm" value="Y-TM" {% if "Y-TM" in membership.training %} checked {% endif %}/> &nbsp;<label for="ytm">Y-TM</label>&nbsp;&nbsp;</td>
+                  <td><input type="checkbox" name="training" class="membership" id="ytm" value="Y-TM" {% if "Y-TM" in membership.training %} checked {% endif %}/> &nbsp;<label for="ytm">Y-Tentmaker</label>&nbsp;&nbsp;</td>
                   <td><input type="checkbox" name="training" id="sm" class="membership" value="SM" {% if "SM" in membership.training %} checked {% endif %}/> &nbsp;<label for="sm">SM</label>&nbsp;&nbsp;</td>
                 </tr>
                 <tr>
+                  <td><input type="checkbox" name="training" id="etc" class="membership" value="etc" {% if "etc" in membership.training %} checked {% endif %}/> &nbsp;<label for="etc">기타</label>&nbsp;&nbsp;</td>
                   <td><input type="checkbox" name="none" id="none" value="없음" {% if "없음" in membership.training %} checked {% endif %}/> &nbsp;<label for="none">없음</label>&nbsp;&nbsp;</td>
                 </tr>
               </table>

@@ -69,23 +69,30 @@ footer {
 <section>
   <header>
     <a href="{{ url_for('.home') }}">
-      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='cbtj/img/2016/header1.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
+      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='cbtj/img/2016/header2.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
     </a>
-    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='cbtj/img/2016/header1_320.jpg') }}" style="width: 100%" class="visible-xs" alt="청년직장인선교캠프"/></a>
+    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='cbtj/img/2016/header2.jpg') }}" style="width: 100%" class="visible-xs" alt="청년직장인선교캠프"/></a>
     <nav class="navbar navbar-default">
       <div class="container ">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-navigation" aria-expanded="false">
+            <!--
             <span class="sr-only">메뉴</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
+          -->
+            메뉴
           </button>
         </div>
         <div class="collapse navbar-collapse" id="primary-navigation">
           <ul class="nav navbar-nav">
             <li><a href="{{ url_for('.page', page='invitation') }}">초대의 글</a></li>
     				<li><a href="{{ url_for('.page', page='recommendation') }}">추천의 글</a></li>
+            <li><a href="{{ url_for('.reg_individual', camp='cbtj') }}">개인 신청</a></li>
+            <li><a href="{{ url_for('.reg_group', camp='cbtj') }}">단체 신청</a></li>
+            <li><a href="{{ url_for('.login', camp='cbtj') }}">신청 조회</a></li>
+            <li><a href="/">홈으로</a></li>
             <!--
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

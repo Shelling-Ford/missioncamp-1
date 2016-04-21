@@ -606,6 +606,7 @@ class CmcView(MetaView):
 
 class CbtjView(MetaView):
 
+    '''
     def init_home(self):
         # 메인통계
         @self.context.route('/')
@@ -667,6 +668,7 @@ class CbtjView(MetaView):
                 '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2),
                 area_list=area_list, group_list=group_list
             )
+    '''
 
     def __init__(self):
         MetaView.__init__(self, 'cbtj')

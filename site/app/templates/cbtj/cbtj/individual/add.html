@@ -4,9 +4,9 @@
 <div class="container">
   <section class="page-header">
     {% if not group_yn %}
-    <h2>개인 신청(1차캠프: 12.28~31)</h2>
+    <h2>개인 신청</h2>
     {% else %}
-    <h2>멤버 신청서 작성(1차캠프: 12.28~31)</h2>
+    <h2>멤버 신청서 작성</h2>
     {% endif %}
   </section>
 
@@ -113,6 +113,7 @@
 
               <option value="경제금융">경제금융</option>
               <option value="연구기술">연구기술</option>
+              <option value="디자인-영상">디자인-영상</option>
               <option value="교육">교육</option>
               <option value="사무관리">사무관리</option>
               <option value="판매서비스">판매서비스</option>
@@ -147,16 +148,16 @@
           <tr id="bubun">
             <td>캠프참석기간</td>
             <td colspan="3"><select name="date_of_arrival">
-              <option selected value="2015-12-28">2015-12-28</option>
-              <option value="2015-12-29">2015-12-29</option>
-              <option value="2015-12-30">2015-12-30</option>
-              <option value="2015-12-31">2015-12-31</option>
+              <option selected value="2016-06-22">2016-06-22</option>
+              <option value="2016-06-23">2016-06-23</option>
+              <option value="2016-06-24">2016-06-24</option>
+              <option value="2016-06-25">2016-06-25</option>
             </select>&nbsp;~&nbsp;
             <select name="date_of_leave">
-              <option value="2015-12-28">2015-12-28</option>
-              <option value="2015-12-29">2015-12-29</option>
-              <option value="2015-12-30">2015-12-30</option>
-              <option selected value="2015-12-31">2015-12-31</option>
+              <option value="2016-06-22">2016-06-22</option>
+              <option value="2016-06-23">2016-06-23</option>
+              <option value="2016-06-24">2016-06-24</option>
+              <option selected value="2016-06-25">2016-06-25</option>
             </select></td>
           </tr>
           <tr>
@@ -167,7 +168,7 @@
             </td>
           </tr>
           <tr>
-            <td>인터콥 훈련여부</td>
+            <td><strong>인터콥 훈련여부</strong></td>
             <td colspan="3">
               <table>
                 <tr>
@@ -182,10 +183,11 @@
                 </tr>
                 <tr>
                   <td><input type="checkbox" name="training" class="membership" id="cbtj" value="C-BTJ"/> &nbsp;<label for="cbtj">C-BTJ</label>&nbsp;&nbsp;</td>
-                  <td><input type="checkbox" name="training" class="membership" id="ytm" value="Y-TM"/> &nbsp;<label for="ytm">Y-TM</label>&nbsp;&nbsp;</td>
+                  <td><input type="checkbox" name="training" class="membership" id="ytm" value="Y-TM"/> &nbsp;<label for="ytm">Y-Tentmaker</label>&nbsp;&nbsp;</td>
                   <td><input type="checkbox" name="training" id="sm" class="membership" value="SM"/> &nbsp;<label for="sm">SM</label>&nbsp;&nbsp;</td>
                 </tr>
                 <tr>
+                  <td><input type="checkbox" name="training" id="etc" class="membership" value="etc"/> &nbsp;<label for="etc">기타</label>&nbsp;&nbsp;</td>
                   <td><input type="checkbox" name="training" id="none" value="없음"/> &nbsp;<label for="none">없음</label>&nbsp;&nbsp;</td>
                 </tr>
               </table>

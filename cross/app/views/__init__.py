@@ -551,6 +551,7 @@ class MetaView():
             return redirect(url_for('.home', next=request.url))
 
 
+# 청대선캠
 class CmcView(MetaView):
     def __init__(self):
         MetaView.__init__(self, 'cmc')
@@ -604,8 +605,10 @@ class CmcView(MetaView):
                 return redirect(url_for('.member', member_idx=idx))
 
 
+# 청직선캠
 class CbtjView(MetaView):
-
+    # 청대청직과 여남시 청직이 나눠지는 경우 사용하는 코드
+    # 나중에 조건문으로 분기할 수 있도록 조정
     '''
     def init_home(self):
         # 메인통계

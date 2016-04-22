@@ -3,32 +3,30 @@
 
 {% block content %}
 <div class="container">
-  {% if request.args.get('cbtj1') == '1' %}
-  <h2>1차캠프</h2>
-  {{ macros.cbtj_render_stat(stat=stat1.summary, title='요약', cols=2, first_row_cols=1) }}
+  {{ macros.cbtj_render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1) }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.persontype, title='참가유형별', param_key='persontype', cols=3) }}
+  {{ macros.cbtj_render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3) }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.area, title='지부별', param_key='area_idx') }}
+  {{ macros.cbtj_render_stat(stat=stat.area, title='지부별', param_key='area_idx') }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.group_name, title='단체별', param_key='group_idx') }}
+  {{ macros.cbtj_render_stat(stat=stat.group_name, title='단체별', param_key='group_idx') }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.training, title='인터콥 훈련 유형별', param_key='training', cols=3) }}
+  {{ macros.cbtj_render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key='training', cols=3) }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.job, title='직업/직군별', param_key='job', cols=3) }}
+  {{ macros.cbtj_render_stat(stat=stat.job, title='직업/직군별', param_key='job', cols=3) }}
   <br/>
-  {{ macros.cbtj_render_stat(stat=stat1.ages, title='연령별', cols=1)}}
+  {{ macros.cbtj_render_stat(stat=stat.ages, title='연령별', cols=1)}}
   <br/>
   <p>일자별 통계</p>
   <table class="table1">
     <tr>
-      <th>12월 28일</th>
-      <th>12월 29일</th>
-      <th>12월 30일</th>
-      <th>12월 31일</th>
+      <th>6월 22일</th>
+      <th>6월 23일</th>
+      <th>6월 24일</th>
+      <th>6월 25일</th>
     </tr>
     <tr>
-    {% for s in attend_stat1 %}
+    {% for s in attend_stat %}
       {% if s.cnt != 0 %}
       <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
       {% endif %}
@@ -46,7 +44,7 @@
       <th>4일</th>
     </tr>
     <tr>
-    {% for s in partial_stat1 %}
+    {% for s in partial_stat %}
       <td>{{ s[1] }}</td>
     {% endfor %}
     </tr>
@@ -55,70 +53,6 @@
   {% if current_user.role == 'master' %}
   <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날자 선택 오류 수정</a>
   {% endif %}
-  {% endif %}
-
-  {% if request.args.get('cbtj2') == '1' %}
-  <h2>2차캠프</h2>
-  {{ macros.cbtj_render_stat(stat=stat2.summary, title='요약', cols=2, first_row_cols=1, camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.persontype, title='참가유형별', param_key='persontype', cols=3, camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.area, title='지부별', param_key='area_idx', camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.group_name, title='단체별', param_key='group_idx', camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.training, title='인터콥 훈련 유형별', param_key='training', cols=3, camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.job, title='직업/직군별', cols=3, param_key='job', camp='cbtj2') }}
-  <br/>
-  {{ macros.cbtj_render_stat(stat=stat2.ages, title='연령별', cols=1, camp='cbtj2')}}
-  <br/>
-  <p>일자별 통계</p>
-  <table class="table1">
-    <tr>
-      <th>1월 7일</th>
-      <th>1월 8일</th>
-      <th>1월 9일</th>
-    </tr>
-    <tr>
-    {% for s in attend_stat2 %}
-      {% if s.cnt != 0 %}
-      <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }}</span> / <span style="color:green">{{ s.a_cnt }}</span></td>
-      {% endif %}
-    {% endfor %}
-    </tr>
-  </table>
-  <br/>
-  <p>참석일수별 통계</p>
-  <table class="table1">
-    <tr>
-      <th>취소</th>
-      <th>1일</th>
-      <th>2일</th>
-      <th>3일</th>
-    </tr>
-    <tr>
-    {% for s in partial_stat2 %}
-      <td>{{ s[1] }}</td>
-    {% endfor %}
-    </tr>
-  </table>
-  <br/>
-  {% if current_user.role == 'master' %}
-  <a href="{{ url_for('.fix_attend_error', camp='cbtj2') }}">전체참석 참가자 날자 선택 오류 수정</a>
-  {% endif %}
-  {% endif %}
-
-  {% if request.args.get('all') == '1' %}
-  <h2>종합</h2>
-  {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
-  <br/>
-  {{ macros.render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3)}}
-  <br/>
-  {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
-  <br/>
-  {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
-  <br/>
   {% endif %}
 </div>
 {% endblock %}

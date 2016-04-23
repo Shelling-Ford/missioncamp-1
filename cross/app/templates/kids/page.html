@@ -13,7 +13,15 @@
 		</ul>
 	</li>
 	<li><a href="{{ url_for('kids.member_list', cancel_yn=1) }}">취소자목록</a></li>
-	<li><a href="{{ url_for('kids.home', year=2015, term=2) }}">지난통계(2015 여름)</a></li>
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			지난통계<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('kids.home', year=2016, term=1) }}">2016 겨울</a></li>
+			<li><a href="{{ url_for('kids.home', year=2015, term=2) }}">2015 여름</a></li>
+		</ul>
+	</li>
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			숙소&nbsp;<span class="caret">

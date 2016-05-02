@@ -8,7 +8,7 @@ sys.path.insert(0, root_dir)
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from flask import Flask
+from flask import Flask, render_template
 
 context = Flask(__name__)
 context.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
@@ -62,4 +62,5 @@ context.register_blueprint(parking)
 @context.errorhandler(500)
 def internal_error(exception):
     context.logger.error(exception)
-    return render_template('500.html'), 500
+    print >> sys.stderr, exception
+    return "500 Internal Server Error", 500

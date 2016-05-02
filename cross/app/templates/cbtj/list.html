@@ -63,7 +63,7 @@
     <thead>
       <tr>
         <th>No.</th>
-        <th>캠프</th>
+        <!--<th>캠프</th>-->
         <th>신청날자</th>
         <th>출석</th>
         <th>출첵시간</th>
@@ -94,7 +94,7 @@
       {% for m in members %}
       <tr>
         <td>{{ i }}</td>
-        <td>{% if m.camp.code == 'cbtj' %}1차{% elif m.camp.code == 'cbtj2' %}2차{% endif %}</td>
+        <!--<td>{% if m.camp.code == 'cbtj' %}1차{% elif m.camp.code == 'cbtj2' %}2차{% endif %}</td>-->
         <td>{{ m.regdate }}</td>
         {% if (current_user.role == 'hq' and 'cbtj' in current_user.camp) or current_user.role == 'master' %}
         <td>

@@ -6,7 +6,7 @@ sys.path.insert(0, cur_dir)
 import logging
 logging.basicConfig(stream=sys.stderr)
 
-activate_this = '/home/missioncamp/.venv/missioncamp/bin/activate_this.py'
+activate_this = '/home/intercp/PYENV/missioncamp/bin/activate_this.py'
 execfile(activate_this, dict(__file__=activate_this))
 
 from werkzeug.debug import DebuggedApplication

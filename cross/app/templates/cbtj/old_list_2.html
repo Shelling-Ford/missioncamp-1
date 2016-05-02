@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="container">
+  <!--
   <div class="col-md-2 col-sm-3">
     <ul>
       <li><a href="{{ url_for('.old_list', camp='cbtj', year=2016, term=1)}}">2016년 겨울</a></li>
@@ -21,6 +22,7 @@
       <li><a href="{{ url_for('.old_list', campcode='ws_2013')}}">2013년 겨울</a></li>
     </ul>
   </div>
+  -->
   <div class="col-md-10 col-sm-9">
     <form class="form-inline" action="{{ url_for('.old_list') }}" method="GET">
       <input type="text" name="name" class="form-control" placeholder="이름"/>

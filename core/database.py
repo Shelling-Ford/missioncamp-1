@@ -13,6 +13,7 @@ class SQLDriver():
     def __init__(self, uri):
         self.engine = create_engine(uri)
         self.db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=self.engine))
+        self.session = self.db_session
 
         self.Base = declarative_base()
         self.Base.query = self.db_session.query_property()
@@ -60,6 +61,9 @@ class SQLDriver():
     def commit(self):
         s = self.db_session()
         s.commit()
+
+# 인증과 관련해서는 btjkorea의 g5_member테이블을 참조함.
+btjkorea_db = SQLDriver("mysql+pymysql://btjkorea:qlxlwpdl1040!@localhost/btjkorea?charset=utf8")
 
 db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/mcampadm?charset=utf8")
 # intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")

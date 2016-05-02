@@ -5,8 +5,9 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from flask_principal import Principal, Identity, AnonymousIdentity, identity_loaded, RoleNeed
 
 from core.functions import *
+from core.models import Area
 from functions import *
-from models import AdminUser
+from models import AdminUser, BtjUser
 
 
 login_manager = LoginManager()
@@ -18,17 +19,28 @@ login_manager.login_message_category = "info"
 # principal 초기화
 principals = Principal(context)
 
+
 # flask-login login_manager
 @login_manager.user_loader
 def load_user(adminid):
-    return AdminUser.get(adminid)
+    try:
+        user = BtjUser.get(mb_id=adminid)
+    except:
+        user = AdminUser.get(id=adminid)
+
+    return user
+
 
 # flask-principal
 @principals.identity_loader
 def read_identity_from_flask_login():
     if current_user.is_authenticated:
-        return Identity(current_user.adminid)
+        try:
+            return Identity(current_user.mb_id)
+        except:
+            return Identity(current_user.adminid)
     return AnonymousIdentity()
+
 
 # flask-principal
 @identity_loaded.connect_via(context)
@@ -71,8 +83,23 @@ def login_proc():
     userid = request.form.get('userid', None)
     pwd = request.form.get('pwd', None)
 
-    adminuser = AdminUser.get(userid)
-    if adminuser is not None and pwd == adminuser.adminpw:
+    if BtjUser.login_check(userid, pwd):
+        btjuser = BtjUser.get(mb_id=userid)
+
+        if btjuser.chaptercode == "01":
+            btjuser.role = 'hq'
+        else:
+            btjuser.role = 'branch'
+            btjuser.area_idx = Area.get_idx(btjuser.chaptercode)
+
+        btjuser.camp = 'cmc'
+        login_user(btjuser)
+
+        camp = 'cmc'
+        return redirect(url_for('%s.home' % camp))
+    elif AdminUser.login_check(userid, pwd):
+        adminuser = AdminUser.get(id=userid)
+
         login_user(adminuser)
         camp = adminuser.camp.split(',')[0]
         return redirect(url_for('%s.home' % camp))

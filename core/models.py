@@ -15,6 +15,7 @@ class Area(db.Base):
     name = Column(String)
     type = Column(String)
     camp = Column(String)
+    chaptercode = Column(String)
 
     @classmethod
     def get(cls, idx):
@@ -27,7 +28,7 @@ class Area(db.Base):
             area_list = db.db_session.query(cls).order_by(cls.type, cls.name).all()
             return area_list
         else:
-            area_list = db.db_session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%"+camp+"%"))).order_by(cls.type, cls.name).all()
+            area_list = db.db_session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%" + camp + "%"))).order_by(cls.type, cls.name).all()
 
             for area in area_list:
                 result.append((area.idx, area.name))
@@ -39,6 +40,11 @@ class Area(db.Base):
     def get_name(cls, idx):
         area = db.db_session.query(cls).filter(cls.idx == idx).one()
         return area.name
+
+    @classmethod
+    def get_idx(cls, chaptercode):
+        area = db.db_session.query(cls).filter(cls.chaptercode == chaptercode).one()
+        return area.idx
 
     @classmethod
     def insert(cls, name, type, camp):

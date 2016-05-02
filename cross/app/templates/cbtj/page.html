@@ -1,6 +1,8 @@
 {% extends 'page.html' %}
 {% block navs %}
 <ul class="nav navbar-nav">
+	<li><a href="{{ url_for('cbtj.home') }}">통계</a></li>
+	<!--
 	<li class="dropdown">
 		<a href="{{ url_for('cbtj.home', cbtj2='1') }}" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			통계&nbsp;<span class="caret">
@@ -11,6 +13,9 @@
 			<li><a href="{{ url_for('cbtj.home', cbtj1='1', cbtj2='1', all='1') }}">전체</a></li>
 		</ul>
 	</li>
+	-->
+	<li><a href="{{ url_for('cbtj.member_list', cancel_yn=0) }}">신청자목록</a></li>
+	<!--
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			신청자목록&nbsp;<span class="caret">
@@ -21,6 +26,9 @@
 			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=0) }}">전체목록</a></li>
 		</ul>
 	</li>
+	-->
+	<li><a href="{{ url_for('cbtj.member_list', cancel_yn=1) }}">취소자목록</a></li>
+	<!--
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			취소자목록&nbsp;<span class="caret">
@@ -31,13 +39,16 @@
 			<li><a href="{{ url_for('cbtj.member_list', cancel_yn=1) }}">전체목록</a></li>
 		</ul>
 	</li>
+	-->
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			지난자료&nbsp;<span class="caret">
 		</a>
 		<ul class="dropdown-menu">
-			<li><a href="{{ url_for('.old_stat', year=2015, term=2) }}">지난통계</a></li>
-			<li><a href="{{ url_for('.old_list', camp='cbtj', year=2015, term=2) }}">지난신청자목록</a></li>
+			<li><a href="{{ url_for('.old_stat', year=2016, term=1) }}">2016-1통계</a></li>
+			<li><a href="{{ url_for('.old_list', camp='cbtj', year=2016, term=1) }}">2016-1신청자목록</a></li>
+			<li><a href="{{ url_for('.old_stat', year=2015, term=2) }}">2015-2통계</a></li>
+			<li><a href="{{ url_for('.old_list', camp='cbtj', year=2015, term=2) }}">2015-2신청자목록</a></li>
 		</ul>
 	</li>
 <!--

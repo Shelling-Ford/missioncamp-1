@@ -1,7 +1,7 @@
 # -*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint, abort
 from flask.helpers import make_response
-from flask_login import login_required  # , current_user
+from flask_login import login_required, current_user
 from flask_principal import Permission, RoleNeed
 # from jinja2 import TemplateNotFound
 
@@ -53,6 +53,9 @@ class MetaView():
 
             params.pop('year', None)
             params.pop('term', None)
+
+            if current_user.role == 'branch' and current_user.chaptercode is not None:
+                params['area_idx'] = Area.get_idx(current_user.chaptercode)
 
             receptionmode = bool(params.pop('receptionmode', False))
             if receptionmode:

@@ -54,8 +54,11 @@ class MetaView():
             params.pop('year', None)
             params.pop('term', None)
 
-            if current_user.area_idx is not None:
+            # if current_user.area_idx is not None:
+            try:
                 params['area_idx'] = current_user.area_idx
+            except AttributeError:
+                pass
 
             receptionmode = bool(params.pop('receptionmode', False))
             if receptionmode:

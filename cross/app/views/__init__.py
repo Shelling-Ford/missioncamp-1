@@ -55,8 +55,15 @@ class MetaView():
             params.pop('term', None)
 
             # if current_user.area_idx is not None:
+            # try:
+            #    params['area_idx'] = current_user.area_idx
+            # except AttributeError:
+            #    pass
+
             try:
-                params['area_idx'] = current_user.area_idx
+                user_area_idx = current_user.area_idx
+                if user_area_idx is not None:
+                    params['area_idx'] = user_area_idx
             except AttributeError:
                 pass
 

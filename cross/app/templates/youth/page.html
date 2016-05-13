@@ -14,7 +14,15 @@
 	</li>
 	<li><a href="{{ url_for('youth.member_list', cancel_yn=1) }}">취소자목록</a></li>
 	<li><a href="{{ url_for('youth.promotion_list') }}">홍보물 신청목록</a></li>
-	<li><a href="{{ url_for('youth.home', year=2015, term=2) }}">지난통계(2015여름)</a></li>
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			지난자료<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('youth.home', year=2016, term=1) }}">지난통계(2016겨울)</a></li>
+			<li><a href="{{ url_for('youth.member_list', cancel_yn=0, year=2016, term=1) }}">지난신청자(2016겨울)</a></li>
+		</ul>
+	</li>
 	<li><a href="{{ url_for('.addmember') }}">당일등록</a></li>
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

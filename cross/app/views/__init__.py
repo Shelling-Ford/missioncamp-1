@@ -702,8 +702,9 @@ class CbtjView(MetaView):
             group_yn = member.group_idx is not None
             camp = request.args.get('camp')
 
-            from core.forms.cbtj import RegForm1, RegForm2
-            form = RegForm1() if camp == 'cbtj' else RegForm2()
+            from core.forms.cbtj import RegForm1  # , RegForm2
+            # form = RegForm1() if camp == 'cbtj' else RegForm2()
+            form = RegForm1()
             form.set_member_data(member)
 
             return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)

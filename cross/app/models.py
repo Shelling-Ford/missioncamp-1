@@ -83,6 +83,7 @@ class BtjUser(btjkorea_db.Base, ModelSerializer, UserMixin):
     mb_hp = Column(String)
     chaptercode = Column(String)
     role = ""
+    camp = ""
 
     @classmethod
     def login_check(cls, mb_id, pwd):
@@ -100,7 +101,14 @@ class BtjUser(btjkorea_db.Base, ModelSerializer, UserMixin):
         result = btjkorea_db.session.query(cls)
 
         if 'mb_id' in kwargs:
-            return result.filter(cls.mb_id == kwargs['mb_id']).one()
+            btjuser = result.filter(cls.mb_id == kwargs['mb_id']).one()
+            if btjuser.chaptercode == '01':
+                btjuser.role = 'hq'
+            else:
+                btjuser.role = 'branch'
+
+            btjuser.camp = "cmc,cbtj,ws,youth,kids"
+            return btjuser
 
         for key, value in kwargs.iteritems():
             filter_list = None

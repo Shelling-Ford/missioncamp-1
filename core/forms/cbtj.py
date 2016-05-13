@@ -51,7 +51,7 @@ class RegForm1(RegistrationForm):
     language = SelectField(u'통역필요', choices=[(u'필요없음', u'필요없음'), (u'영어', u'영어'), (u'중국어', u'중국어'), (u'일본어', u'일본어')])
     memo = StringField(u'남기고싶은 말', widget=TextArea())
 
-
+'''
 class RegForm2(RegistrationForm):
     userid = StringField(u'아이디')
     pwd = PasswordField(u'비밀번호')
@@ -73,3 +73,4 @@ class RegForm2(RegistrationForm):
     training = MultiCheckboxField(u'인터콥 훈련여부', choices=[('training1', u'비전스쿨'), ('training2', u'BTJ스쿨'), ('training3', u'월드미션'), ('training4', u'선교캠프'), ('training5', u'MIT'), ('training6', u'FO'), ('training7', u'C-BTJ'), ('training8', u'Y-TM'), ('training9', u'SM'), ('none', u'없음')])
     language = SelectField(u'통역필요', choices=[(u'필요없음', u'필요없음'), (u'영어', u'영어'), (u'중국어', u'중국어'), (u'일본어', u'일본어')])
     memo = StringField(u'남기고싶은 말', widget=TextArea())
+'''

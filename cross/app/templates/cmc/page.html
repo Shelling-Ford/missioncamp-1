@@ -4,10 +4,19 @@
 	<li><a href="{{ url_for('cmc.home') }}">통계</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=0, page=1) }}">신청자목록</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=1) }}">취소자목록</a></li>
-	<li><a href="{{ url_for('cmc.old_stat', year=2015, term=2) }}">지난통계</a></li>
-	<li><a href="{{ url_for('.old_list', camptype='cmc', year=2015, term=2)}}">지난신청자목록</a></li>
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			지난자료&nbsp;<span class="caret">
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('.home', year=2016, term=1) }}">2016 겨울통계</a></li>
+			<li><a href="{{ url_for('.member_list', camp='cbtj', year=2016, term=1) }}">2016 겨울신청자목록</a></li>
+			<li><a href="{{ url_for('.home', year=2015, term=2) }}">2015 여름통계</a></li>
+			<li><a href="{{ url_for('.member_list', camp='cbtj', year=2015, term=2) }}">2015 여름신청자목록</a></li>
+		</ul>
+	</li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=0, page=1, receptionmode=1) }}">등록대</a></li>
-	
+
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			숙소&nbsp;<span class="caret">

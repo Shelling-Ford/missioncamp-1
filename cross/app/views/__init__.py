@@ -54,17 +54,12 @@ class MetaView():
             params.pop('year', None)
             params.pop('term', None)
 
-            # if current_user.area_idx is not None:
-            # try:
-            #    params['area_idx'] = current_user.area_idx
-            # except AttributeError:
-            #    pass
-
             try:
-                user_area_idx = current_user.area_idx
-                if user_area_idx is not None:
+                chaptercode = current_user.chaptercode
+                if not chaptercode == '01':
+                    user_area_idx = Area.get_idx(chaptercode)
                     params['area_idx'] = user_area_idx
-            except AttributeError:
+            except:
                 pass
 
             receptionmode = bool(params.pop('receptionmode', False))
@@ -574,7 +569,6 @@ class CmcView(MetaView):
         # 개인 신청 수정
         @self.context.route('/member-edit')
         @login_required
-        @self.camp_permission.require(http_exception=403)
         def member_edit():
             idx = request.args.get('member_idx', 0)
             session['idx'] = idx
@@ -591,7 +585,6 @@ class CmcView(MetaView):
         # 수정된 신청서 저장
         @self.context.route('/member-edit', methods=['POST'])
         @login_required
-        @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
             camp_idx = request.form.get('camp_idx')
@@ -694,7 +687,6 @@ class CbtjView(MetaView):
         # 개인 신청 수정
         @self.context.route('/member-edit')
         @login_required
-        @self.camp_permission.require(http_exception=403)
         def member_edit():
             idx = request.args.get('member_idx', 0)
             session['idx'] = idx
@@ -713,7 +705,6 @@ class CbtjView(MetaView):
         # 수정된 신청서 저장
         @self.context.route('/member-edit', methods=['POST'])
         @login_required
-        @self.camp_permission.require(http_exception=403)
         def member_edit_proc():
             idx = session['idx']
             member = Member.get(idx)

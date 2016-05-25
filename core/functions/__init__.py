@@ -1,10 +1,11 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 from core.database import db
 
 from flask import request
 from sqlalchemy.sql import text
 import datetime
 import hashlib
+
 
 # 파라메터: 캠프 코드값
 # 반환값: global_options 테이블에 등록되어있는 년도와 학기, 그리고 파라메터로 넘겨준 캠프 코드에 맞는 캠프 idx
@@ -16,11 +17,13 @@ def getCampIdx(camp, year=None, term=None):
     camp_idx = db.execute("SELECT `idx` FROM `camp` WHERE `code` = '%s' AND `year` = %s AND `term` = %s" % (camp, year, term))[0]['idx']
     return camp_idx
 
+
 # 파라메터: 캠프 고유번호, 옵션 키
 # 반환값: 옵션 값
 def getCampOption(camp_idx, option_key):
     option_data = db.execute("SELECT `value` FROM `options` WHERE `key` = '%s' AND `camp_idx` = %s" % (option_key, cmap_idx))[0]['value']
     return option_data
+
 
 # 파라메터: 캠프 고유번호
 # 반환값: 캠프 날자 리스트
@@ -28,35 +31,40 @@ def getCampDateList(camp_idx):
     campdata = db.execute("SELECT `startday`, `campday` FROM `camp` WHERE `idx` = %s" % camp_idx)[0]
     datelist = []
     for i in range(campdata['campday']):
-        datelist.append(campdata['startday'] + datetime.timedelta(days=(i-1)))
+        datelist.append(campdata['startday'] + datetime.timedelta(days=(i - 1)))
 
     return datelist
+
 
 # 지부 목록
 def getAreaList(camp):
     arealist = db.execute("SELECT * FROM `area` WHERE `camp` = '*' OR `camp` LIKE '%s' ORDER BY `type` ASC, `name` ASC" % ('%' + camp + '%',))
     return arealist
 
+
 # 지부 고유번호를 지부 이름으로 변환
 def getAreaName(area_idx):
     area_name = db.execute("SELECT `name` FROM `area` WHERE `idx` = %s" % (area_idx,))[0]['name']
     return area_name
 
+
 # 생년월일
 def getDateSelectList():
     date_select_list = {}
     # 연도 리스트를 생성, 1900년 부터 2015년 까지
-    date_select_list['yr_list'] = [ i for i in range(2015, 1900, -1) ]
+    date_select_list['yr_list'] = [i for i in range(2015, 1900, -1)]
     # 월 리스트를 생성 1월 부터 12월 까지
-    date_select_list['m_list'] = [ '%02d' % i for i in range(1, 13) ]
+    date_select_list['m_list'] = ['%02d' % i for i in range(1, 13)]
     # 일 리스트를 생성 1일 부터 31일 까지
-    date_select_list['d_list'] = [ '%02d' % i for i in range(1, 32) ]
+    date_select_list['d_list'] = ['%02d' % i for i in range(1, 32)]
 
     return date_select_list
+
 
 # 개인신청 아이디 중복검사
 def checkUserId(campidx, userid):
     return db.execute("SELECT COUNT(`idx`) as `cnt` FROM `member` WHERE `camp_idx` = %s AND `userid` = '%s' AND `cancel_yn` = 0" % (campidx, userid))[0]['cnt']
+
 
 # 단체 아이디 중복 검사
 def checkGroupId(campidx, groupid):
@@ -68,22 +76,26 @@ def loginCheckUserid(campidx, userid, pwd):
     cnt = db.execute("SELECT COUNT(`idx`) as `cnt` FROM `member` WHERE `camp_idx` = %s AND `userid` = '%s' AND `pwd` = '%s' AND `cancel_yn` = 0" % (campidx, userid, hashlib.sha224(pwd).hexdigest()))[0]['cnt']
     return True if cnt > 0 else False
 
+
 # 개인신청자 일련번호 반환
 def getUserIdx(campidx, userid):
     return db.execute("SELECT `idx` FROM `member` WHERE `camp_idx` = %s AND `userid` = '%s'" % (campidx, userid))[0]['idx']
+
 
 # 단체 신정조회 로그인 체크
 def loginCheckGroupid(campidx, groupid, pwd):
     cnt = db.execute("SELECT COUNT(`idx`) as `cnt` FROM `group` WHERE `camp_idx` = %s AND `groupid` = '%s' AND `pwd` = '%s' AND `cancel_yn` = 0" % (campidx, groupid, hashlib.sha224(pwd).hexdigest()))[0]['cnt']
     return True if cnt > 0 else False
 
+
 # 단체 일련번호 조회
 def getGroupIdx(campidx, groupid):
     return db.execute("SELECT `idx` FROM `group` WHERE `camp_idx` = %s AND `groupid` = '%s'" % (campidx, groupid))[0]['idx']
 
+
 # 멤버십 리스트를 딕셔너리로 변환
 def getMembership(membership_list):
-    membership = {'training':[]}
+    membership = {'training': []}
     for m in membership_list:
         if m['key'] == 'training':
             membership[m['key']].append(m['value'])
@@ -104,12 +116,14 @@ group_form_keys = [
     'grouptype', 'area_idx', 'memo'
 ]
 
+
 # key 오류가 발생하지 않도록 등록 필수항목인 key의 값을 None으로 셋팅해줌.
 def getSafeFormData(formData, keys):
     for key in keys:
-        if not key in formData:
+        if key not in formData:
             formData[key] = None
     return formData
+
 
 # request로부터 제출된 양식 데이터를 가져옴
 def getFormData():
@@ -117,7 +131,7 @@ def getFormData():
     for key in request.form.keys():
         if key == 'pwd':
             pwd = request.form.get(key, None)
-            if pwd != '' and pwd != None:
+            if pwd != '' and pwd is not None:
                 formData[key] = hashlib.sha224(pwd).hexdigest()
             else:
                 formData[key] = None
@@ -128,20 +142,23 @@ def getFormData():
             formData[key] = s.strip()
     return formData
 
+
 # add 또는 edit 시에 넘겨주는 form data를 dictionary 타입으로 반환해준다.
 # regIndividual함수와 editIndividual함수에서 이 함수를 사용함
 def getIndividualFormData():
     formData = getSafeFormData(getFormData(), individual_form_keys)
     return formData
 
+
 def getGroupFormData():
     formData = getSafeFormData(getFormData(), group_form_keys)
     return formData
 
+
 def getAttendArray(camp_idx, formData):
     attend = [0, 0, 0, 0]
 
-    campdata = db.select_one("SELECT `startday`, `campday` FROM `camp` WHERE `idx` = :idx", {'idx':camp_idx})
+    campdata = db.select_one("SELECT `startday`, `campday` FROM `camp` WHERE `idx` = :idx", {'idx': camp_idx})
 
     date_of_arrival = formData['date_of_arrival']
     date_of_leave = formData['date_of_leave']
@@ -197,7 +214,8 @@ def getAttendArray(camp_idx, formData):
             attend[2] = 1
     return attend
 
-#개인신청 입력
+
+# 개인신청 입력
 def regIndividualCommon(camp_idx, formData, membershipDataList, group_idx=None):
     formData['camp_idx'] = camp_idx
     formData['attend_yn'] = 0
@@ -233,7 +251,8 @@ def regIndividualCommon(camp_idx, formData, membershipDataList, group_idx=None):
     db.commit()
     return member_idx
 
-#개인신청 수정
+
+# 개인신청 수정
 def editIndividualCommon(camp_idx, member_idx, formData, membershipDataList, group_idx=None):
     formData['member_idx'] = member_idx
 

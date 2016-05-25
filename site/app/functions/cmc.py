@@ -1,9 +1,10 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 from core import functions as core_functions
 import core.database as db
 from contextlib import closing
 import datetime
 from sqlalchemy.sql import text
+
 
 # 개인 신청 등록
 def regIndividual(camp_idx, formData, group_idx=None):
@@ -34,10 +35,13 @@ def regIndividual(camp_idx, formData, group_idx=None):
     lastrowid = db.execute("SELECT LAST_INSERT_ID() as idx")
     member_idx = lastrowid[0]['idx']
 
+    print formData['foreigner']
+    print formData['nationality']
     insertMembershipData(camp_idx, member_idx, formData)
 
     db.commit()
     return member_idx
+
 
 # 개인신청 수정
 def editIndividual(camp_idx, member_idx, formData, group_idx=None):
@@ -45,7 +49,7 @@ def editIndividual(camp_idx, member_idx, formData, group_idx=None):
     formData['group_idx'] = group_idx
 
     # 비밀번호 항목이 빈칸인 경우 비밀번호를 지우지 않도록 함.
-    if formData['pwd'] == '' or formData['pwd'] == None:
+    if formData['pwd'] == '' or formData['pwd'] is None:
         pwd = db.execute('SELECT `pwd` FROM `member` WHERE `idx` = :idx', {'idx': member_idx})[0]['pwd']
         formData['pwd'] = pwd
 
@@ -76,16 +80,23 @@ def editIndividual(camp_idx, member_idx, formData, group_idx=None):
 
     db.commit()
 
+
 def getMembershipDataList(camp_idx, member_idx, formData):
     membership_data_list = []
     if formData['persontype'] == u'청년':
-        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'job', 'value':formData['job']})
+        membership_data_list.append({'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'job', 'value': formData['job']})
     elif formData['persontype'] == u'대학생':
-        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'campus', 'value':formData['campus']})
-        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'major', 'value':formData['major']})
+        membership_data_list.append({'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'campus', 'value': formData['campus']})
+        membership_data_list.append({'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'major', 'value': formData['major']})
 
     for t in formData['training']:
-        membership_data_list.append({'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'training', 'value':t})
+        membership_data_list.append({'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'training', 'value': t})
+
+    if 'foreigner' in formData and formData['foreigner'] == u'외국인':
+        foreigner_data = {'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'foreigner', 'value': u'외국인'}
+        membership_data_list.append(foreigner_data)
+        nationality_data = {'camp_idx': camp_idx, 'member_idx': member_idx, 'key': 'nationality', 'value': formData['nationality']}
+        membership_data_list.append(nationality_data)
 
     return membership_data_list
 
@@ -104,3 +115,6 @@ def insertMembershipData(camp_idx, member_idx, formData):
     for t in formData['training']:
         membership_data = {'camp_idx':camp_idx, 'member_idx':member_idx, 'key':'training', 'value':t}
         db.raw_query(membership_insert, membership_data)
+
+    print 'foreigner in formData' + 'foreigner' in formData
+    print 'formData[\'foreigner\']' + formData['foreigner']

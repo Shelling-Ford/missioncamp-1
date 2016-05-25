@@ -17,13 +17,15 @@
   <br/>
   {{ macros.render_stat(stat=stat.job, title='직군별', param_key="job", cols=3)}}
   <br/>
+  <p><a href="list?cancel_yn=0&amp;foreigner=외국인">외국인 신청자 목록 보기</a></p>
+  <br/>
   <p>일자별 통계</p>
   <table class="table1">
     <tr>
-      <th>12월 28일</th>
-      <th>12월 29일</th>
-      <th>12월 30일</th>
-      <th>12월 31일</th>
+      <th>6월 22일</th>
+      <th>6월 23일</th>
+      <th>6월 24일</th>
+      <th>6월 25일</th>
     </tr>
     <tr>
     {% for s in attend_stat %}

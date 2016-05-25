@@ -176,7 +176,7 @@ class Member(db.Base):
 
     @classmethod
     def get_filtered_result(cls, result, orderby=None, isnull=None, **kwargs):
-        membership_keys = ['training', 'campus', 'job']
+        membership_keys = ['training', 'campus', 'job', 'foreigner']
         payment_keys = ['complete']
         pass_keys = ['page', 'year', 'term']
         for key, value in kwargs.iteritems():

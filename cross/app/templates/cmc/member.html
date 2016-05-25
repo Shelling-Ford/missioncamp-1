@@ -205,6 +205,14 @@
         <td>통역 필요</td>
         <td>{{ member.language }}</td>
       </tr>
+      {% for membership in member.membership %}
+        {% if membership.key == 'foreigner' %}
+        <tr>
+          <td>국적</td>
+          <td>{% for t in member.membership %} {% if t.key == 'nationality' %} {{t.value}} {% endif %}{% endfor %}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
       <tr>
         <td>등록 날자</td>
         <td>{{ member.regdate }}</td>
@@ -213,7 +221,7 @@
         <td>메모</td>
         <td>{{ member.memo }}</td>
       </tr>
-      
+
       {% if current_user.role == 'master' %}
       <tr>
         <td>통계표</td>

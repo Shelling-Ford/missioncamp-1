@@ -79,6 +79,7 @@ def reg_individual():
     return render_template('cmc/individual/add.html', camp='cmc', campidx=campidx,
         area_list=area_list, date_select_list=date_select_list, group_yn=False)
 
+
 # 개인신청 - 신청서를 데이터베이스에 저장
 @context.route('/individual/add', methods=['POST'])
 def reg_individual_proc():
@@ -106,6 +107,7 @@ def reg_individual_proc():
 
         flash(u'신청이 완료되었습니다.')
         return redirect(url_for('.show_individual'))
+
 
 # 신청조회 - 로그인 폼
 @context.route('/check')

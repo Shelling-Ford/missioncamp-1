@@ -42,6 +42,15 @@ $(document).ready(function () {
             $('#none').attr('checked', true);
         }
     });
+
+    $('select[name=foreigner]').change(function () {
+      if ($('select[name=foreigner] option:selected').val() === '내국인') {
+        $('#nationality').hide();
+        $('#nationality').val('');
+      } else {
+        $('#nationality').show();
+      }
+    });
 });
 var isChecked = false;
 

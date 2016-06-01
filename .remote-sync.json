@@ -9,6 +9,8 @@
     ".git/**"
   ],
   "username": "intercp",
-  "keyfile": "/Users/intercp/.ssh/id_rsa",
-  "transport": "scp"
+  "transport": "scp",
+  "useAtomicWrites": true,
+  "password": "Hi$torymakers",
+  "watch": []
 }

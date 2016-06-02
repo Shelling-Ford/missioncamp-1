@@ -53,9 +53,7 @@
     {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
     <button type="submit" class="btn btn-default">검색</button>
-    {% if 'camp' in request.args.to_dict() %}
     <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
-    {% endif %}
   </form>
   <br/>
   <br/>

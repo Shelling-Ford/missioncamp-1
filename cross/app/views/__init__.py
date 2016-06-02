@@ -216,10 +216,14 @@ class MetaView():
             else:
                 if self.camp == 'cbtj':
                     camp = request.args.get('camp')
+                    '''
                     if camp is None:
                         camp_idx = [Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')]
                     else:
                         camp_idx = Camp.get_idx(camp)
+                    '''
+                    if camp is None:
+                        camp_idx = Camp.get_idx('cbtj')
                 else:
                     camp_idx = Camp.get_idx(self.camp)
 

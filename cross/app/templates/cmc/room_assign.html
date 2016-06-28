@@ -10,7 +10,11 @@
     {% if i == page|int %}
     <td>{{ i }}</td>
     {% else %}
-    <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
+      {% if 'complete=1' in request.url and 'complete=2' in request.url %}
+        <td><a href="{{ url_for('.roomassign', page=i, **params) }}&complete=2">{{ i }}</a></td>
+      {% else %}
+        <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
+      {% endif %}
     {% endif %}
     {% if i % 30 == 0 %}</tr><tr>{% endif %}
     {% endfor %}

@@ -124,6 +124,7 @@
     <table class="table1">
       <tr>
         {% set params = request.args.to_dict() %}
+        {% set params['complete'] = request.args.getlist('complete') %}
         <!--{% set page = params.pop('page', none) %}-->
         {% for i in nav %}
         {% if i == page|int %}

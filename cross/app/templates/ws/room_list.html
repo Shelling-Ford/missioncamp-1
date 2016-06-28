@@ -53,10 +53,10 @@
       </select>
       <div class="form-group">
         <div class="checkbox">
-          <label><input type="checkbox" name="complete" value="1"/>&nbsp;부분납&nbsp;</label>
-          <label><input type="checkbox" name="complete" value="2"/>&nbsp;완납&nbsp;</label>
-          <label><input type="checkbox" name="job" value="목회자"/>&nbsp;목회자&nbsp;</label>
-          <label><input type="checkbox" name="training" value="없음"/>&nbsp;훈련여부없음&nbsp;</label>
+          <label><input type="checkbox" name="complete" value="1" {% if 'complete=1' in request.url %} checked {% endif %}/>&nbsp;부분납&nbsp;</label>
+          <label><input type="checkbox" name="complete" value="2" {% if 'complete=2' in request.url %} checked {% endif %}/>&nbsp;완납&nbsp;</label>
+          <label><input type="checkbox" name="job" value="목회자" {% if 'job=목회자' in request.url %} checked {% endif %}/>&nbsp;목회자&nbsp;</label>
+          <label><input type="checkbox" name="training" value="없음" {% if 'training=없음' in request.url %} checked {% endif %}/>&nbsp;훈련여부없음&nbsp;</label>
         </div>
       </div>
       <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign', cancel_yn=0) }}" class="btn btn-warning">필터 초기화</a>

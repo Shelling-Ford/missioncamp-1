@@ -423,13 +423,17 @@ class MetaView():
 
                 if self.camp == 'cmc':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
-                elif self.camp == 'ws':
-                    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+                    # if 'camp' in params:
+                    #     camp_idx = Camp.get_idx(params['camp']
+                                                
+                # elif self.camp == 'ws':
+                #    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
                 print camp_idx
                 print params
 
-                member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], isnull='room_idx', **params)
+                member_list = Member.get_list(camp_idx, orderby=['camp_idx', 'sex', 'area_idx'], isnull='room_idx', **params)
+                
                 count = Member.count(camp_idx, isnull='room_idx', **params)
                 area_list = Area.get_list(self.camp)
                 if type(camp_idx) is list:
@@ -471,10 +475,13 @@ class MetaView():
                 if complete_list is not None:
                     params['complete'] = complete_list
 
-                if self.camp == 'cmc':
+                if self.camp == 'cmc' or self.camp == 'cbtj':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
-                elif self.camp == 'ws':
-                    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+                    # if 'camp' in params:
+                    #    camp_idx = Camp.get_idx(params['camp'])
+                        
+                # elif self.camp == 'ws':
+                #    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
                 if room_idx is not None:
                     member_list = Member.get_list(camp_idx, orderby=['sex', 'area_idx'], room_idx=room_idx, cancel_yn=0, **params)

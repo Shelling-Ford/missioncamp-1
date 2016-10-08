@@ -79,7 +79,7 @@
             <td colspan="3">
               <input type="radio" name="persontype" id="youngtype" value="청년" {% if member.persontype == "청년" %} checked {% endif %}/><label for="youngtype">&nbsp;&nbsp;청년</label><br/>
               <input type="radio" name="persontype" id="studenttype" value="대학생" {% if member.persontype == "대학생" %} checked {% endif %}/><label for="studenttype">&nbsp;&nbsp;대학생</label><br/>
-              <!--<input type="radio" name="persontype" id="go3type" value="고3" {% if member.persontype == "고3" %} checked {% endif %}/><label for="go3type">&nbsp;&nbsp;고3</label><br/>-->
+              <input type="radio" name="persontype" id="go3type" value="고3" {% if member.persontype == "고3" %} checked {% endif %}/><label for="go3type">&nbsp;&nbsp;고3</label><br/>
               <input type="radio" name="persontype" id="stafftype" value="스탭" {% if member.persontype == "스탭" %} checked {% endif %}/><label for="stafftype">&nbsp;&nbsp;청년 스탭</label>
             </td>
           </tr>
@@ -136,18 +136,19 @@
           <tr id="bubun">
             <td>캠프참석기간</td>
             <td colspan="3"><select name="date_of_arrival" id="date_of_arrival">
-              <option value="2016-06-22" {% if member['date_of_arrival']|string() == "2016-06-22" %} selected {% endif %}>2016-06-22</option>
-              <option value="2016-06-23" {% if member['date_of_arrival']|string() == "2016-06-23" %} selected {% endif %}>2016-06-23</option>
-              <option value="2016-06-24" {% if member['date_of_arrival']|string() == "2016-06-24" %} selected {% endif %}>2016-06-24</option>
-              <option value="2016-06-25" {% if member['date_of_arrival']|string() == "2016-06-25" %} selected {% endif %}>2016-06-25</option>
+              <option value="2016-12-28" {% if member['date_of_arrival']|string() == "2016-12-28" %} selected {% endif %}>2016-12-28</option>
+              <option value="2016-12-29" {% if member['date_of_arrival']|string() == "2016-12-29" %} selected {% endif %}>2016-12-29</option>
+              <option value="2016-12-30" {% if member['date_of_arrival']|string() == "2016-12-30" %} selected {% endif %}>2016-12-30</option>
+              <option value="2016-12-31" {% if member['date_of_arrival']|string() == "2016-12-31" %} selected {% endif %}>2016-12-31</option>
             </select>&nbsp;~&nbsp;
             <select name="date_of_leave" id="date_of_leave">
-              <option value="2016-06-22" {% if member['date_of_leave']|string() == "2016-06-22" %} selected {% endif %}>2016-06-22</option>
-              <option value="2016-06-23" {% if member['date_of_leave']|string() == "2016-06-23" %} selected {% endif %}>2016-06-23</option>
-              <option value="2016-06-24" {% if member['date_of_leave']|string() == "2016-06-24" %} selected {% endif %}>2016-06-24</option>
-              <option value="2016-06-25" {% if member['date_of_leave']|string() == "2016-06-25" %} selected {% endif %}>2016-06-25</option>
+              <option value="2016-12-28" {% if member['date_of_leave']|string() == "2016-12-28" %} selected {% endif %}>2016-12-28</option>
+              <option value="2016-12-29" {% if member['date_of_leave']|string() == "2016-12-29" %} selected {% endif %}>2016-12-29</option>
+              <option value="2016-12-30" {% if member['date_of_leave']|string() == "2016-12-30" %} selected {% endif %}>2016-12-30</option>
+              <option value="2016-12-31" {% if member['date_of_leave']|string() == "2016-12-31" %} selected {% endif %}>2016-12-31</option>
             </select></td>
           </tr>
+          <!--
           <tr>
             <td><label for="sm_yn">SM(학생선교사) 여부</label></td>
             <td colspan="3">
@@ -155,6 +156,7 @@
               <input type="radio" name="sm_yn" id="sm_n" value="0" {% if not membership.sm_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="sm_n">아니오</label>&nbsp;
             </td>
           </tr>
+          -->
           <tr>
             <td><label for="newcomer_yn">선교캠프가<br/>처음이신가요?</label></td>
 

@@ -63,11 +63,13 @@ class MetaView():
                 pass
 
             receptionmode = bool(params.pop('receptionmode', False))
+            '''
             if receptionmode:
                 if self.camp == 'cmc':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
                 elif self.camp == 'ws':
                     camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
+            '''
 
             member_list = Member.get_list(camp_idx, **params)
             count = Member.count(camp_idx, **params)

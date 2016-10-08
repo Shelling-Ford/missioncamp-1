@@ -37,7 +37,7 @@ def room_check():
 
         if logintype == u'개인':
             try:
-                member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('ws'), Member.camp_idx == Camp.get_idx('cbtj2'))).one()
+                member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('ws'))).one()
                 member_list = [member]
                 group_name = None
             except NoResultFound:

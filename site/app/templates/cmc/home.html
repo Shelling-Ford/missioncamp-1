@@ -1,96 +1,97 @@
 {% extends 'cmc/page.html' %}
 {% block content %}
+
 <div class="container">
-	<div class="widget col-sm-6 col-xs-12">
-		<h2>&nbsp;</h2>
-		<div class="embed-responsive embed-responsive-16by9">
-		  <iframe class="embed-responsive-item" src="//www.youtube.com/embed/8ftCq60JmJE"></iframe>
-		</div>
-		<br/>
-	</div> <!-- .widget -->
+    <div class="widget col-sm-12">
+        <h2>{% trans %}프로그램{% endtrans %}</h2>
+    </div>
+    <div class="widget col-sm-6 col-xs-12">
+        <h4>{% trans %}소그룹 모임{% endtrans %}</h4>
+        <p>{% trans %}전국에서 모인 다양한 청년 대학생들과 교제하며 믿음의 친구, 믿음의 동역자를 만들어가는 시간{% endtrans %}</p>
 
-	<div class="widget col-sm-6 col-xs-12">
-		<div class="well well-sm">
-			<h4>{% trans %}등록비 안내{% endtrans %}</h4>
-			<table class="table" style="margin-bottom:0">
-        <tbody>
-	        <tr>
-            <td></td>
-            <td>{% trans %}1차마감{% endtrans %}<br>11/11</td>
-            <td>{% trans %}2차마감{% endtrans %}<br>12/2</td>
-            <td>{% trans %}3차마감{% endtrans %}<br>12/16</td>
-            <td>{% trans %}캠프당일{% endtrans %}<br> </td>
-	        </tr>
-	        <tr>
-            <td>{% trans %}개인{% endtrans %}</td>
-            <td>93,000</td>
-            <td>98,000</td>
-            <td>103,000</td>
-            <td rowspan="2">108,000</td>
-	        </tr>
-	        <tr>
-            <td>{% trans %}단체{% endtrans %}</td>
-            <td>88,000</td>
-            <td>93,000</td>
-            <td>98,000</td>
-	        </tr>
-	        <tr>
-            <td colspan="5"><p style="text-align:center; margin-bottom:0; font-size:12px">{% trans %}당일 30,000원 / 1박2일 55,000원 / 2박3일 80,000원{% endtrans %}</p></td>
-	        </tr>
-		    </tbody>
-			</table>
-		</div> <!-- .well -->
+        <h4>{% trans %}주제강의{% endtrans %}</h4>
+        <p>{% trans %}최근에 일어난 여러 사건들을 성경적으로 해석하고 시대를 조명하며, 역사의 주관자로서 열방을 경영하시는 하나님의 나라와 거룩한 비전을 제시하는 최바울 선교사의 탁월한 강의{% endtrans %}</p>
 
-		<section style="font-size: 12px;">
-			{% trans %}- 등록비 입금계좌 : 국민은행 763601-04-098592{% endtrans %}<br/>
-			{% trans %}- 예금주 : 전문인국제***(청대캠프){% endtrans %}<br/>
-			{% trans %}*입금자명에 참가자  지역과 이름을 기입해 주세요. 예)서울 홍길동{% endtrans %}<br/>
-		</section>
-		<br/>
-		<section style="font-size: 12px;">
-			{% trans %}- 등록일은 등록비 입금 날짜 기준이며, 선입금 3만원 입금 후 3차 마감일(12/16) 이전에 나머지 금액을 완납하셔야 등록이 완료됩니다.(선입금 3만원은 취소하더라도 환불되지 않습니다.) {% endtrans %}<br/>
-			{% trans %}- 단체 할인은 교회나 학교별 10인 이상일 경우에 적용됩니다.(각 1, 2, 3차 마감일에 해당하는 비용 적용) {% endtrans %}<br/>
-			{% trans %}- 3차 마감(12/16) 이후(17일 부터) 취소시 선입금(3만원)을 제외한 금액의 50% 환불, 당일(12/28)취소는 환불되지 않습니다. {% endtrans %}<br/>
-			<br/>
-			{% trans %}- 환불 (문의 historymakers_b@hanmail.net) {% endtrans %}<br/>
-			{% trans %}*오류입금에 의한 환불 접수는 캠프 이후 2주간,  1/11(수)까지 신청받습니다. 이후에는 어떤 경우에도 환불이 되지 않습니다. {% endtrans %}<br/>
-			{% trans %}*환불 접수는 historymakers_b@hanmail.net로 {% endtrans %}<br/>
-			{% trans %}이름/연락처/환불금액/계좌(은행명,예금주)를 빠짐없이 기록하여 신청해주세요. {% endtrans %}<br/>
-		</section>
-	</div> <!-- .widget -->
-</div> <!-- .container -->
+        <h4>{% trans %}간증{% endtrans %}</h4>
+        <p>{% trans %}캠퍼스 또는 선교지 현장에서 사역하고 있는 청년들과 선교현장에서 제자양육, 교회개척 사역을 수행한 선교사님들의 간증의 시간{% endtrans %}</p>
+    </div>
+
+    <div class="widget col-sm-6 col-xs-12">
+        <h4>{% trans %}선택식 강의{% endtrans %}</h4>
+        <p>{% trans %}국내와 선교지에서 필요한 구체적인 사역뿐 아니라 영적 성숙과 훈련을 위한 20여개의 다양한 전문 강의들을 선택해서 듣는 시간{% endtrans %}</p>
+
+        <h4>{% trans %}영상 미디어{% endtrans %}</h4>
+        <p>{% trans %}최근에 일어난 지구촌의 이슈들을 성경적 관점에서 재조명하고 한국교회가 감당해야 할 과업들을 영상을 통해 경험{% endtrans %}</p>
+
+        <h4>BTJ Festival</h4>
+        <p>{% trans %}다양한 장르의 공연과 열방 퍼레이드를 통해 모든 민족을 하나님께 올려드리며 BTJ 세대로 일어나는 축제의 시간{% endtrans %}</p>
+
+        <h4>{% trans %}비전/진로 상담{% endtrans %}</h4>
+        <p>{% trans %}믿음의 선배나 선교사님들과 대화하며 상담할 수 있는 시간{% endtrans %}</p>
+    </div>
+</div><!-- .container -->
 
 <div class="divider">
-  <div class="container">
-  	<div class="widget col-sm-12">
-  		<h2>{% trans %}프로그램{% endtrans %}</h2>
-  	</div>
-		<div class="widget col-sm-6 col-xs-12">
-			<h4>{% trans %}소그룹 모임{% endtrans %}</h4>
-			<p>{% trans %}전국에서 모인 다양한 청년 대학생들과 교제하며 믿음의 친구, 믿음의 동역자를 만들어가는 시간{% endtrans %}</p>
+    <div class="container">
+    	<div class="widget col-sm-6 col-xs-12">
+    		<h2>&nbsp;</h2>
+    		<div class="embed-responsive embed-responsive-16by9">
+    		  <iframe class="embed-responsive-item" src="//www.youtube.com/embed/8ftCq60JmJE"></iframe>
+    		</div>
+    		<br/>
+    	</div> <!-- .widget -->
 
-			<h4>{% trans %}주제강의{% endtrans %}</h4>
-			<p>{% trans %}최근에 일어난 여러 사건들을 성경적으로 해석하고 시대를 조명하며, 역사의 주관자로서 열방을 경영하시는 하나님의 나라와 거룩한 비전을 제시하는 최바울 선교사의 탁월한 강의{% endtrans %}</p>
+    	<div class="widget col-sm-6 col-xs-12">
+    		<div class="well well-sm">
+    			<h4>{% trans %}등록비 안내{% endtrans %}</h4>
+    			<table class="table" style="margin-bottom:0">
+                <tbody>
+    	        <tr>
+                <td></td>
+                <td>{% trans %}1차마감{% endtrans %}<br>11/11</td>
+                <td>{% trans %}2차마감{% endtrans %}<br>12/2</td>
+                <td>{% trans %}3차마감{% endtrans %}<br>12/16</td>
+                <td>{% trans %}캠프당일{% endtrans %}<br> </td>
+    	        </tr>
+    	        <tr>
+                <td>{% trans %}개인{% endtrans %}</td>
+                <td>93,000</td>
+                <td>98,000</td>
+                <td>103,000</td>
+                <td rowspan="2">108,000</td>
+    	        </tr>
+    	        <tr>
+                <td>{% trans %}단체{% endtrans %}</td>
+                <td>88,000</td>
+                <td>93,000</td>
+                <td>98,000</td>
+    	        </tr>
+    	        <tr>
+                <td colspan="5"><p style="text-align:center; margin-bottom:0; font-size:12px">{% trans %}당일 30,000원 / 1박2일 55,000원 / 2박3일 80,000원{% endtrans %}</p></td>
+    	        </tr>
+    		    </tbody>
+    			</table>
+    		</div> <!-- .well -->
 
-			<h4>{% trans %}간증{% endtrans %}</h4>
-			<p>{% trans %}캠퍼스 또는 선교지 현장에서 사역하고 있는 청년들과 선교현장에서 제자양육, 교회개척 사역을 수행한 선교사님들의 간증의 시간{% endtrans %}</p>
-		</div>
-
-		<div class="widget col-sm-6 col-xs-12">
-			<h4>{% trans %}선택식 강의{% endtrans %}</h4>
-			<p>{% trans %}국내와 선교지에서 필요한 구체적인 사역뿐 아니라 영적 성숙과 훈련을 위한 20여개의 다양한 전문 강의들을 선택해서 듣는 시간{% endtrans %}</p>
-
-			<h4>{% trans %}영상 미디어{% endtrans %}</h4>
-			<p>{% trans %}최근에 일어난 지구촌의 이슈들을 성경적 관점에서 재조명하고 한국교회가 감당해야 할 과업들을 영상을 통해 경험{% endtrans %}</p>
-
-			<h4>BTJ Festival</h4>
-			<p>{% trans %}다양한 장르의 공연과 열방 퍼레이드를 통해 모든 민족을 하나님께 올려드리며 BTJ 세대로 일어나는 축제의 시간{% endtrans %}</p>
-
-			<h4>{% trans %}비전/진로 상담{% endtrans %}</h4>
-			<p>{% trans %}믿음의 선배나 선교사님들과 대화하며 상담할 수 있는 시간{% endtrans %}</p>
-		</div>
-  </div><!-- .container -->
-</div> <!-- .divider -->
+    		<section style="font-size: 12px;">
+    			{% trans %}- 등록비 입금계좌 : 국민은행 763601-04-098592{% endtrans %}<br/>
+    			{% trans %}- 예금주 : 전문인국제***(청대캠프){% endtrans %}<br/>
+    			{% trans %}*입금자명에 참가자  지역과 이름을 기입해 주세요. 예)서울 홍길동{% endtrans %}<br/>
+    		</section>
+    		<br/>
+    		<section style="font-size: 12px;">
+    			{% trans %}- 등록일은 등록비 입금 날짜 기준이며, 선입금 3만원 입금 후 3차 마감일(12/16) 이전에 나머지 금액을 완납하셔야 등록이 완료됩니다.(선입금 3만원은 취소하더라도 환불되지 않습니다.) {% endtrans %}<br/>
+    			{% trans %}- 단체 할인은 교회나 학교별 10인 이상일 경우에 적용됩니다.(각 1, 2, 3차 마감일에 해당하는 비용 적용) {% endtrans %}<br/>
+    			{% trans %}- 3차 마감(12/16) 이후(17일 부터) 취소시 선입금(3만원)을 제외한 금액의 50% 환불, 당일(12/28)취소는 환불되지 않습니다. {% endtrans %}<br/>
+    			<br/>
+    			{% trans %}- 환불 (문의 historymakers_b@hanmail.net) {% endtrans %}<br/>
+    			{% trans %}*오류입금에 의한 환불 접수는 캠프 이후 2주간,  1/11(수)까지 신청받습니다. 이후에는 어떤 경우에도 환불이 되지 않습니다. {% endtrans %}<br/>
+    			{% trans %}*환불 접수는 historymakers_b@hanmail.net로 {% endtrans %}<br/>
+    			{% trans %}이름/연락처/환불금액/계좌(은행명,예금주)를 빠짐없이 기록하여 신청해주세요. {% endtrans %}<br/>
+    		</section>
+    	</div> <!-- .widget -->
+    </div> <!-- .container -->
+</div>
 
 <div class="divider">
   <div class="container">

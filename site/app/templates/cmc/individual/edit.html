@@ -86,7 +86,7 @@
           <tr id="young_job">
             <td><label for="job">직업/직종</label></td>
             <td colspan="3"><select name="job" id="job">
-              <option value="정치행정" {% if membership.job == "정치행정" %} selected {% endif %}>정치행정</option>
+              <option value="정치" {% if membership.job == "정치" %} selected {% endif %}>정치</option>
               <option value="법률" {% if membership.job == "법률" %} selected {% endif %}>법률</option>
               <option value="보건의료" {% if membership.job == "보건의료" %} selected {% endif %}>보건의료</option>
               <option value="종교" {% if membership.job == "종교" %} selected {% endif %}>종교</option>
@@ -158,7 +158,7 @@
           </tr>
           -->
           <tr>
-            <td><label for="newcomer_yn">선교캠프가<br/>처음이신가요?</label></td>
+            <td><label for="newcomer_yn">선교캠프<br/>처음이신가요?</label></td>
 
             <td colspan="3">
               <input type="radio" name="newcomer_yn" id="newcomer_y" value="1" {% if member.newcomer_yn %} checked {% endif %}/>&nbsp;&nbsp;<label for="newcomer_y">예</label>&nbsp;

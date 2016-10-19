@@ -3,3 +3,4 @@
 cross/cross.wsgi
 site/missioncamp.wsgi
 .remote-sync.json
+env/**

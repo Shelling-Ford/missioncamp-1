@@ -2,7 +2,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-import collections
+# import collections
 
 import sys
 reload(sys)
@@ -61,6 +61,7 @@ class SQLDriver():
     def commit(self):
         s = self.db_session()
         s.commit()
+
 
 # 인증과 관련해서는 btjkorea의 g5_member테이블을 참조함.
 btjkorea_db = SQLDriver("mysql+pymysql://btjkorea:qlxlwpdl1040!@localhost/btjkorea?charset=utf8")

@@ -18,7 +18,7 @@ class RegistrationForm(Form):
     church = StringField(u'소속교회')
     persontype = RadioField(u'참가구분', choices=[(u'중학생', u'중학생'), (u'고등학생', u'고등학생'), (u'교사', u'교사'), (u'교역자', u'교역자'), (u'기타', u'기타')])
     sch1 = StringField(u'학교')
-    sch2 = SelectField(u'학년', choices=[(unicode(i), unicode(i)+u'학년') for i in range(1, 7)])
+    sch2 = SelectField(u'학년', choices=[(unicode(i), unicode(i) + u'학년') for i in range(1, 7)])
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
     newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])
     training = MultiCheckboxField(

@@ -32,7 +32,7 @@
 {%- endmacro %}
 
 {% macro render_select_field(field) -%}
-    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }} {% if field.id == 'sch2' %} school {% endif %}">
+    <div id="{{ field.id }}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }} {% if field.id == 'sch2' %} school {% endif %}">
         <label id="{{ field.id }}_label" for="{{ field.id }}" class="col-sm-4 control-label">{{ field.label }}</label>
         <div class="col-sm-8">
             <select name="{{ field.id }}" class="form-control" id="{{ field.id }}">
@@ -55,7 +55,7 @@
         {{ macros.render_checkbox_field(form.remember_me) }}
  #}
 {% macro render_checkbox_field(field) -%}
-    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+    <div id="{{ field.id }}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
         <label id="{{ field.id }}_label" for="{{ field.id }}" class="col-sm-4 control-label">{{ field.label }}</label>
         <div class="col-sm-8">
         {% for id, value, _ in field.iter_choices() %}
@@ -85,7 +85,7 @@
         {{ macros.render_radio_field(form.answers) }}
  #}
 {% macro render_radio_field(field) -%}
-    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+    <div  id="{{ field.id }}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
         <label id="{{ field.id }}_label" for="{{ field.id }}" class="control-label col-sm-4">{{ field.label }}</label>
         <div class="radio col-sm-8">
         {% for value, label, _ in field.iter_choices() %}
@@ -104,7 +104,7 @@
 
 {% macro render_contact_field(field) -%}
     {% if field.data is not none %}{% set hp = field.data.split('-') %}{% else %}{% set hp = ['','',''] %}{% endif %}
-    <div class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+    <div  id="{{ field.id }}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
         <label id="{{ field.id }}_label" for="hp" class="col-sm-4 control-label">{{ field.label }}</label>
         <div class="col-sm-8">
             <select name="hp" id="hp">
@@ -118,6 +118,7 @@
             </select>
             -<input name="hp2" id="hp2" type="text" size="4" value="{{ hp[1] }}"/>
             -<input name="hp3" id="hp3" type="text" size="4" value="{{ hp[2] }}"/>
+            <input name="{{ field.id }}" id="{{ field.id }}" type="hidden" value="{{ field.data }}" />
         </div>
         {% if field.errors %}
             {% for e in field.errors %}

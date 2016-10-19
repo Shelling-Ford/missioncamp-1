@@ -19,16 +19,16 @@ class Area(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get_list(cls, camp):
         result = []
         if camp == '*':
-            area_list = db.db_session.query(cls).order_by(cls.type, cls.name).all()
+            area_list = db.session.query(cls).order_by(cls.type, cls.name).all()
             return area_list
         else:
-            area_list = db.db_session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%" + camp + "%"))).order_by(cls.type, cls.name).all()
+            area_list = db.session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%" + camp + "%"))).order_by(cls.type, cls.name).all()
 
             for area in area_list:
                 result.append((area.idx, area.name))
@@ -38,12 +38,12 @@ class Area(db.Base):
     # 주어진 area_idx에 해당하는 area_name을 반환하는 함수
     @classmethod
     def get_name(cls, idx):
-        area = db.db_session.query(cls).filter(cls.idx == idx).one()
+        area = db.session.query(cls).filter(cls.idx == idx).one()
         return area.name
 
     @classmethod
     def get_idx(cls, chaptercode):
-        area = db.db_session.query(cls).filter(cls.chaptercode == chaptercode).one()
+        area = db.session.query(cls).filter(cls.chaptercode == chaptercode).one()
         return area.idx
 
     @classmethod
@@ -53,8 +53,8 @@ class Area(db.Base):
         area.type = type
         area.camp = camp
 
-        db.db_session.add(area)
-        db.db_session.commit()
+        db.session.add(area)
+        db.session.commit()
         pass
 
     @classmethod
@@ -65,13 +65,13 @@ class Area(db.Base):
             area.name = name
             area.type = type
             area.camp = camp
-            db.db_session.add(area)
+            db.session.add(area)
         else:
             area.name = name
             area.type = type
             area.camp = camp
 
-        db.db_session.commit()
+        db.session.commit()
 
 
 # 캠프
@@ -88,7 +88,7 @@ class Camp(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     # camp_idx 반환, year와 term을 파라메터로 넘겨줄 경우 해당 연도와 학기의 camp_idx를 반환해주고
     # year와 term파라메터가 없을 경우 GlobalOptions에 등록되어있는 year와 term을 현재 활성화되어있는 캠프의 camp_idx를 반환해줌.
@@ -98,12 +98,12 @@ class Camp(db.Base):
             year = GlobalOptions.get_year()
         if term is None or term == 0:
             term = GlobalOptions.get_term()
-        return db.db_session.query(cls).filter(cls.code == code, cls.year == year, cls.term == term).one().idx
+        return db.session.query(cls).filter(cls.code == code, cls.year == year, cls.term == term).one().idx
 
     # 캠프가 진행되는 날자를 리스트 형태로 반환해주는 함수
     @classmethod
     def get_date_list(cls, camp_idx):
-        camp = db.db_session.query(cls).filter(cls.idx == camp_idx).one()
+        camp = db.session.query(cls).filter(cls.idx == camp_idx).one()
         startday = camp.startday
         campday = camp.campday
 
@@ -164,15 +164,15 @@ class Member(db.Base):
 
     @classmethod
     def get_idx(cls, camp_idx, userid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first().idx
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first().idx
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).one()
+        return db.session.query(cls).filter(cls.idx == idx).one()
 
     @classmethod
     def find(cls, camp_idx, userid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).first()
 
     @classmethod
     def get_filtered_result(cls, result, orderby=None, isnull=None, **kwargs):
@@ -225,7 +225,7 @@ class Member(db.Base):
 
     @classmethod
     def get_list(cls, camp_idx=None, orderby=None, isnull=None, **kwargs):
-        result = db.db_session.query(cls)
+        result = db.session.query(cls)
         camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
@@ -235,12 +235,12 @@ class Member(db.Base):
         kwargs.pop('camp', None)
 
         result = cls.get_filtered_result(result, orderby=orderby, isnull=isnull, **kwargs)
-        return result.all() if page == 0 else result.limit(50).offset((page-1)*50).all()
+        return result.all() if page == 0 else result.limit(50).offset((page - 1) * 50).all()
 
     # 특정 camp_idx에 해당하는 member의 수를 반환하는 함수. 필터 조건을 파라메터로 넘길 수 있음. (예: persontype=u'청년')
     @classmethod
     def count(cls, camp_idx=None, isnull=None, **kwargs):
-        result = db.db_session.query(cls)
+        result = db.session.query(cls)
         camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
@@ -255,7 +255,7 @@ class Member(db.Base):
 
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
-        result = db.db_session.query(cls).filter(cls.camp_idx == camp_idx)
+        result = db.session.query(cls).filter(cls.camp_idx == camp_idx)
         for key, value in kwargs.iteritems():
             if value is not None and value != '':
                 attr = getattr(cls, key)
@@ -295,7 +295,7 @@ class Member(db.Base):
                 member.contact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
 
                 if membership_data_list is not None:
-                    db.db_session.query(Membership).filter(Membership.member_idx == member_idx).delete()
+                    db.session.query(Membership).filter(Membership.member_idx == member_idx).delete()
 
                     for membership_data in membership_data_list:
                         membership = Membership()
@@ -303,7 +303,7 @@ class Member(db.Base):
                         membership.member_idx = member_idx
                         membership.key = membership_data['key']
                         membership.value = membership_data['value']
-                        db.db_session.add(membership)
+                        db.session.add(membership)
             else:
                 if 'date_of_arrival' in kwargs and 'date_of_leave' in kwargs:
                     attend = member.get_attend_array(kwargs.get('date_of_arrival'), kwargs.get('date_of_leave'))
@@ -337,16 +337,16 @@ class Member(db.Base):
                     setattr(member, key, value)
 
             if len(membership_list) > 0:
-                db.db_session.query(Membership).filter(Membership.member_idx == member_idx).delete()
+                db.session.query(Membership).filter(Membership.member_idx == member_idx).delete()
                 for key, value in membership_list:
                     membership = Membership()
                     membership.camp_idx = member.camp_idx
                     membership.member_idx = member.idx
                     membership.key = key
                     membership.value = value
-                    db.db_session.add(membership)
+                    db.session.add(membership)
 
-            db.db_session.commit()
+            db.session.commit()
 
     # 멤버 추가 함수
     @classmethod
@@ -377,8 +377,8 @@ class Member(db.Base):
 
         member.contact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
 
-        db.db_session.add(member)
-        db.db_session.commit()
+        db.session.add(member)
+        db.session.commit()
 
         member_idx = member.idx
 
@@ -388,18 +388,18 @@ class Member(db.Base):
             membership.member_idx = member_idx
             membership.key = membership_data['key']
             membership.value = membership_data['value']
-            db.db_session.add(membership)
+            db.session.add(membership)
 
-        db.db_session.commit()
+        db.session.commit()
         return member_idx
 
     @classmethod
     def check_userid(cls, camp_idx, userid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).count()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).count()
 
     @classmethod
     def login_check(cls, camp_idx, userid, pwd):
-        count = db.db_session.query(cls).filter(
+        count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.userid == userid,
             cls.pwd == hashlib.sha224(pwd).hexdigest(),
             cls.cancel_yn == 0
@@ -412,13 +412,13 @@ class Member(db.Base):
         member.cancel_yn = 1
         member.cancel_reason = reason
         member.canceldate = datetime.datetime.today()
-        db.db_session.commit()
+        db.session.commit()
 
     @classmethod
     def delete(cls, idx):
-        db.db_session.query(Payment).filter(Payment.member_idx == idx).delete()
-        db.db_session.query(Membership).filter(Membership.member_idx == idx).delete()
-        db.db_session.query(cls).filter(cls.idx == idx).delete()
+        db.session.query(Payment).filter(Payment.member_idx == idx).delete()
+        db.session.query(Membership).filter(Membership.member_idx == idx).delete()
+        db.session.query(cls).filter(cls.idx == idx).delete()
 
     def get_membership_data(self):
         membership_data = dict()
@@ -440,11 +440,11 @@ class Member(db.Base):
         date_of_arrival = datetime.datetime.strptime(date_of_arrival, '%Y-%m-%d').date()
         date_of_leave = datetime.datetime.strptime(date_of_leave, '%Y-%m-%d').date()
 
-        i = (date_of_arrival-camp.startday).days
-        interval = range(0, (date_of_leave - date_of_arrival).days+1)
+        i = (date_of_arrival - camp.startday).days
+        interval = range(0, (date_of_leave - date_of_arrival).days + 1)
         attend = [0, 0, 0, 0]
         for j in interval:
-            attend[i+j] = 1
+            attend[i + j] = 1
 
         return attend
 
@@ -454,13 +454,13 @@ class Member(db.Base):
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
-        count = db.db_session.query(
+        count = db.session.query(
             func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
         ).filter(*filter_list).filter(cls.cancel_yn == 0).one()
-        r_count = db.db_session.query(
+        r_count = db.session.query(
             func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
         ).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment != None).one()
-        a_count = db.db_session.query(func.sum(
+        a_count = db.session.query(func.sum(
             cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)
         ).filter(*filter_list).filter(cls.attend_yn == 1).one()
 
@@ -479,8 +479,8 @@ class Member(db.Base):
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
-        stmt = db.db_session.query((cls.attend1 + cls.attend2 + cls.attend3 + cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
-        count = db.db_session.query(stmt, func.count('partial')).group_by('partial').all()
+        stmt = db.session.query((cls.attend1 + cls.attend2 + cls.attend3 + cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
+        count = db.session.query(stmt, func.count('partial')).group_by('partial').all()
         return count
 
     @classmethod
@@ -538,11 +538,11 @@ class Membership(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get_list(cls, member_idx):
-        return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
+        return db.session.query(cls).filter(cls.member_idx == member_idx).first()
 
 
 # 입금 정보
@@ -563,11 +563,11 @@ class Payment(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def find(cls, member_idx):
-        return db.db_session.query(cls).filter(cls.member_idx == member_idx).first()
+        return db.session.query(cls).filter(cls.member_idx == member_idx).first()
 
     @classmethod
     def save(cls, member_idx, amount, complete, claim, staff_name, paydate=None):
@@ -583,7 +583,7 @@ class Payment(db.Base):
             payment.claim = claim
             payment.paydate = paydate
             payment.staff_name = staff_name
-            db.db_session.add(payment)
+            db.session.add(payment)
         else:
             payment.amount = amount
             payment.complete = complete
@@ -591,12 +591,12 @@ class Payment(db.Base):
             payment.paydate = paydate
             payment.staff_name = staff_name
 
-        db.db_session.commit()
+        db.session.commit()
 
     @classmethod
     def delete(cls, member_idx):
-        db.db_session.query(cls).filter(cls.member_idx == member_idx).delete()
-        db.db_session.commit()
+        db.session.query(cls).filter(cls.member_idx == member_idx).delete()
+        db.session.commit()
 
 
 # 단체
@@ -628,27 +628,27 @@ class Group(db.Base):
 
     @classmethod
     def get_idx(cls, camp_idx, groupid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).one().idx
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).one().idx
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def find(cls, camp_idx, groupid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).first()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).first()
 
     @classmethod
     def get_list(cls, camp_idx):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.cancel_yn == 0).all()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.cancel_yn == 0).all()
 
     @classmethod
     def check_groupid(cls, camp_idx, groupid):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).count()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).count()
 
     @classmethod
     def login_check(cls, camp_idx, groupid, pwd):
-        count = db.db_session.query(cls).filter(
+        count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.groupid == groupid,
             cls.pwd == hashlib.sha224(pwd).hexdigest(),
             cls.cancel_yn == 0
@@ -657,17 +657,17 @@ class Group(db.Base):
 
     @classmethod
     def inc_mem_num(cls, idx):
-        group = db.db_session.query(cls).filter(cls.idx == idx).one()
+        group = db.session.query(cls).filter(cls.idx == idx).one()
         group.mem_num += 1
-        db.db_session.commit()
+        db.session.commit()
 
     @classmethod
     def dec_mem_num(cls, idx):
-        group = db.db_session.query(cls).filter(cls.idx == idx).one()
+        group = db.session.query(cls).filter(cls.idx == idx).one()
         group.mem_num -= 1
         if group.mem_num < 0:
             group.mem_num = 0
-        db.db_session.commit()
+        db.session.commit()
 
     @classmethod
     def insert(cls, camp_idx, formData):
@@ -688,8 +688,8 @@ class Group(db.Base):
         group.cancel_reason = None
         group.memo = formData['memo']
 
-        db.db_session.add(group)
-        db.db_session.commit()
+        db.session.add(group)
+        db.session.commit()
         return group.idx
 
     @classmethod
@@ -718,7 +718,7 @@ class Group(db.Base):
                 else:
                     setattr(group, key, value)
 
-        db.db_session.commit()
+        db.session.commit()
 
     @classmethod
     def cancel(cls, idx, reason):
@@ -733,7 +733,7 @@ class Group(db.Base):
                 member.cancel_yn = 1
                 member.cancel_reason = reason
                 member.canceldate = datetime.datetime.today()
-        db.db_session.commit()
+        db.session.commit()
 
 
 # 청소년 홍보물
@@ -763,22 +763,22 @@ class Promotion(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def find(cls, camp_idx, church_name):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx, cls.church_name == church_name).first()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.church_name == church_name).first()
 
     @classmethod
     def get_list(cls, camp_idx):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
 
     @classmethod
     def insert(cls, camp_idx, church_name, name, address, contact, memo):
         promotion = cls(camp_idx, church_name, name, address, contact, memo)
         promotion.created = datetime.datetime.now()
-        db.db_session.add(promotion)
-        db.db_session.commit()
+        db.session.add(promotion)
+        db.session.commit()
 
 
 class GlobalOptions(db.Base):
@@ -789,11 +789,11 @@ class GlobalOptions(db.Base):
 
     @classmethod
     def get_year(cls):
-        return int(db.db_session.query(cls).filter(cls.key == 'current_year').one().value)
+        return int(db.session.query(cls).filter(cls.key == 'current_year').one().value)
 
     @classmethod
     def get_term(cls):
-        return int(db.db_session.query(cls).filter(cls.key == 'current_term').one().value)
+        return int(db.session.query(cls).filter(cls.key == 'current_term').one().value)
 
 
 class Options(db.Base):
@@ -806,11 +806,11 @@ class Options(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).one()
+        return db.session.query(cls).filter(cls.idx == idx).one()
 
     @classmethod
     def get_value(cls, camp_idx, key):
-        return db.db_session.query(cls).filteR(cls.camp_idx == camp_idx, cls.key == key).one().value
+        return db.session.query(cls).filteR(cls.camp_idx == camp_idx, cls.key == key).one().value
 
 
 class Room(db.Base):
@@ -822,11 +822,11 @@ class Room(db.Base):
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).first()
+        return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get_list(cls):
-        return db.db_session.query(cls).order_by(cls.building, cls.number).all()
+        return db.session.query(cls).order_by(cls.building, cls.number).all()
 
     @classmethod
     def get_stat(cls, camp_idx):
@@ -842,7 +842,7 @@ class Room(db.Base):
         if camp_idx is not None:
             filter_list = [Member.camp_idx == idx for idx in camp_idx]
 
-        count = db.db_session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list), Member.cancel_yn==0).group_by(Member.room_idx)
+        count = db.session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list), Member.cancel_yn==0).group_by(Member.room_idx)
 
         for room_idx, cnt, a_cnt in count.all():
             if room_idx is not None:
@@ -868,7 +868,7 @@ class Roomsetting(db.Base):
 
     @classmethod
     def get_list(cls, camp_idx):
-        return db.db_session.query(cls).filter(cls.camp_idx == camp_idx).all()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
 
     @classmethod
     def init(cls, camp_idx):
@@ -879,12 +879,12 @@ class Roomsetting(db.Base):
             roomsetting.room_idx = room.idx
             roomsetting.cap = 0
             roomsetting.memo = ''
-            db.db_session.add(roomsetting)
-        db.db_session.commit()
+            db.session.add(roomsetting)
+        db.session.commit()
 
     @classmethod
     def get(cls, idx):
-        return db.db_session.query(cls).filter(cls.idx == idx).one()
+        return db.session.query(cls).filter(cls.idx == idx).one()
 
     def save(self):
-        db.db_session.commit()
+        db.session.commit()

@@ -51,6 +51,7 @@ class RegForm1(RegistrationForm):
     language = SelectField(u'통역필요', choices=[(u'필요없음', u'필요없음'), (u'영어', u'영어'), (u'중국어', u'중국어'), (u'일본어', u'일본어')])
     memo = StringField(u'남기고싶은 말', widget=TextArea())
 
+
 '''
 class RegForm2(RegistrationForm):
     userid = StringField(u'아이디')

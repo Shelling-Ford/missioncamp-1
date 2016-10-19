@@ -1,22 +1,27 @@
-/*global $, document, alert */
+/* global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    $('#bubun').hide();
-    $('#young_job').hide();
-    $('#campus_major').hide();
+    $('#campus_group').hide();
+    $('#major_group').hide();
+    $('#job_group').hide();
+    $('#date_of_arrival_group').hide();
+    $('#date_of_leave_group').hide();
 
     // 참가구분 == 청년 일때 직업란 보여줌
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
-            $('#campus_major').hide();
-            $('#young_job').show();
+            $('#campus_group').hide();
+            $('#major_group').hide();
+            $('#job_group').show();
         } else if ($(this).val() === '대학생') {
-            $('#campus_major').show();
-            $('#young_job').hide();
+            $('#campus_group').show();
+            $('#major_group').show();
+            $('#job_group').hide();
         } else {
-            $('#campus_major').hide();
-            $('#young_job').hide();
+            $('#campus_group').hide();
+            $('#major_group').hide();
+            $('#job_group').hide();
         }
     });
 
@@ -24,9 +29,11 @@ $(document).ready(function () {
     // 그 외는 모두 숨김
     $('input[name=fullcamp_yn]').change(function () {
         if ($(this).val() === '0') {
-            $('#bubun').show();
+            $('#date_of_arrival_group').show();
+            $('#date_of_leave_group').show();
         } else {
-            $('#bubun').hide();
+            $('#date_of_arrival_group').hide();
+            $('#date_of_leave_group').hide();
         }
     });
 
@@ -51,15 +58,19 @@ $(document).ready(function () {
         $('#nationality').show();
       }
     });
+
+    $('#form1').on('submit', validate_form);
+    $('#userid').change(check_userid);
 });
 var isChecked = false;
 
 function check_userid() {
     'use strict';
-    var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[0-9a-zA-Z]([\-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([\-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[a-z]?[a-z0-9\-\_]{4,}$/i;
 
     if (!email_regex.test(userid)) {
-        alert('올바른 이메일이 아닙니다.');
+        $('#id_check').html('아이디는 영문 소문자 및 숫자 4글자 이상 입력해주세요');
+        $('#id_check').removeClass('text-success').addClass('text-danger');
         isChecked = false;
         return;
     }
@@ -67,13 +78,15 @@ function check_userid() {
     $.ajax({
         url: './check-userid',
         type: 'POST',
-        data: 'userid=' + userid + '&campidx=' + campidx,
+        data: 'userid=' + userid,
         success: function (data) {
             if (parseInt(data, 10) === 0) {
-                alert("사용이 가능한 이메일입니다.");
+                $('#id_check').html("사용이 가능한 아이디입니다.")
+                $('#id_check').removeClass('text-danger').addClass('text-success');
                 isChecked = true;
             } else {
-                alert("사용이 불가한 이메일입니다.");
+                $('#id_check').html("사용이 불가한 아이디입니다.")
+                $('#id_check').removeClass('text-success').addClass('text-danger');
                 isChecked = false;
             }
         }
@@ -183,14 +196,7 @@ function validate_form() {
     }
 
 
-    $('#birth').val($('#birthyr').val() + '-' + $('#birthm').val() + '-' + $('#birthd').val());
+    // $('#birth').val($('#birthyr').val() + '-' + $('#birthm').val() + '-' + $('#birthd').val());
     $('#contact').val(contact);
     return true;
-}
-
-function submit_form() {
-    'use strict';
-    if (validate_form()) {
-        $('#form').submit();
-    }
 }

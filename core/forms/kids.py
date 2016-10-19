@@ -6,7 +6,7 @@ from core.forms import ContactField, MultiCheckboxField
 
 
 sch2_choices = [(u'예비1학년', u'예비1학년')]
-sch2_choices.extend([(unicode(i), unicode(i)+unicode('학년')) for i in range(1, 7)])
+sch2_choices.extend([(unicode(i), unicode(i) + unicode('학년')) for i in range(1, 7)])
 
 
 class RegistrationForm(Form):

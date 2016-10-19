@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-2016여성남성시니어선교캠프
+2017여성남성시니어선교캠프
 {% endblock %}
 
 {% block head %}
@@ -69,9 +69,9 @@ footer {
 <section>
   <header>
     <a href="{{ url_for('.home') }}">
-      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='ws/img/2016/header2.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
+      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='ws/img/2017/header.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
     </a>
-    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='ws/img/2016/header2.jpg') }}" style="width: 100%" class="visible-xs" alt="여성남성시니어선교캠프"/></a>
+    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='ws/img/2017/header.jpg') }}" style="width: 100%" class="visible-xs" alt="여성남성시니어선교캠프"/></a>
     <nav class="navbar navbar-default">
       <div class="container ">
         <div class="navbar-header">
@@ -90,7 +90,9 @@ footer {
             <li><a href="{{ url_for('.reg_group') }}">단체 신청</a></li>
             <li><a href="{{ url_for('.login') }}">신청 조회</a></li>
             <li><a href="/">홈으로</a></li>
-            <li><a href="{{ url_for('.room_check') }}">숙소확인</a></li>ㄴ
+          <!--  
+            <li><a href="{{ url_for('.room_check') }}">숙소확인</a></li>
+           --> 
           </ul>
         </div>
       </div>

@@ -12,10 +12,10 @@ class Area(db.Base):
     __tablename__ = "area"
 
     idx = Column(Integer, primary_key=True)
-    name = Column(String)
-    type = Column(String)
-    camp = Column(String)
-    chaptercode = Column(String)
+    name = Column(String(45))
+    type = Column(String(45))
+    camp = Column(String(45))
+    chaptercode = Column(String(10))
 
     @classmethod
     def get(cls, idx):
@@ -46,45 +46,18 @@ class Area(db.Base):
         area = db.session.query(cls).filter(cls.chaptercode == chaptercode).one()
         return area.idx
 
-    @classmethod
-    def insert(cls, name, type, camp):
-        area = cls()
-        area.name = name
-        area.type = type
-        area.camp = camp
-
-        db.session.add(area)
-        db.session.commit()
-        pass
-
-    @classmethod
-    def update(cls, idx, name, type, camp):
-        area = cls.get(idx)
-        if area is None:
-            area = cls()
-            area.name = name
-            area.type = type
-            area.camp = camp
-            db.session.add(area)
-        else:
-            area.name = name
-            area.type = type
-            area.camp = camp
-
-        db.session.commit()
-
 
 # 캠프
 class Camp(db.Base):
     __tablename__ = 'camp'
 
     idx = Column(Integer, primary_key=True)
-    code = Column(String)
+    code = Column(String(45))
     year = Column(Integer)
     term = Column(Integer)
     startday = Column(Date)
     campday = Column(Integer)
-    name = Column(String)
+    name = Column(String(45))
 
     @classmethod
     def get(cls, idx):
@@ -121,29 +94,29 @@ class Member(db.Base):
 
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer, ForeignKey('camp.idx'))
-    userid = Column(String)
-    pwd = Column(String)
-    name = Column(String)
+    userid = Column(String(100))
+    pwd = Column(String(100))
+    name = Column(String(45))
     area_idx = Column(Integer, ForeignKey('area.idx'))
-    contact = Column(String)
-    church = Column(String)
-    birth = Column(String)
-    sex = Column(String)
+    contact = Column(String(45))
+    church = Column(String(45))
+    birth = Column(String(45))
+    sex = Column(String(1))
     bus_yn = Column(Integer)
     mit_yn = Column(Integer)
     attend_yn = Column(Integer)
     newcomer_yn = Column(Integer)
-    persontype = Column(String)
+    persontype = Column(String(45))
     fullcamp_yn = Column(Integer)
     date_of_arrival = Column(Date)
     date_of_leave = Column(Date)
-    language = Column(String)
+    language = Column(String(45))
     group_idx = Column(Integer, ForeignKey('group.idx'))
     regdate = Column(DateTime)
     canceldate = Column(DateTime)
     cancel_yn = Column(Integer)
-    cancel_reason = Column(String)
-    memo = Column(String)
+    cancel_reason = Column(String(1000))
+    memo = Column(String(1000))
     room_idx = Column(Integer, ForeignKey('room.idx'))
     smallgroup_num = Column(Integer)
     attend1 = Column(Integer)
@@ -528,8 +501,8 @@ class Membership(db.Base):
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer)
     member_idx = Column(Integer, ForeignKey('member.idx'))
-    key = Column(String)
-    value = Column(String)
+    key = Column(String(100))
+    value = Column(String(100))
 
     member = relationship("Member", backref='member_memberships')
 
@@ -553,10 +526,10 @@ class Payment(db.Base):
     member_idx = Column(Integer, ForeignKey('member.idx'))
     amount = Column(Integer)
     complete = Column(Integer)
-    claim = Column(String)
-    staff_name = Column(String)
-    paydate = Column(Date)
-    code = Column(String)
+    claim = Column(String(500))
+    staff_name = Column(String(45))
+    paydate = Column(DateTime)
+    code = Column(String(45))
 
     def get_id(self):
         return self.idx
@@ -605,20 +578,20 @@ class Group(db.Base):
 
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer)
-    name = Column(String)
-    groupid = Column(String)
-    pwd = Column(String)
-    leadername = Column(String)
-    leaderjob = Column(String)
-    leadercontact = Column(String)
+    name = Column(String(100))
+    groupid = Column(String(45))
+    pwd = Column(String(100))
+    leadername = Column(String(45))
+    leaderjob = Column(String(45))
+    leadercontact = Column(String(45))
     area_idx = Column(Integer, ForeignKey('area.idx'))
     mem_num = Column(Integer)
-    grouptype = Column(String)
-    regdate = Column(DateTime)
-    canceldate = Column(DateTime)
+    grouptype = Column(String(45))
+    regdate = Column(Date)
+    canceldate = Column(Date)
     cancel_yn = Column(Integer)
-    cancel_reason = Column(String)
-    memo = Column(String)
+    cancel_reason = Column(String(1000))
+    memo = Column(String(1000))
 
     member = relationship("Member", order_by="Member.idx", backref="member_group")
     area = relationship("Area", backref=backref("area_group", lazy='dynamic'))
@@ -742,12 +715,12 @@ class Promotion(db.Base):
 
     idx = Column(Integer, primary_key=True)
     camp_idx = Column(Integer)
-    church_name = Column(String)
-    name = Column(String)
-    address = Column(String)
-    contact = Column(String)
+    church_name = Column(String(100))
+    name = Column(String(100))
+    address = Column(String(100))
+    contact = Column(String(50))
     created = Column(DateTime)
-    memo = Column(String)
+    memo = Column(String(255))
 
     def __init__(self, camp_idx, church_name, name, address, contact, memo, idx=None):
         self.idx = idx
@@ -784,8 +757,8 @@ class Promotion(db.Base):
 class GlobalOptions(db.Base):
     __tablename__ = 'global_options'
 
-    key = Column(String, primary_key=True)
-    value = Column(String)
+    key = Column(String(45), primary_key=True)
+    value = Column(String(200))
 
     @classmethod
     def get_year(cls):
@@ -796,29 +769,12 @@ class GlobalOptions(db.Base):
         return int(db.session.query(cls).filter(cls.key == 'current_term').one().value)
 
 
-class Options(db.Base):
-    __tablename__ = 'options'
-
-    idx = Column(Integer, primary_key=True)
-    camp_idx = Column(Integer)
-    key = Column(String)
-    value = Column(String)
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).one()
-
-    @classmethod
-    def get_value(cls, camp_idx, key):
-        return db.session.query(cls).filteR(cls.camp_idx == camp_idx, cls.key == key).one().value
-
-
 class Room(db.Base):
     __tablename__ = 'room'
 
     idx = Column(Integer, primary_key=True)
-    building = Column(String)
-    number = Column(String)
+    building = Column(String(45))
+    number = Column(String(45))
 
     @classmethod
     def get(cls, idx):
@@ -861,7 +817,7 @@ class Roomsetting(db.Base):
     camp_idx = Column(Integer, ForeignKey('camp.idx'))
     room_idx = Column(Integer, ForeignKey('room.idx'))
     cap = Column(Integer)
-    memo = Column(String)
+    memo = Column(String(1000))
 
     camp = relationship("Camp", backref=backref("camp_roomsetting", lazy='dynamic'))
     room = relationship("Room", backref=backref("room_roomsetting", lazy='dynamic'))

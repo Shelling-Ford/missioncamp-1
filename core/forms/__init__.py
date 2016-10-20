@@ -1,9 +1,11 @@
 # -*-coding:utf-8-*-
+from flask import request
 from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField, RadioField
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
 from core.models import Area, Group
 from core.database import db
 import datetime
+import hashlib
 
 
 class ContactField(StringField):
@@ -42,7 +44,7 @@ class GroupForm(Form):
         group.groupid = self.groupid.data
         group.name = self.name.data
         group.leadername = self.leadername.data
-        group.leadercontact = self.leadercontact.data
+        group.leadercontact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
         group.leaderjob = self.leaderjob.data
         group.area_idx = self.area_idx.data
         group.memo = self.memo.data
@@ -51,7 +53,7 @@ class GroupForm(Form):
         group = Group()
         group.camp_idx = camp_idx
         group.regdate = datetime.datetime.today()
-        group.pwd = self.pwd.data
+        group.pwd = hashlib.sha224(self.pwd.data).hexdigest()
         self.populate_obj(group)
         group.cancel_yn = 0
         group.cancel_reason = None
@@ -63,6 +65,8 @@ class GroupForm(Form):
 
     def update(self, camp_idx, idx):
         group = Group.get(idx)
+        if self.pwd.data is not None and self.pwd.data != '':
+            group.pwd = hashlib.sha224(self.pwd.data).hexdigest()
         self.populate_obj(group)
         db.session.commit()
 

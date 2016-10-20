@@ -210,6 +210,7 @@ def check_groupid():
 @context.route('/group/add')
 def reg_group():
     form = GroupForm()
+    form.set_camp('kids')
     return render_template('kids/form.html', form=form, page_header=u"단체신청", script=url_for('static', filename='kids/js/reg-group.js'))
 
 
@@ -259,6 +260,7 @@ def edit_group():
     group = Group.get(idx)
     form = GroupForm()
     form.set_group_data(group)
+    form.set_camp('kids')
     return render_template('kids/form.html', form=form, page_header=u"단체신청 수정", script=url_for('static', filename='kids/js/reg-group-edit.js'), editmode=True)
 
 

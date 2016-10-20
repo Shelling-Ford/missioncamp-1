@@ -31,7 +31,7 @@ class GroupForm(Form):
     group_idx = HiddenField()
 
     def set_camp(self, camp):
-        self.area_idx = SelectField(u'등록지부', choices=Area.get_list(camp))
+        self.area_idx.choices = Area.get_list(camp)
         if camp == 'youth':
             self.grouptype = RadioField(u'단체 유형', choices=[('1', '다니엘과 세친구'), ('2', '예수님과 열두제자'), ('3', '단체교회')])
 

@@ -25,15 +25,13 @@ class Area(db.Base):
     def get_list(cls, camp):
         result = []
         if camp == '*':
-            area_list = db.session.query(cls).order_by(cls.type, cls.name).all()
-            return area_list
+            area_list = db.session.query(cls).filter(cls.type != 4).order_by(cls.type, cls.name).all()
         else:
-            area_list = db.session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%" + camp + "%"))).order_by(cls.type, cls.name).all()
+            area_list = db.session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%" + camp + "%")), cls.type != 4).order_by(cls.type, cls.name).all()
 
-            for area in area_list:
-                result.append((area.idx, area.name))
-
-            return result
+        for area in area_list:
+            result.append((area.idx, area.name))
+        return result
 
     # 주어진 area_idx에 해당하는 area_name을 반환하는 함수
     @classmethod

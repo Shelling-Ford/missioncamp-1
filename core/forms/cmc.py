@@ -25,6 +25,7 @@ trainings = [
     ('training6', u'FO'), ('training7', u'SM'), ('training8', u'인터콥캠퍼스'), ('none', u'없음')
 ]
 
+
 class MemberCommon():
     def populate_membership(self, member_idx):
         if self.job.data is not None:
@@ -70,7 +71,6 @@ class MemberCommon():
                 t_membership.value = training
                 db.session.add(t_membership)
         db.session.commit()
-
 
 
 class RegistrationForm(Form, MemberCommon):

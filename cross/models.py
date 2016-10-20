@@ -1,9 +1,8 @@
 # -*-coding:utf-8-*-
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Date, or_
-from sqlalchemy.orm import class_mapper
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm.exc import NoResultFound
-from core.database import btjkorea_db
+# from core.database import btjkorea_db
 from core.database import db
 
 
@@ -45,6 +44,7 @@ class AdminUser(db.Base, UserMixin):
             return None
 
 
+'''
 import datetime
 
 
@@ -123,3 +123,4 @@ class BtjUser(btjkorea_db.Base, ModelSerializer, UserMixin):
                     result = result.filter(or_(*filter_list))
 
             return result.all()
+'''

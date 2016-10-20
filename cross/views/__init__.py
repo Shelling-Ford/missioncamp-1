@@ -7,11 +7,11 @@ from flask_principal import Permission, RoleNeed
 
 from core.models import Group, Member, Camp, Area, Room, Payment, Promotion, Roomsetting
 from core.functions import *
-from app.functions import *
+from cross.functions import *
 
-from app import functions_mongo as mongo
-from app import functions_xlsx as xlsx
-from app.functions_xlsx import XlsxBuilder
+from cross import functions_mongo as mongo
+from cross import functions_xlsx as xlsx
+from cross.functions_xlsx import XlsxBuilder
 # import xlsxwriter
 
 

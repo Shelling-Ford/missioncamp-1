@@ -13,20 +13,20 @@ from flask import Flask, render_template
 context = Flask(__name__)
 context.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
 
-import logging
-from logging import FileHandler
+# import logging
+# from logging import FileHandler
 
-logger = logging.getLogger('werkzeug')
-logger.setLevel(logging.DEBUG)
-logging.basicConfig(stream=sys.stderr)
-file_handler = FileHandler('/home/intercp/logs/missioncamp/error.log')
-file_handler.setLevel(logging.DEBUG)
+# logger = logging.getLogger('werkzeug')
+# logger.setLevel(logging.DEBUG)
+# logging.basicConfig(stream=sys.stderr)
+# file_handler = FileHandler('/home/intercp/logs/missioncamp/error.log')
+# file_handler.setLevel(logging.DEBUG)
 
 # access log
-logger.addHandler(file_handler)
+# logger.addHandler(file_handler)
 
 # error log for 500
-context.logger.addHandler(file_handler)
+# context.logger.addHandler(file_handler)
 
 import views_main
 
@@ -57,10 +57,11 @@ context.register_blueprint(master)
 from parking import context as parking
 context.register_blueprint(parking)
 
-
+'''
 # 500에러 발생시 로그에 기록
 @context.errorhandler(500)
 def internal_error(exception):
     context.logger.error(exception)
     print >> sys.stderr, exception
     return "500 Internal Server Error", 500
+'''

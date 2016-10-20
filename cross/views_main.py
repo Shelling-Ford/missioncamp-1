@@ -1,13 +1,11 @@
 # -*-coding:utf-8-*-
 from app import context
-from flask import render_template, flash, redirect, url_for, session, request, Blueprint
+from flask import render_template, flash, redirect, url_for, session, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, identity_loaded, RoleNeed
 
-from core.functions import *
 from core.models import Area
-from functions import *
-from models import AdminUser, BtjUser
+from models import AdminUser
 
 
 login_manager = LoginManager()
@@ -23,11 +21,7 @@ principals = Principal(context)
 # flask-login login_manager
 @login_manager.user_loader
 def load_user(adminid):
-    try:
-        user = BtjUser.get(mb_id=adminid)
-    except:
-        user = AdminUser.get(id=adminid)
-
+    user = AdminUser.get(id=adminid)
     return user
 
 
@@ -83,21 +77,7 @@ def login_proc():
     userid = request.form.get('userid', None)
     pwd = request.form.get('pwd', None)
 
-    if BtjUser.login_check(userid, pwd):
-        btjuser = BtjUser.get(mb_id=userid)
-
-        if btjuser.chaptercode == "01":
-            btjuser.role = 'hq'
-        else:
-            btjuser.role = 'branch'
-            btjuser.area_idx = Area.get_idx(btjuser.chaptercode)
-
-        btjuser.camp = 'cmc'
-        login_user(btjuser)
-
-        camp = 'cmc'
-        return redirect(url_for('%s.home' % camp))
-    elif AdminUser.login_check(userid, pwd):
+    if AdminUser.login_check(userid, pwd):
         adminuser = AdminUser.get(id=userid)
 
         login_user(adminuser)

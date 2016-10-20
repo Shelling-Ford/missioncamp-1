@@ -26,9 +26,12 @@ class GroupForm(Form):
     leadername = StringField(u'담당자 이름')
     leadercontact = ContactField(u'담당자 연락처')
     leaderjob = StringField(u'담당자 직업')
-    area_idx = SelectField(u'등록지부', choices=Area.get_list('kids'))
+    area_idx = SelectField(u'등록지부', choices=Area.get_list('*'))
     memo = StringField(u'남기고싶은 말', widget=TextArea())
     group_idx = HiddenField()
+
+    def set_camp(self, camp):
+        self.area_idx = SelectField(u'등록지부', choices=Area.get_list(camp))
 
     def set_group_data(self, group):
         self.groupid.data = group.groupid

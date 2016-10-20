@@ -192,6 +192,7 @@ def check_groupid(camp):
 def reg_group(camp):
     check_campcode(camp) # camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
     form = GroupForm(request.form)
+    form.set_camp(camp)
 
     if request.method == "POST":
         group_idx = form.insert(Camp.get_idx(camp))
@@ -222,9 +223,10 @@ def edit_group(camp):
     if check_session(camp, u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
         return redirect(url_for('.login', camp=camp))
-    
+
     idx = session['idx']
     form = GroupForm(request.form)
+    form.set_camp(camp)
 
     if request.method == "POST":
         form.update(Camp.get_idx(camp), idx)
@@ -263,9 +265,9 @@ def member_add(camp):
     if check_session(camp, u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
         return redirect(url_for('.login', camp=camp))
-    
+
     form = GroupMemberRegForm(request.form)
-    
+
     idx = session['idx']
     form.group_idx.data = idx
     group = Group.get(idx)

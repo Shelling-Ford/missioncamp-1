@@ -207,6 +207,7 @@ def check_groupid():
 @context.route('/group/add', methods=["GET", "POST"])
 def reg_group():
     form = GroupForm(request.form)
+    form.set_camp('cmc')
 
     if request.method == "POST":
         group_idx = form.insert(Camp.get_idx("cmc"))
@@ -238,9 +239,10 @@ def edit_group():
     if check_session(u'단체'):
         flash(u'로그아웃 되었습니다. 다시 로그인하세요')
         return redirect(url_for('.login'))
-    
+
     idx = session['idx']
     form = GroupForm(request.form)
+    form.set_camp('cmc')
 
     if request.method == "POST":
         form.update(Camp.get_idx('cmc'), idx)
@@ -289,7 +291,7 @@ def member_add():
         return redirect(url_for('.login'))
 
     form = GroupMemberRegForm(request.form)
-    
+
     idx = session['idx']
     form.group_idx.data = idx
     group = Group.get(idx)

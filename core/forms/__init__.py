@@ -1,7 +1,9 @@
 # -*-coding:utf-8-*-
 from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField, RadioField
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput
-from core.models import Area
+from core.models import Area, Group
+from core.database import db
+import datetime
 
 
 class ContactField(StringField):
@@ -35,6 +37,34 @@ class GroupForm(Form):
         self.area_idx.data = group.area_idx
         self.memo.data = group.memo
         self.group_idx.data = group.idx
+
+    def populate_obj(self, group):
+        group.groupid = self.groupid.data
+        group.name = self.name.data
+        group.leadername = self.leadername.data
+        group.leadercontact = self.leadercontact.data
+        group.leaderjob = self.leaderjob.data
+        group.area_idx = self.area_idx.data
+        group.memo = self.memo.data
+
+    def insert(self, camp_idx):
+        group = Group()
+        group.camp_idx = camp_idx
+        group.regdate = datetime.datetime.today()
+        group.pwd = self.pwd.data
+        self.populate_obj(group)
+        group.cancel_yn = 0
+        group.cancel_reason = None
+        group.cancedate = None
+        group.mem_num = 0
+        db.session.add(group)
+        db.session.commit()
+        return group.idx
+
+    def update(self, camp_idx, idx):
+        group = Group.get(idx)
+        self.populate_obj(group)
+        db.session.commit()
 
 
 class RoomCheckForm(Form):

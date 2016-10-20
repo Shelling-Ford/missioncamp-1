@@ -91,9 +91,6 @@ class RegistrationForm(Form):
         self.memo.data = member.memo
 
     def populate_obj(self, member):
-        member.camp_idx = Camp.get_idx('cmc')
-        member.userid = self.userid.data
-        member.pwd = self.pwd.data
         member.name = self.name.data
         member.area_idx = self.area_idx.data
         member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
@@ -114,14 +111,7 @@ class RegistrationForm(Form):
             member.date_of_arrival = self.date_of_arrival.data
             member.date_of_leave = self.date_of_leave.data
         member.language = self.language.data
-        member.group_idx = None
-        member.regdate = datetime.datetime.today()
-        member.canceldate = None
-        member.cancel_yn = 0
-        member.cancel_reason = None
         member.memo = self.memo.data
-        member.room_idx = None
-        member.smallgroup_num = None
 
     def populate_membership(self, member_idx):
         if self.job.data is not None:
@@ -171,32 +161,12 @@ class RegistrationForm(Form):
         member.camp_idx = Camp.get_idx('cmc')
         member.userid = self.userid.data
         member.pwd = self.pwd.data
-        member.name = self.name.data
-        member.area_idx = self.area_idx.data
-        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
-        member.church = self.church.data
-        member.birth = self.birth.data
-        member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data
-        member.mit_yn = self.mit_yn.data
-        member.attend_yn = 0
-        member.newcomer_yn = self.newcomer_yn.data
-        member.persontype = self.persontype.data
-        member.fullcamp_yn = self.fullcamp_yn.data
-        if self.fullcamp_yn.data == 1:
-            date_list = Camp.get_date_list(member.camp_idx)
-            member.date_of_arrival = date_list[0][0]
-            member.date_of_leave = date_list[-1][0]
-        else:
-            member.date_of_arrival = self.date_of_arrival.data
-            member.date_of_leave = self.date_of_leave.data
-        member.language = self.language.data
+        self.populate_obj(member)
         member.group_idx = None
         member.regdate = datetime.datetime.today()
         member.canceldate = None
         member.cancel_yn = 0
         member.cancel_reason = None
-        member.memo = self.memo.data
         member.room_idx = None
         member.smallgroup_num = None
         db.session.add(member)
@@ -211,26 +181,7 @@ class RegistrationForm(Form):
         member.userid = self.userid.data
         if self.pwd.data is not None and self.pwd.data != '':
             member.pwd = self.pwd.data
-        member.name = self.name.data
-        member.area_idx = self.area_idx.data
-        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
-        member.church = self.church.data
-        member.birth = self.birth.data
-        member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data
-        member.mit_yn = self.mit_yn.data
-        member.newcomer_yn = self.newcomer_yn.data
-        member.persontype = self.persontype.data
-        member.fullcamp_yn = self.fullcamp_yn.data
-        if self.fullcamp_yn.data == 1:
-            date_list = Camp.get_date_list(member.camp_idx)
-            member.date_of_arrival = date_list[0][0]
-            member.date_of_leave = date_list[-1][0]
-        else:
-            member.date_of_arrival = self.date_of_arrival.data
-            member.date_of_leave = self.date_of_leave.data
-        member.language = self.language.data
-        member.memo = self.memo.data
+        self.populate_obj(member)
         db.session.commit()
         self.populate_membership(member.idx)
         return

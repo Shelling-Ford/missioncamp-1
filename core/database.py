@@ -64,7 +64,6 @@ class SQLDriver():
 
 
 # 인증과 관련해서는 btjkorea의 g5_member테이블을 참조함.
-# btjkorea_db = SQLDriver("mysql+pymysql://btjkorea:qlxlwpdl1040!@localhost/btjkorea?charset=utf8")
-
+btjkorea_db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/btjkorea?charset=utf8")
 db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/mcampadm?charset=utf8")
 # intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")

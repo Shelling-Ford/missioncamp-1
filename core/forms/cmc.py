@@ -62,6 +62,14 @@ class MemberCommon():
             db.session.add(sm_yn)
         '''
 
+        if self.vision_yn.data not in [None, '', 'None']:
+            vision_yn = Membership()
+            vision_yn.camp_idx = Camp.get_idx('cbtj')
+            vision_yn.member_idx = member_idx
+            vision_yn.key = 'vision_yn'
+            vision_yn.value = self.vision_yn.data
+            db.session.add(vision_yn)
+
         if self.training.data not in [None, '', 'None']:
             for training in self.training.data:
                 t_membership = Membership()
@@ -75,7 +83,7 @@ class MemberCommon():
 
 class RegistrationForm(Form, MemberCommon):
     idx = HiddenField()
-    userid = StringField(u'아이디')
+    userid = StringField(u'아이디(이메일)')
     pwd = PasswordField(u'비밀번호')
     pwd2 = PasswordField(u'비밀번호 확인')
     name = StringField(u'이름')
@@ -92,13 +100,15 @@ class RegistrationForm(Form, MemberCommon):
     # membership
     major = StringField(u'전공')
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
+    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
     fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
     date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     # membership
     # sm_yn = RadioField(u'SM(학생선교사) 여부', choices=[(1, u'예'), (0, u'아니오')])
     newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])
+    # membership
+    vision_yn = RadioField(u'비전스쿨 수료여부', choices=[(1, u'예'), (0, u'아니오')])
     # membership
     training = MultiCheckboxField(u'인터콥 훈련여부', choices=trainings)
     language = SelectField(u'통역필요', choices=[(i, i) for i in languages])
@@ -126,6 +136,7 @@ class RegistrationForm(Form, MemberCommon):
         self.date_of_leave.data = member.date_of_leave
         # self.sm_yn.data = membership_data.get('sm_yn')
         self.newcomer_yn.data = member.newcomer_yn
+        self.vision_yn.data = int(membership_data.get('vision_yn'))
         self.training.data = membership_data.get('training')
         self.language.data = member.language
         self.memo.data = member.memo
@@ -152,8 +163,6 @@ class RegistrationForm(Form, MemberCommon):
             member.date_of_leave = self.date_of_leave.data
         member.language = self.language.data
         member.memo = self.memo.data
-
-    
 
     def insert(self):
         member = Member()
@@ -199,13 +208,15 @@ class GroupMemberRegForm(Form, MemberCommon):
     # membership
     major = StringField(u'전공')
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
+    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
     fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
     date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     # membership
     # sm_yn = RadioField(u'SM(학생선교사) 여부', choices=[(1, u'예'), (0, u'아니오')])
     newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])
+    # membership
+    vision_yn = RadioField(u'비전스쿨 수료여부', choices=[(1, u'예'), (0, u'아니오')])
     # membership
     training = MultiCheckboxField(u'인터콥 훈련여부', choices=trainings)
     language = SelectField(u'통역필요', choices=[(i, i) for i in languages])
@@ -229,6 +240,7 @@ class GroupMemberRegForm(Form, MemberCommon):
         self.date_of_leave.data = member.date_of_leave
         # self.sm_yn.data = membership_data.get('sm_yn')
         self.newcomer_yn.data = member.newcomer_yn
+        self.vision_yn.data = int(membership_data.get('vision_yn'))
         self.training.data = membership_data.get('training')
         self.language.data = member.language
 
@@ -252,7 +264,6 @@ class GroupMemberRegForm(Form, MemberCommon):
             member.date_of_arrival = self.date_of_arrival.data
             member.date_of_leave = self.date_of_leave.data
         member.language = self.language.data
-
 
     def insert(self, group_idx, area_idx):
         member = Member()

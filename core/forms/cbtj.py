@@ -44,6 +44,14 @@ class MemberCommon():
             vision_yn.value = self.vision_yn.data
             db.session.add(vision_yn)
 
+        if self.job_name.data not in [None, '', 'None']:
+            job_name = Membership()
+            job_name.camp_idx = Camp.get_idx('cbtj')
+            job_name.member_idx = member_idx
+            job_name.key = 'job_name'
+            job_name.value = self.job_name.data
+            db.session.add(job_name)
+
         if self.training.data not in [None, '', 'None']:
             for training in self.training.data:
                 t_membership = Membership()
@@ -57,7 +65,7 @@ class MemberCommon():
 
 class RegistrationForm(Form, MemberCommon):
     idx = HiddenField()
-    userid = StringField(u'아이디')
+    userid = StringField(u'아이디(이메일)')
     pwd = PasswordField(u'비밀번호')
     pwd2 = PasswordField(u'비밀번호 확인')
     name = StringField(u'이름')
@@ -69,8 +77,9 @@ class RegistrationForm(Form, MemberCommon):
     persontype = RadioField(u'참가구분', choices=[(i, i) for i in persontypes])
     # membership
     job = SelectField(u'직업/직종', choices=[(i, i) for i in jobs])
+    job_name = StringField(u'직장명')
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
+    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
     fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
     date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cbtj')))
     date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cbtj')))
@@ -95,6 +104,7 @@ class RegistrationForm(Form, MemberCommon):
         self.church.data = member.church
         self.persontype.data = member.persontype
         self.job.data = membership_data.get('job')
+        self.job_name.data = membership_data.get('job_name')
         self.bus_yn.data = member.bus_yn
         self.mit_yn.data = member.mit_yn
         self.fullcamp_yn.data = member.fullcamp_yn
@@ -128,8 +138,6 @@ class RegistrationForm(Form, MemberCommon):
             member.date_of_leave = self.date_of_leave.data
         member.language = self.language.data
         member.memo = self.memo.data
-
-    
 
     def insert(self):
         member = Member()
@@ -170,8 +178,9 @@ class GroupMemberRegForm(Form, MemberCommon):
     persontype = RadioField(u'참가구분', choices=[(i, i) for i in persontypes])
     # membership
     job = SelectField(u'직업/직종', choices=[(i, i) for i in jobs])
+    job_name = StringField(u'직장명')
     bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
+    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
     fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
     date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cbtj')))
     date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cbtj')))
@@ -192,6 +201,7 @@ class GroupMemberRegForm(Form, MemberCommon):
         self.church.data = member.church
         self.persontype.data = member.persontype
         self.job.data = membership_data.get('job')
+        self.job_name.data = membership_data.get('job_name')
         self.bus_yn.data = member.bus_yn
         self.mit_yn.data = member.mit_yn
         self.fullcamp_yn.data = member.fullcamp_yn
@@ -222,7 +232,6 @@ class GroupMemberRegForm(Form, MemberCommon):
             member.date_of_arrival = self.date_of_arrival.data
             member.date_of_leave = self.date_of_leave.data
         member.language = self.language.data
-
 
     def insert(self, group_idx, area_idx):
         member = Member()

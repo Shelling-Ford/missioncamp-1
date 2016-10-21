@@ -64,12 +64,17 @@ $(document).ready(function () {
 });
 var isChecked = false;
 
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 function check_userid() {
     'use strict';
     var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[a-z]?[a-z0-9\-\_]{4,}$/i;
 
-    if (!email_regex.test(userid)) {
-        $('#id_check').html('아이디는 영문 소문자 및 숫자 4글자 이상 입력해주세요');
+    if (!validateEmail(userid)) {
+        $('#id_check').html('올바른 이메일을 입력해주시기 바랍니다.');
         $('#id_check').removeClass('text-success').addClass('text-danger');
         isChecked = false;
         return;
@@ -173,7 +178,13 @@ function validate_form() {
 
     // MIT 참가 여부
     if ($('input[name=mit_yn]:checked').val() === undefined) {
-        alert('MIT참가 여부를 선택해 주세요');
+        alert('2017 겨울 FO/MIT참가 여부를 선택해 주세요');
+        return false;
+    }
+
+    // 비전스쿨 수료 여부
+    if ($('input[name=vision_yn]:checked').val() === undefined) {
+        alert('비전스쿨 수료 여부를 선택해 주세요');
         return false;
     }
 

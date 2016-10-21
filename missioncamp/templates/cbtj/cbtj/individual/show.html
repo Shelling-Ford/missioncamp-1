@@ -37,7 +37,7 @@
           <td>{% if member.bus_yn %} 예 {% else %} 아니오 {% endif %}</td>
         </tr>
         <tr>
-          <td>MIT 참여 여부</td>
+          <td>2017년 겨울 FO/MIT 참여 여부</td>
           <td>{% if member.mit_yn %} 예 {% else %} 아니오 {% endif %}</td>
         </tr>
         <tr>
@@ -58,8 +58,12 @@
         </tr>
         {% if member.persontype == '청년' %}
         <tr>
-          <td>직업</td>
+          <td>직업/직종</td>
           <td>{{ member.membership.job }}</td>
+        </tr>
+        <tr>
+          <td>직장명</td>
+          <td>{{ member.membership.job_name }}</td>
         </tr>
         {% endif %}
         <tr>

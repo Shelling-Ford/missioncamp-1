@@ -1,5 +1,6 @@
 # -*-coding:utf-8-*-
 import xlsxwriter
+import datetime
 from core.models import Member, Camp
 
 try:
@@ -115,7 +116,10 @@ class XlsxBuilder():
             membership = member.get_membership_data()
             for label in label_list:
                 if label in date_type_label:
-                    self.worksheet.write_datetime(r, c, self.get_value(member, label), self.date_format)
+                    if type(self.get_value(member, label)) is datetime.datetime or type(self.get_value(member, label)) is datetime.date:
+                        self.worksheet.write_datetime(r, c, self.get_value(member, label), self.date_format)
+                    else:
+                        self.worksheet.write(r, c, "")
                 elif label in membership_type_label:
                     value = self.get_membership_value(membership, label)
                     self.worksheet.write(r, c, value)

@@ -2,6 +2,7 @@
 $(document).ready(function () {
     'use strict';
     $('#job_group').hide();
+    $('#job_name_group').hide();
     $('#date_of_arrival_group').hide();
     $('#date_of_leave_group').hide();
 
@@ -10,8 +11,10 @@ $(document).ready(function () {
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
             $('#job_group').show();
+            $('#job_name_group').show();
         } else {
             $('#job_group').hide();
+            $('#job_name_group').hide();
         }
     });
 
@@ -54,12 +57,17 @@ $(document).ready(function () {
 });
 var isChecked = false;
 
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 function check_userid() {
     'use strict';
     var userid = $('#userid').val(), campidx = $('#campidx').val(), email_regex = /^[a-z]?[a-z0-9\-\_]{4,}$/i;
 
-    if (!email_regex.test(userid)) {
-        $('#id_check').html('아이디는 영문 소문자 및 숫자 4글자 이상 입력해주세요');
+    if (!validateEmail(userid)) {
+        $('#id_check').html('올바른 이메일을 입력해주시기 바랍니다.');
         $('#id_check').removeClass('text-success').addClass('text-danger');
         isChecked = false;
         return;

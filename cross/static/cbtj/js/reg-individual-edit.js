@@ -2,11 +2,11 @@
 $(document).ready(function () {
     'use strict';
     
-    if($('input[name=persontype]').val() != '청년') {
+    if($('input[name=persontype]:checked').val() != '청년') {
         $('#job_group').hide();
     }
 
-    if($('input[name=fullcamp_yn]').val() == '1') {
+    if($('input[name=fullcamp_yn]:checked').val() == '1') {
         $('#date_of_arrival_group').hide();
         $('#date_of_leave_group').hide();    
     }

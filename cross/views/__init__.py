@@ -648,7 +648,7 @@ class CbtjView(MetaView):
             group_yn = member.group_idx is not None
             form.set_member_data(member)
 
-            return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
+            return render_template('%s/form.html' % self.camp, form=form, script=url_for('static', filename='cbtj/js/reg-individual-edit.js'), editmode=True, group_yn=group_yn)
 
 
 class KidsView(MetaView):

@@ -4,6 +4,7 @@ $(document).ready(function () {
     
     if($('input[name=persontype]').val() != '청년') {
         $('#job_group').hide();
+        $('#job_name_group').hide();
     }
 
     if($('input[name=fullcamp_yn]').val() == '1') {
@@ -16,8 +17,10 @@ $(document).ready(function () {
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
             $('#job_group').show();
+            $('#job_name_group').show();
         } else {
             $('#job_group').hide();
+            $('#job_name_group').hide();
         }
     });
 

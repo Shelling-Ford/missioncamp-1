@@ -1,7 +1,11 @@
 /* global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    
+    if($('input[name=persontype]').val() != '대학생') {
+        $('#campus_group').hide();
+        $('#major_group').hide();
+    }
+
     if($('input[name=persontype]').val() != '청년') {
         $('#job_group').hide();
     }
@@ -15,8 +19,16 @@ $(document).ready(function () {
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
+            $('#campus_group').hide();
+            $('#major_group').hide();
             $('#job_group').show();
+        } else if ($(this).val() === '대학생') {
+            $('#campus_group').show();
+            $('#major_group').show();
+            $('#job_group').hide();
         } else {
+            $('#campus_group').hide();
+            $('#major_group').hide();
             $('#job_group').hide();
         }
     });
@@ -120,15 +132,15 @@ function validate_form() {
         return false;
     }
 
-    // 뉴커머 여부
-    if ($('input[name=newcomer_yn]:checked').val() === undefined) {
-        alert('선캠 처음 참석 여부를 선택해 주세요');
+    // SM 여부
+    if ($('input[name=sm_yn]:checked').val() === undefined) {
+        alert('SM(학생선교사) 여부를 선택해 주세요');
         return false;
     }
 
-    // 비전스쿨수료 여부
-    if ($('input[name=vision_yn]:checked').val() === undefined) {
-        alert('비전스쿨 수료 여부를 선택해 주세요');
+    // 뉴커머 여부
+    if ($('input[name=newcomer_yn]:checked').val() === undefined) {
+        alert('선캠 처음 참석 여부를 선택해 주세요');
         return false;
     }
 

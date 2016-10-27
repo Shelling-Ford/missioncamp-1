@@ -1,26 +1,23 @@
-/*global $, document, alert */
+/* global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    if($('input[name=persontype]').val() === '청년') {
-        $('#young_job').show();
-    } else {
-        $('#young_job').hide();
+    
+    if($('input[name=persontype]').val() != '청년') {
+        $('#job_group').hide();
     }
 
-    if($('input[name=fullcamp_yn]:checked').val() === '0') {
-        $('#bubun').show();
-    } else {
-        $('#bubun').hide();
+    if($('input[name=fullcamp_yn]').val() == '1') {
+        $('#date_of_arrival_group').hide();
+        $('#date_of_leave_group').hide();    
     }
-
+    
     // 참가구분 == 청년 일때 직업란 보여줌
-    // 참가구분 == 대학생 일때 학교 / 학과 기입란 보여줌
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {
         if ($(this).val() === '청년') {
-            $('#young_job').show();
+            $('#job_group').show();
         } else {
-            $('#young_job').hide();
+            $('#job_group').hide();
         }
     });
 
@@ -28,9 +25,11 @@ $(document).ready(function () {
     // 그 외는 모두 숨김
     $('input[name=fullcamp_yn]').change(function () {
         if ($(this).val() === '0') {
-            $('#bubun').show();
+            $('#date_of_arrival_group').show();
+            $('#date_of_leave_group').show();
         } else {
-            $('#bubun').hide();
+            $('#date_of_arrival_group').hide();
+            $('#date_of_leave_group').hide();
         }
     });
 
@@ -46,6 +45,8 @@ $(document).ready(function () {
             $('#none').attr('checked', true);
         }
     });
+
+    $('#form1').on('submit', validate_form);
 });
 
 
@@ -53,7 +54,7 @@ $(document).ready(function () {
 function validate_form() {
 
     'use strict';
-    var contact_regex = /^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/, birth_regex = /^(19([0-9]{2})|200([0-9])|201([0-5]))-?(0([1-9])|1[0-2])-?([0-2][0-9]|[3][0-1])$/g;
+    var contact_regex = /^01([0|1|6|7|8|9]?)-?([0-9]{3,4})-?([0-9]{4})$/, contact = $('#hp').val() + '-' + $('#hp2').val() + '-' + $('#hp3').val();
 
 
     // 비밀번호 공백
@@ -64,8 +65,6 @@ function validate_form() {
             return false;
         }
     }
-
-
 
     // 이름 입력 안함
     if ($('#name').val() === '') {
@@ -127,6 +126,12 @@ function validate_form() {
         return false;
     }
 
+    // 비전스쿨수료 여부
+    if ($('input[name=vision_yn]:checked').val() === undefined) {
+        alert('비전스쿨 수료 여부를 선택해 주세요');
+        return false;
+    }
+
     if ($('input[type=checkbox]:checked').val() === undefined) {
         alert('인터콥 훈련여부를 적어도 하나 이상 체크해 주세요');
         return false;
@@ -134,11 +139,4 @@ function validate_form() {
 
 
     return true;
-}
-
-function submit_form() {
-    'use strict';
-    if (validate_form()) {
-        $('#form').submit();
-    }
 }

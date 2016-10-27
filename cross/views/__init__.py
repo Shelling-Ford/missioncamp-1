@@ -93,12 +93,12 @@ class MetaView():
         self.camp_permission = Permission(RoleNeed(self.camp))
 
         # 신청자 상세
-        @self.context.route('/member')
+        @self.context.route('/member/<member_idx>')
         @login_required
-        def member():
+        def member(member_idx):
             # camp_idx = Camp.get_idx(self.camp) if self.camp != 'cbtj' else Camp.get_idx(request.args.get('camp'))
 
-            member_idx = request.args.get('member_idx', 0)
+            # member_idx = request.args.get('member_idx', 0)
 
             if member_idx != 0:
                 member = Member.get(member_idx)
@@ -481,7 +481,7 @@ class MetaView():
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
                     # if 'camp' in params:
                     #    camp_idx = Camp.get_idx(params['camp'])
-                        
+
                 # elif self.camp == 'ws':
                 #    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
@@ -626,96 +626,36 @@ class CmcView(MetaView):
 
 # 청직선캠
 class CbtjView(MetaView):
-    # 청대청직과 여남시 청직이 나눠지는 경우 사용하는 코드
-    # 나중에 조건문으로 분기할 수 있도록 조정
-    '''
-    def init_home(self):
-        # 메인통계
-        @self.context.route('/')
-        @login_required
-        def home():
-
-            args = request.args.to_dict()
-            if 'cbtj1' not in args and 'cbtj2' not in args:
-                return redirect(url_for('.home', cbtj2='1'))
-
-            camp_idx = getCampIdx('cbtj')
-            stat1 = get_basic_stat(camp_idx)
-            attend_stat1 = Member.get_attend_stat(camp_idx)
-            partial_stat1 = Member.get_partial_stat(camp_idx)
-
-            camp_idx2 = getCampIdx('cbtj2')
-            stat2 = get_basic_stat(camp_idx2)
-            attend_stat2 = Member.get_attend_stat(camp_idx2)
-            partial_stat2 = Member.get_partial_stat(camp_idx2)
-
-            stat = get_basic_stat(camp_idx, camp_idx2)
-            return render_template(
-                '%s/home.html' % self.camp, stat1=stat1, stat2=stat2, stat=stat, attend_stat1=attend_stat1,
-                partial_stat1=partial_stat1, attend_stat2=attend_stat2, partial_stat2=partial_stat2
-            )
-
-    def init_member_list(self):
-        # 신청자 목록
-        @self.context.route('/list')
-        @login_required
-        def member_list():
-            camp = request.args.get('camp', None)
-            group_idx = request.args.get('group_idx', None)
-            page = int(request.args.get('page', 1))
-            group = Group.get(group_idx) if group_idx is not None else None
-
-            params = request.args.to_dict()
-
-            passlist = ['cbtj1', 'cbtj2', 'all']
-            for key in passlist:
-                params.pop(key, None)
-
-            if 'page' not in params:
-                params['page'] = page
-
-            area_list = Area.get_list(self.camp)
-
-            if camp is None or camp == 'None':
-                member_list = Member.get_list([Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')], **params)
-                count = Member.count([Camp.get_idx('cbtj'), Camp.get_idx('cbtj2')], **params)
-                group_list = Group.get_list(Camp.get_idx('cbtj'))
-                group_list.extend(Group.get_list(Camp.get_idx('cbtj2')))
-            else:
-                camp_idx = Camp.get_idx(camp)
-                member_list = Member.get_list(camp_idx, **params)
-                count = Member.count(camp_idx, **params)
-                group_list = Group.get_list(camp_idx)
-            return render_template(
-                '%s/list.html' % self.camp, members=member_list, group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2),
-                area_list=area_list, group_list=group_list
-            )
-    '''
-
     def __init__(self):
         MetaView.__init__(self, 'cbtj')
         self.init_home()
         self.init_member_list()
 
         # 개인 신청 수정
-        @self.context.route('/member-edit')
+        @self.context.route('/member-edit/<member_idx>', methods=["GET", "POST"])
         @login_required
-        def member_edit():
-            idx = request.args.get('member_idx', 0)
-            session['idx'] = idx
-            member = Member.get(idx)
-            group_yn = member.group_idx is not None
-            camp = request.args.get('camp')
+        def member_edit(member_idx):
+            # idx = request.args.get('member_idx', 0)
+            # print(idx)
+            # session['idx'] = idx
+            from core.forms.cbtj import RegistrationForm
+            form = RegistrationForm(request.form)
 
-            from core.forms.cbtj import RegForm1  # , RegForm2
-            # form = RegForm1() if camp == 'cbtj' else RegForm2()
-            form = RegForm1()
+            if request.method == "POST":
+                # idx = session['idx']
+                form.update(member_idx)
+                flash(u'수정이 완료되었습니다')
+                return redirect(".member", member_idx=member_idx)
+
+            member = Member.get(member_idx)
+            group_yn = member.group_idx is not None
             form.set_member_data(member)
 
             return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
 
         # **수정필요!!
         # 수정된 신청서 저장
+        '''
         @self.context.route('/member-edit', methods=['POST'])
         @login_required
         def member_edit_proc():
@@ -743,6 +683,7 @@ class CbtjView(MetaView):
                 Member.update(idx, **params)
                 flash(u'신청서 수정이 완료되었습니다.')
                 return redirect(url_for('.member', member_idx=idx))
+        '''
 
 
 class KidsView(MetaView):

@@ -19,12 +19,15 @@ def check_campcode(camp):
         print u'잘못된 접근: 캠프코드가 cbtj 또는 cbtj2가 아닙니다.'
         raise BaseException
 
+
 def check_session(camp, logintype, idx=None):
     return True if not 'type' in session or session['type'] != logintype or not 'idx' in session else False
+
 
 @context.route('/')
 def home():
     return render_template('cbtj/home.html')
+
 
 @context.route('/<page>')
 def page(page):
@@ -32,6 +35,7 @@ def page(page):
         return render_template('cbtj/%s.html' % page)
     except TemplateNotFound:
         return render_template('cbtj/404.html')
+
 
 @context.route('/room-check', methods=['GET', 'POST'])
 def room_check():
@@ -60,9 +64,11 @@ def room_check():
         form = RoomCheckForm()
         return render_template('cbtj/room-check.html', form=form)
 
+
 @context.route('/<camp>/')
 def camp(camp):
     return render_template('cbtj/%s/home.html' % camp)
+
 
 # 아이디 중복체크
 @context.route('/<camp>/individual/check-userid', methods=['POST'])
@@ -72,10 +78,11 @@ def check_userid(camp):
     userid = request.form.get('userid')
     return "%d" % checkUserId(campidx, userid)
 
+
 # 개인신청 - 신청서
 @context.route('/<camp>/individual/add', methods=["GET", "POST"])
 def reg_individual(camp):
-    check_campcode(camp) # camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
+    check_campcode(camp)  # camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
     form = RegistrationForm(request.form)
 
     if request.method == "POST":
@@ -133,6 +140,7 @@ def login_proc(camp):
         flash('신청구분이 잘못되었습니다. 관리자에게 문의해주세요(070-8787-8870)')
         return redirect(url_for('.login', camp=camp))
 
+
 # 개인신청 조회
 @context.route('/<camp>/individual/<idx>')
 def show_individual(camp, idx):
@@ -143,6 +151,7 @@ def show_individual(camp, idx):
     member = getIndividualData(idx)
     area_name = getAreaName(member['area_idx'])
     return render_template('cbtj/%s/individual/show.html' % camp, camp=camp, member=member, area_name=area_name)
+
 
 # 개인 신청 수정
 @context.route('/<camp>/individual/<idx>/edit', methods=["GET", "POST"])
@@ -162,6 +171,7 @@ def edit_individual(camp, idx):
     member = Member.get(idx)
     form.set_member_data(member)
     return render_template('cbtj/form.html', form=form, page_header=u"개인 신청서 수정", script=url_for('static', filename='cbtj/js/reg-individual-edit.js'), editmode=True)
+
 
 # 신청 취소
 @context.route('/<camp>/individual/<idx>/cancel')

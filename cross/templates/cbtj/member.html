@@ -194,6 +194,16 @@
       </tr>
       {% endif %}
       <tr>
+        <td>비전스쿨 수료 여부</td>
+        <td>
+          {% for t in member.membership %}
+            {% if t.key == 'vision_yn' %}
+              {% if t.value == "1" %}예{% else %}아니오{% endif %}
+            {% endif %}
+          {% endfor %}
+        </td>
+      </tr>
+      <tr>
         <td>인터콥 훈련 여부</td>
         <td>
           {% for t in member.membership %}

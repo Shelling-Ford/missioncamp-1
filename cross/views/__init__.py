@@ -635,9 +635,6 @@ class CbtjView(MetaView):
         @self.context.route('/member-edit/<member_idx>', methods=["GET", "POST"])
         @login_required
         def member_edit(member_idx):
-            # idx = request.args.get('member_idx', 0)
-            # print(idx)
-            # session['idx'] = idx
             from core.forms.cbtj import RegistrationForm
             form = RegistrationForm(request.form)
 
@@ -645,45 +642,13 @@ class CbtjView(MetaView):
                 # idx = session['idx']
                 form.update(member_idx)
                 flash(u'수정이 완료되었습니다')
-                return redirect(".member", member_idx=member_idx)
+                return redirect(url_for(".member", member_idx=member_idx))
 
             member = Member.get(member_idx)
             group_yn = member.group_idx is not None
             form.set_member_data(member)
 
             return render_template('%s/form.html' % self.camp, form=form, editmode=True, group_yn=group_yn)
-
-        # **수정필요!!
-        # 수정된 신청서 저장
-        '''
-        @self.context.route('/member-edit', methods=['POST'])
-        @login_required
-        def member_edit_proc():
-            idx = session['idx']
-            member = Member.get(idx)
-            camp_idx = member.camp_idx
-            fullcamp_yn = int(request.form.get('fullcamp_yn', 0))
-
-            params = request.form.to_dict()
-
-            if fullcamp_yn == 1:
-                date_list = Camp.get_date_list(camp_idx)
-                params['date_of_arrival'] = str(date_list[0][0])
-                params['date_of_leave'] = str(date_list[-1][0])
-
-            date_of_arrival = datetime.datetime.strptime(params.get('date_of_arrival'), '%Y-%m-%d')
-            date_of_leave = datetime.datetime.strptime(params.get('date_of_leave'), '%Y-%m-%d')
-
-            td = (date_of_leave - date_of_arrival)
-
-            if td.days < 0:
-                flash(u'참석 기간을 잘못 선택하셨습니다.')
-                return redirect(url_for('.member_edit', member_idx=idx))
-            else:
-                Member.update(idx, **params)
-                flash(u'신청서 수정이 완료되었습니다.')
-                return redirect(url_for('.member', member_idx=idx))
-        '''
 
 
 class KidsView(MetaView):

@@ -94,25 +94,27 @@ def reg_individual(camp):
 
     return render_template('cbtj/form.html', form=form, page_header=u"개인신청", script=url_for('static', filename='cbtj/js/reg-individual.js'))
 
+
 # 신청조회 - 로그인 폼
 @context.route('/<camp>/check')
 def login(camp):
     return render_template('cbtj/%s/check.html' % camp)
 
+
 @context.route('/<camp>/check', methods=['POST'])
 def login_proc(camp):
     logintype = request.form.get('logintype', None)
-    if logintype == '' or logintype == None:
+    if logintype == '' or logintype is None:
         flash(u'신청 구분을 선택해주세요')
         return redirect(url_for('.login', camp=camp))
 
     userid = request.form.get('userid', None)
-    if userid == '' or userid == None:
+    if userid == '' or userid is None:
         flash(u'아이디를 입력해주세요')
         return redirect(url_for('.login', camp=camp))
 
     pwd = request.form.get('pwd', None)
-    if pwd == '' or pwd == None:
+    if pwd == '' or pwd is None:
         flash(u'비밀번호를 입력해 주세요')
         return redirect(url_for('.login', camp=camp))
 
@@ -129,7 +131,7 @@ def login_proc(camp):
     elif logintype == u'단체':
         print loginCheckGroupid(campidx, userid, pwd)
         if loginCheckGroupid(campidx, userid, pwd):
-            idx = getGroupIdx(campidx,userid)
+            idx = getGroupIdx(campidx, userid)
             session['type'] = u'단체'
             session['idx'] = idx
             return redirect(url_for('.show_group', camp=camp))

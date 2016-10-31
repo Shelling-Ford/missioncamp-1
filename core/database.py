@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 # import collections
-
+import config
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -23,7 +23,7 @@ class SQLDriver():
         return self.select_all(query, params)
 
     def select_all(self, query, params=None):
-        s = self.db_session()
+        s = self.session()
         if params is None:
             result = s.execute(query)
         else:
@@ -38,7 +38,7 @@ class SQLDriver():
         return rows
 
     def select_one(self, query, params=None):
-        s = self.db_session()
+        s = self.session()
         if params is None:
             result = s.execute(query)
         else:
@@ -52,18 +52,18 @@ class SQLDriver():
         return r
 
     def raw_query(self, query, params=None):
-        s = self.db_session()
+        s = self.session()
         if params is None:
             s.execute(query)
         else:
             s.execute(query, params)
 
     def commit(self):
-        s = self.db_session()
+        s = self.session()
         s.commit()
 
 
 # 인증과 관련해서는 btjkorea의 g5_member테이블을 참조함.
-btjkorea_db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/btjkorea?charset=utf8")
-db = SQLDriver("mysql+pymysql://root:btj1040!@localhost/mcampadm?charset=utf8")
+btjkorea_db = SQLDriver("mysql+pymysql://{0}:{1}@{2}/btjkorea?charset=utf8".format(config.bkdb_user, config.bkdb_password, config.bkdb_host))
+db = SQLDriver("mysql+pymysql://{0}:{1}@{2}/mcampadm?charset=utf8".format(config.db_user, config.db_password, config.db_host))
 # intercp_driver = SQLDriver("mssql+pymssql://intercp21:gbs1040@intercp")

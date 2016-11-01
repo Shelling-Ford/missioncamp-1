@@ -1,4 +1,5 @@
-# -*-coding:utf-8-*-
+''' cmc.py
+'''
 from flask import render_template, redirect, url_for, session, flash, Blueprint, request
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
@@ -69,7 +70,7 @@ def camp():
     return redirect(url_for('.home'))
 
 
-# 아이디 중복체크
+#아이디 중복체크
 @context.route('/individual/check-userid', methods=['POST'])
 @context.route('/group/member/check-userid', methods=['POST'])
 def check_userid():
@@ -78,7 +79,7 @@ def check_userid():
     return "%d" % Member.check_userid(campidx, userid)
 
 
-# 개인신청 - 신청서
+# 개인신청-신청서
 @context.route('/individual/add', methods=["GET", "POST"])
 def reg_individual():
     form = RegistrationForm(request.form)
@@ -113,7 +114,7 @@ def edit_individual():
     return render_template('cmc/form.html', form=form, page_header=u"개인 신청서 수정", script=url_for('static', filename='cmc/js/reg-individual-edit.js'), editmode=True)
 
 
-# 신청조회 - 로그인 폼
+# 신청조회-로그인폼
 @context.route('/check')
 def login():
     return render_template('cmc/check.html')
@@ -306,7 +307,7 @@ def member_add():
     return render_template('cmc/form.html', form=form, page_header="멤버 추가", script=url_for('static', filename='cmc/js/reg-individual.js'))
 
 
-# 단체 멤버 수정
+# 단체멤버수정
 @context.route('/group/member/edit/<member_idx>', methods=["GET", "POST"])
 def member_edit(member_idx):
     if check_session(u'단체'):
@@ -354,7 +355,7 @@ def member_cancel(member_idx):
     return render_template('cmc/individual/cancel.html')
 
 
-# 로그아웃
+#로그아웃
 @context.route('/logout')
 def logout():
     session.clear()

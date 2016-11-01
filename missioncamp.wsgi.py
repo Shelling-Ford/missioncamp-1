@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 import os
 import sys
 import logging
@@ -9,6 +8,9 @@ sys.path.append(cur_dir)
 logging.basicConfig(stream=sys.stderr)
 
 activate_this = os.path.join(cur_dir, 'env/bin/activate_this.py')
-execfile(activate_this, dict(__file__=activate_this))
-from missioncamp.app import context as app
+with open(activate_this) as f:
+    code = compile(f.read(), activate_this, 'exec')
+    exec(code)
+
+from missioncamp.app import app
 application = app

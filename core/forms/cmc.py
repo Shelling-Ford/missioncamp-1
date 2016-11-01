@@ -1,4 +1,5 @@
-# -*-coding:utf-8-*-
+''' forms.cmc.py
+'''
 from flask import request
 from wtforms import Form, StringField, SelectField, RadioField, PasswordField, HiddenField
 from wtforms.widgets import TextArea
@@ -10,25 +11,25 @@ import datetime
 import hashlib
 
 # 직업
-jobs = [u'정치행정', u'법률', u'보건의료', u'종교', u'사회복지', u'문화예술스포츠', u'정치행정', u'경제금융', u'연구기술', u'교육', u'사무관리', u'판매서비스', u'기계기능', u'취업준비', u'군인', u'기타']
+jobs = ['정치행정', '법률', '보건의료', '종교', '사회복지', '문화예술스포츠', '정치행정', '경제금융', '연구기술', '교육', '사무관리', '판매서비스', '기계기능', '취업준비', '군인', '기타']
 
 # 통역필요
-languages = [u'필요없음', u'영어', u'중국어', u'일본어']
+languages = ['필요없음', '영어', '중국어', '일본어']
 
 # 참가구분
-persontypes = [u'청년', u'대학생', u'고3', u'스탭']  # 상반기 선캠
-# persontypes = [u'청년', u'대학생', u'스탭']  # 하반기 선캠
+persontypes = ['청년', '대학생', '고3', '스탭']  #상반기 선캠
+# persontypes = ['청년', '대학생', '스탭']  # 하반기 선캠
 
 # 인터콥 훈련여부
 trainings = [
-    ('training1', u'비전스쿨'), ('training2', u'BTJ스쿨'), ('training3', u'월드미션'), ('training4', u'선교캠프'), ('training5', u'MIT'),
-    ('training6', u'FO'), ('training7', u'SM'), ('training8', u'인터콥캠퍼스'), ('none', u'없음')
+    ('training1', '비전스쿨'), ('training2', 'BTJ스쿨'), ('training3', '월드미션'), ('training4', '선교캠프'), ('training5', 'MIT'),
+    ('training6', 'FO'), ('training7', 'SM'), ('training8', '인터콥캠퍼스'), ('none', '없음')
 ]
 
 
 class MemberCommon():
     def populate_membership(self, member_idx):
-        if self.job.data is not None:
+        if self.getattr('job').data is not None:
             job = Membership()
             job.camp_idx = Camp.get_idx('cmc')
             job.member_idx = member_idx
@@ -83,36 +84,36 @@ class MemberCommon():
 
 class RegistrationForm(Form, MemberCommon):
     idx = HiddenField()
-    userid = StringField(u'아이디(이메일)')
-    pwd = PasswordField(u'비밀번호')
-    pwd2 = PasswordField(u'비밀번호 확인')
-    name = StringField(u'이름')
-    area_idx = SelectField(u'지부', choices=Area.get_list('cmc'))
-    sex = RadioField(u'성별', choices=[('M', u'남'), ('F', u'여')])
-    birth = SelectField(u'출생년도', choices=[(unicode(i), unicode(i)) for i in range(2015, 1940, -1)])
-    contact = ContactField(u'연락처')
-    church = StringField(u'소속교회')
-    persontype = RadioField(u'참가구분', choices=[(i, i) for i in persontypes])
+    userid = StringField('아이디(이메일)')
+    pwd = PasswordField('비밀번호')
+    pwd2 = PasswordField('비밀번호 확인')
+    name = StringField('이름')
+    area_idx = SelectField('지부', choices=Area.get_list('cmc'))
+    sex = RadioField('성별', choices=[('M', '남'), ('F', '여')])
+    birth = SelectField('출생년도', choices=[("{0}".format(i), "{0}".format(i)) for i in range(2015, 1940, -1)])
+    contact = ContactField('연락처')
+    church = StringField('소속교회')
+    persontype = RadioField('참가구분', choices=[(i, i) for i in persontypes])
     # membership
-    job = SelectField(u'직업/직종', choices=[(i, i) for i in jobs])
+    job = SelectField('직업/직종', choices=[(i, i) for i in jobs])
     # membership
-    campus = StringField(u'캠퍼스')
+    campus = StringField('캠퍼스')
     # membership
-    major = StringField(u'전공')
-    bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
-    fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
-    date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
-    date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
+    major = StringField('전공')
+    bus_yn = RadioField('단체버스 이용', choices=[(1, '예'), (0, '아니오')])
+    mit_yn = RadioField('2017 겨울 FO/MIT 참가', choices=[(1, '예'), (0, '아니오')])
+    fullcamp_yn = RadioField('참가형태', choices=[(1, '전체참가'), (0, '부분참가')])
+    date_of_arrival = SelectField('캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
+    date_of_leave = SelectField('집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     # membership
-    # sm_yn = RadioField(u'SM(학생선교사) 여부', choices=[(1, u'예'), (0, u'아니오')])
-    newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])
+    # sm_yn = RadioField('SM(학생선교사) 여부', choices=[(1, '예'), (0, '아니오')])
+    newcomer_yn = RadioField('선교캠프가<br/>처음인가요?', choices=[(1, '예'), (0, '아니오')])
     # membership
-    vision_yn = RadioField(u'비전스쿨 수료여부', choices=[(1, u'예'), (0, u'아니오')])
+    vision_yn = RadioField('비전스쿨 수료여부', choices=[(1, '예'), (0, '아니오')])
     # membership
-    training = MultiCheckboxField(u'인터콥 훈련여부', choices=trainings)
-    language = SelectField(u'통역필요', choices=[(i, i) for i in languages])
-    memo = StringField(u'남기고싶은 말', widget=TextArea())
+    training = MultiCheckboxField('인터콥 훈련여부', choices=trainings)
+    language = SelectField('통역필요', choices=[(i, i) for i in languages])
+    memo = StringField('남기고싶은 말', widget=TextArea())
 
     def set_member_data(self, member):
         membership_data = member.get_membership_data()
@@ -195,31 +196,31 @@ class RegistrationForm(Form, MemberCommon):
 
 class GroupMemberRegForm(Form, MemberCommon):
     group_idx = HiddenField()
-    name = StringField(u'이름')
-    sex = RadioField(u'성별', choices=[('M', u'남'), ('F', u'여')])
-    birth = SelectField(u'출생년도', choices=[(unicode(i), unicode(i)) for i in range(2015, 1940, -1)])
-    contact = ContactField(u'연락처')
-    church = StringField(u'소속교회')
-    persontype = RadioField(u'참가구분', choices=[(i, i) for i in persontypes])
+    name = StringField('이름')
+    sex = RadioField('성별', choices=[('M', '남'), ('F', '여')])
+    birth = SelectField('출생년도', choices=[("{0}".format(i), "{0}".format(i)) for i in range(2015, 1940, -1)])
+    contact = ContactField('연락처')
+    church = StringField('소속교회')
+    persontype = RadioField('참가구분', choices=[(i, i) for i in persontypes])
     # membership
-    job = SelectField(u'직업/직종', choices=[(i, i) for i in jobs])
+    job = SelectField('직업/직종', choices=[(i, i) for i in jobs])
     # membership
-    campus = StringField(u'캠퍼스')
+    campus = StringField('캠퍼스')
     # membership
-    major = StringField(u'전공')
-    bus_yn = RadioField(u'단체버스 이용', choices=[(1, u'예'), (0, u'아니오')])
-    mit_yn = RadioField(u'2017 겨울 FO/MIT 참가', choices=[(1, u'예'), (0, u'아니오')])
-    fullcamp_yn = RadioField(u'참가형태', choices=[(1, u'전체참가'), (0, u'부분참가')])
-    date_of_arrival = SelectField(u'캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
-    date_of_leave = SelectField(u'집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
+    major = StringField('전공')
+    bus_yn = RadioField('단체버스 이용', choices=[(1, '예'), (0, '아니오')])
+    mit_yn = RadioField('2017 겨울 FO/MIT 참가', choices=[(1, '예'), (0, '아니오')])
+    fullcamp_yn = RadioField('참가형태', choices=[(1, '전체참가'), (0, '부분참가')])
+    date_of_arrival = SelectField('캠프오는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
+    date_of_leave = SelectField('집에가는날', choices=Camp.get_date_list(Camp.get_idx('cmc')))
     # membership
-    # sm_yn = RadioField(u'SM(학생선교사) 여부', choices=[(1, u'예'), (0, u'아니오')])
-    newcomer_yn = RadioField(u'선교캠프가<br/>처음인가요?', choices=[(1, u'예'), (0, u'아니오')])
+    # sm_yn = RadioField('SM(학생선교사) 여부', choices=[(1, '예'), (0, '아니오')])
+    newcomer_yn = RadioField('선교캠프가<br/>처음인가요?', choices=[(1, '예'), (0, '아니오')])
     # membership
-    vision_yn = RadioField(u'비전스쿨 수료여부', choices=[(1, u'예'), (0, u'아니오')])
+    vision_yn = RadioField('비전스쿨 수료여부', choices=[(1, '예'), (0, '아니오')])
     # membership
-    training = MultiCheckboxField(u'인터콥 훈련여부', choices=trainings)
-    language = SelectField(u'통역필요', choices=[(i, i) for i in languages])
+    training = MultiCheckboxField('인터콥 훈련여부', choices=trainings)
+    language = SelectField('통역필요', choices=[(i, i) for i in languages])
 
     def set_member_data(self, member):
         membership_data = member.get_membership_data()

@@ -1,27 +1,27 @@
 # -*-coding:utf-8-*-
 from flask import render_template, flash, redirect, url_for, session, request, Blueprint
+from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
 from jinja2 import TemplateNotFound
-from core.functions import *
-from core.functions.cbtj import *
 from core.forms import GroupForm
 from core.forms.cbtj import RegistrationForm, GroupMemberRegForm
-from core.models import Member, Group, Area, Camp
+from core.models import Member, Group, Area, Camp, Room
 from core.database import db
-from missioncamp.functions.cbtj import *
+import datetime
 
 context = Blueprint('cbtj', __name__, template_folder='templates', url_prefix='/cbtj')
 
 
-# camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
-def check_campcode(camp):
-    if camp != 'cbtj' and camp != 'cbtj2':
-        print u'잘못된 접근: 캠프코드가 cbtj 또는 cbtj2가 아닙니다.'
+def check_campcode(campcode):
+    if campcode != 'cbtj' and campcode != 'cbtj2':
+        print('잘못된 접근: 캠프코드가 cbtj 또는 cbtj2가 아닙니다.')
         raise BaseException
 
 
-def check_session(camp, logintype, idx=None):
-    return True if not 'type' in session or session['type'] != logintype or not 'idx' in session else False
+def check_session(logintype):
+    ''' 등록 정보 조회시 사용자가 로그인을 했는지 확인하는 함수.
+    '''
+    return True if 'type' not in session or session['type'] != logintype or 'idx' not in session else False
 
 
 @context.route('/')
@@ -29,10 +29,10 @@ def home():
     return render_template('cbtj/home.html')
 
 
-@context.route('/<page>')
-def page(page):
+@context.route('/<page_id>')
+def page(page_id):
     try:
-        return render_template('cbtj/%s.html' % page)
+        return render_template('cbtj/%s.html' % page_id)
     except TemplateNotFound:
         return render_template('cbtj/404.html')
 
@@ -43,14 +43,10 @@ def room_check():
         contact = '-'.join([request.form.get('hp'), request.form.get('hp2'), request.form.get('hp3')])
         name = request.form.get('name')
 
-        from core.models import Member, Room
-        from core.database import db
-        from core.models import Camp
-        from sqlalchemy import or_
         try:
-            member = db.db_session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('cbtj'))).one()
+            member = db.session.query(Member).filter(Member.contact == contact, Member.name == name, Member.cancel_yn == 0, or_(Member.camp_idx == Camp.get_idx('cbtj'))).one()
         except NoResultFound:
-            return render_template('cbtj/room-check-result.html', room=None, msg=u'접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
+            return render_template('cbtj/room-check-result.html', room=None, msg='접수된 신청 정보가 없습니다^^ 이름과 연락처를 확인해주세요', name=name)
 
         room_idx = member.room_idx
 
@@ -58,117 +54,112 @@ def room_check():
             room = Room.get(room_idx)
             return render_template('cbtj/room-check-result.html', room=room, name=name)
         else:
-            return render_template('cbtj/room-check-result.html', room=None, msg=u'숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
+            return render_template('cbtj/room-check-result.html', room=None, msg='숙소가 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요', name=name)
     else:
         from core.forms import RoomCheckForm
         form = RoomCheckForm()
         return render_template('cbtj/room-check.html', form=form)
 
 
-@context.route('/<camp>/')
-def camp(camp):
-    return render_template('cbtj/%s/home.html' % camp)
-
-
 # 아이디 중복체크
-@context.route('/<camp>/individual/check-userid', methods=['POST'])
-@context.route('/<camp>/group/member/check-userid', methods=['POST'])
-def check_userid(camp):
-    campidx = getCampIdx(camp)
+@context.route('/individual/check-userid', methods=['POST'])
+@context.route('/group/member/check-userid', methods=['POST'])
+def check_userid():
+    '''
+    '''
+    campidx = Camp.get_idx('cbtj')
     userid = request.form.get('userid')
-    return "%d" % checkUserId(campidx, userid)
+    return "%d" % Member.check_userid(campidx, userid)
 
 
 # 개인신청 - 신청서
-@context.route('/<camp>/individual/add', methods=["GET", "POST"])
-def reg_individual(camp):
-    check_campcode(camp)  # camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
+@context.route('/individual/add', methods=["GET", "POST"])
+def reg_individual():
+    '''
+    '''
     form = RegistrationForm(request.form)
 
     if request.method == "POST":
         idx = form.insert()
         flash('신청이 완료되었습니다.')
-        session['type'] = u'개인'
+        session['type'] = '개인'
         session['idx'] = idx
-        return redirect(url_for('.show_individual', camp=camp, idx=idx))
+        return redirect(url_for('.show_individual', idx=idx))
 
     return render_template('cbtj/form.html', form=form, page_header=u"개인신청", script=url_for('static', filename='cbtj/js/reg-individual.js'))
 
 
 # 신청조회 - 로그인 폼
-@context.route('/<camp>/check')
-def login(camp):
-    return render_template('cbtj/%s/check.html' % camp)
+@context.route('/check', methods=['GET', 'POST'])
+def login():
+    if request.method == "POST":
+        logintype = request.form.get('logintype', None)
+        if logintype == '' or logintype is None:
+            flash('신청 구분을 선택해주세요')
+            return redirect(url_for('.login'))
 
+        userid = request.form.get('userid', None)
+        if userid == '' or userid is None:
+            flash('아이디를 입력해주세요')
+            return redirect(url_for('.login'))
 
-@context.route('/<camp>/check', methods=['POST'])
-def login_proc(camp):
-    logintype = request.form.get('logintype', None)
-    if logintype == '' or logintype is None:
-        flash(u'신청 구분을 선택해주세요')
-        return redirect(url_for('.login', camp=camp))
+        pwd = request.form.get('pwd', None)
+        if pwd == '' or pwd is None:
+            flash('비밀번호를 입력해 주세요')
+            return redirect(url_for('.login'))
 
-    userid = request.form.get('userid', None)
-    if userid == '' or userid is None:
-        flash(u'아이디를 입력해주세요')
-        return redirect(url_for('.login', camp=camp))
-
-    pwd = request.form.get('pwd', None)
-    if pwd == '' or pwd is None:
-        flash(u'비밀번호를 입력해 주세요')
-        return redirect(url_for('.login', camp=camp))
-
-    campidx = getCampIdx(camp)
-    if logintype == u'개인':
-        if loginCheckUserid(campidx, userid, pwd):
-            idx = getUserIdx(campidx, userid)
-            session['type'] = u'개인'
-            session['idx'] = idx
-            return redirect(url_for('.show_individual', camp=camp, idx=idx))
+        campidx = Camp.get_idx('cbtj')
+        if logintype == '개인':
+            if Member.login_check(campidx, userid, pwd):
+                idx = Member.get_idx(campidx, userid)
+                session['type'] = '개인'
+                session['idx'] = idx
+                return redirect(url_for('.show_individual', idx=idx))
+            else:
+                flash('아이디 또는 비밀번호가 잘못되었습니다.')
+                return redirect(url_for('.login'))
+        elif logintype == '단체':
+            print(Group.login_check(campidx, userid, pwd))
+            if Group.login_check(campidx, userid, pwd):
+                idx = Group.get_idx(campidx, userid)
+                session['type'] = '단체'
+                session['idx'] = idx
+                return redirect(url_for('.show_group'))
+            else:
+                flash('아이디 또는 비밀번호가 잘못되었습니다.')
+                return redirect(url_for('.login'))
         else:
-            flash(u'아이디 또는 비밀번호가 잘못되었습니다.')
-            return redirect(url_for('.login', camp=camp))
-    elif logintype == u'단체':
-        print loginCheckGroupid(campidx, userid, pwd)
-        if loginCheckGroupid(campidx, userid, pwd):
-            idx = getGroupIdx(campidx, userid)
-            session['type'] = u'단체'
-            session['idx'] = idx
-            return redirect(url_for('.show_group', camp=camp))
-        else:
-            flash(u'아이디 또는 비밀번호가 잘못되었습니다.')
-            return redirect(url_for('.login', camp=camp))
-    else:
-        flash('신청구분이 잘못되었습니다. 관리자에게 문의해주세요(070-8787-8870)')
-        return redirect(url_for('.login', camp=camp))
+            flash('신청구분이 잘못되었습니다. 관리자에게 문의해주세요(070-8787-8870)')
+            return redirect(url_for('.login'))
+    return render_template('cbtj/check.html')
 
 
 # 개인신청 조회
-@context.route('/<camp>/individual/<idx>')
-def show_individual(camp, idx):
-    if check_session(camp, u'개인', idx):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/individual/<idx>')
+def show_individual(idx):
+    if check_session('개인'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
-    member = getIndividualData(idx)
-    area_name = getAreaName(member['area_idx'])
-    return render_template('cbtj/%s/individual/show.html' % camp, camp=camp, member=member, area_name=area_name)
+    member = Member.get(idx)
+    area_name = Area.get_name(member['area_idx'])
+    return render_template('cbtj/individual/show.html', member=member, area_name=area_name)
 
 
 # 개인 신청 수정
-@context.route('/<camp>/individual/<idx>/edit', methods=["GET", "POST"])
-def edit_individual(camp, idx):
-    if check_session(camp, u'개인', idx):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/individual/<idx>/edit', methods=["GET", "POST"])
+def edit_individual(idx):
+    if check_session('개인'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
     idx = session['idx']
 
     form = RegistrationForm(request.form)
     if request.method == "POST":
         form.update(idx)
-        flash(u'수정이 완료되었습니다')
-        return redirect(url_for('.show_individual', camp=camp, idx=idx))
+        flash('수정이 완료되었습니다')
+        return redirect(url_for('.show_individual', idx=idx))
 
     member = Member.get(idx)
     form.set_member_data(member)
@@ -176,74 +167,77 @@ def edit_individual(camp, idx):
 
 
 # 신청 취소
-@context.route('/<camp>/individual/<idx>/cancel')
-def cancel_individual(camp, idx):
-    if check_session(camp, u'개인', idx):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/individual/<idx>/cancel', methods=['GET', 'POST'])
+def cancel_individual(idx):
+    if check_session('개인'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
-    return render_template('cbtj/%s/individual/cancel.html' % camp)
+    if request.method == 'POST':
+        cancel_reason = request.form.get('cancel_reason', None)
+        member = db.session.query(Member).filter(Member.idx == idx).one()
+        member.cancel_yn = 1
+        member.cancel_reason = cancel_reason
+        member.canceldate = datetime.datetime.today()
+        db.session.commit()
 
-# 신청 취소 적용
-@context.route('/<camp>/individual/<idx>/cancel', methods=['POST'])
-def cancel_individual_proc(camp, idx):
-    cancel_reason = request.form.get('cancel_reason', None)
-    cancelIndividual(idx, cancel_reason)
-    flash(u'신청이 취소되었습니다')
-    return redirect(url_for('.home'))
+        flash('신청이 취소되었습니다')
+        return redirect(url_for('.home'))
+    return render_template('cbtj/individual/cancel.html')
+
 
 # 단체 아이디 중복체크
-@context.route('/<camp>/group/check-groupid', methods=['POST'])
-def check_groupid(camp):
-    campidx = getCampIdx(camp)
+@context.route('/group/check-groupid', methods=['POST'])
+def check_groupid():
+    campidx = Camp.get_idx('cbtj')
     userid = request.form.get('groupid')
-    return "%d" % checkGroupId(campidx, userid)
+    return "%d" % Group.check_groupid(campidx, userid)
+
 
 # 단체신청
-@context.route('/<camp>/group/add', methods=["GET", "POST"])
-def reg_group(camp):
-    check_campcode(camp) # camp code  가 cbtj 또는 cbtj2가 아닐 경우 오류 페이지로 리다이렉션
+@context.route('/group/add', methods=["GET", "POST"])
+def reg_group():
     form = GroupForm(request.form)
-    form.set_camp(camp)
+    form.set_camp('cbtj')
 
     if request.method == "POST":
-        group_idx = form.insert(Camp.get_idx(camp))
+        group_idx = form.insert(Camp.get_idx('cbtj'))
 
-        session['type'] = u'단체'
+        session['type'] = '단체'
         session['idx'] = group_idx
 
-        flash(u'신청이 완료되었습니다.')
-        return redirect(url_for('.show_group', camp=camp))
+        flash('신청이 완료되었습니다.')
+        return redirect(url_for('.show_group'))
 
     return render_template('cbtj/form.html', form=form, page_header=u"단체신청", script=url_for('static', filename='common/js/reg-group.js'))
 
 
 # 단체신청 조회
-@context.route('/<camp>/group/info')
-def show_group(camp):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/group/info')
+def show_group():
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
     idx = session['idx']
-    group = getGroupData(idx)
-    member_list = getMemberList(idx)
-    return render_template('cbtj/%s/group/show.html' % camp, group=group, area=getAreaName(group['area_idx']), member_list=member_list)
+    group = Group.get(idx)
+    member_list = Member.get_list(group_idx=idx)
+    return render_template('cbtj/%s/group/show.html', group=group, area=Area.get_name(group.area_idx), member_list=member_list)
 
 # 단체 수정
-@context.route('/<camp>/group/edit', methods=["GET", "POST"])
-def edit_group(camp):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/group/edit', methods=["GET", "POST"])
+def edit_group():
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
     idx = session['idx']
     form = GroupForm(request.form)
-    form.set_camp(camp)
+    form.set_camp('cbtj')
 
     if request.method == "POST":
-        form.update(Camp.get_idx(camp), idx)
+        form.update(Camp.get_idx('cbtj'), idx)
         flash(u"단체 정보 수정이 완료되었습니다.")
-        return redirect(url_for('.show_group', camp=camp))
+        return redirect(url_for('.show_group'))
 
     group = Group.get(idx)
     form.set_group_data(group)
@@ -251,32 +245,39 @@ def edit_group(camp):
 
 
 # 단체 취소
-@context.route('/<camp>/group/cancel')
-def cancel_group(camp):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
-    return render_template(cbtj/'%s/group/cancel.html' % camp)
+@context.route('/group/cancel', method=['GET', 'POST'])
+def cancel_group():
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
-# 단체 취소 저장
-@context.route('/<camp>/group/cancel', methods=['POST'])
-def cancel_group_proc(camp):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
-    idx = session['idx']
-    cancel_reason = request.form.get('cancel_reason', None)
-    cancelGroup(idx, cancel_reason)
-    flash(u"단체 신청이 모두 취소되었습니다.")
-    return redirect(url_for('.home'))
+    if request.method == 'POST':
+        idx = session['idx']
+        cancel_reason = request.form.get('cancel_reason', None)
+        group = Group.get(idx)
+        group.cancel_yn = 1
+        group.cancel_reason = cancel_reason
+        group.canceldate = datetime.datetime.today()
+
+        member_list = db.session.query(Member).filter(Member.group_idx == idx).all()
+
+        for member in member_list:
+            member.cancel_yn = 1
+            member.cancel_reason = "단체취소: " + cancel_reason
+            member.canceldate = datetime.datetime.today()
+
+        db.session.commit()
+        flash("단체 신청이 모두 취소되었습니다.")
+        return redirect(url_for('.home'))
+    return render_template('cbtj/group/cancel.html')
 
 
 # 단체 멤버 추가
-@context.route('/<camp>/group/member/add', methods=["GET", "POST"])
-def member_add(camp):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/group/member/add', methods=["GET", "POST"])
+def member_add():
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
     form = GroupMemberRegForm(request.form)
 
@@ -289,18 +290,18 @@ def member_add(camp):
         group.mem_num += 1
         db.session.commit()
         flash(u"멤버가 추가되었습니다.")
-        return redirect(url_for(".show_group", camp=camp))
+        return redirect(url_for(".show_group"))
 
     return render_template('cbtj/form.html', form=form, page_header="멤버 추가", script=url_for('static', filename='cbtj/js/reg-individual.js'))
 
 
 # 단체 멤버 수정
-@context.route('/<camp>/group/member/edit/<member_idx>', methods=["GET", "POST"])
-def member_edit(camp, member_idx):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
-    
+@context.route('/group/member/edit/<member_idx>', methods=["GET", "POST"])
+def member_edit(member_idx):
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
+
     form = GroupMemberRegForm(request.form)
     idx = session['idx']
     form.group_idx.data = idx
@@ -308,7 +309,7 @@ def member_edit(camp, member_idx):
     if request.method == "POST":
         form.update(member_idx)
         flash(u"성공적으로 수정되었습니다.")
-        return redirect(url_for(".show_group", camp=camp))
+        return redirect(url_for(".show_group"))
 
     member = Member.get(member_idx)
     form.set_member_data(member)
@@ -316,27 +317,35 @@ def member_edit(camp, member_idx):
 
 
 # 신청 취소
-@context.route('/<camp>/group/member/cancel/<member_idx>')
-def member_cancel(camp, member_idx):
-    if check_session(camp, u'단체'):
-        flash(u'로그아웃 되었습니다. 다시 로그인하세요')
-        return redirect(url_for('.login', camp=camp))
+@context.route('/group/member/cancel/<member_idx>', methods=['GET', 'POST'])
+def member_cancel(member_idx):
+    if check_session('단체'):
+        flash('로그아웃 되었습니다. 다시 로그인하세요')
+        return redirect(url_for('.login'))
 
-    return render_template('cbtj/%s/individual/cancel.html' % camp)
+    if request.method == 'POST':
+        cancel_reason = request.form.get('cancel_reason', None)
+        member = Member.get(member_idx)
+        member.cancel_yn = 1
+        member.cancel_reason = cancel_reason
+        member.canceldate = datetime.datetime.today()
+        db.session.commit()
 
-# 신청 취소 적용
-@context.route('/<camp>/group/member/cancel/<member_idx>', methods=['POST'])
-def member_cancel_proc(camp, member_idx):
-    cancel_reason = request.form.get('cancel_reason', None)
-    cancelIndividual(member_idx, cancel_reason)
-    idx = session['idx']
-    dec_mem_num(idx)
-    flash(u'신청이 취소되었습니다')
-    return redirect(url_for('.show_group', camp=camp))
+        idx = session['idx']
+        group = Group.get(idx)
+        group.mem_num -= 1
+        if group.mem_num < 0:
+            group.mem_num = 0
+        db.session.commit()
+
+        flash(u'신청이 취소되었습니다')
+        return redirect(url_for('.show_group'))
+    return render_template('cbtj/individual/cancel.html')
+
 
 # 로그아웃
 @context.route('/logout')
 def logout():
     session.clear()
-    flash(u'정상적으로 로그아웃 되었습니다.')
+    flash('정상적으로 로그아웃 되었습니다.')
     return redirect(url_for('.home'))

@@ -101,7 +101,7 @@ function validate_form() {
     var group_idx = $('input[name=group_idx]').val()
 
     // 이메일 중복검사
-    if (!isChecked && typeof(group_idx) == "undefined") {
+    if (!isChecked && $('#userid').length) {
         alert('이메일 중복 검사를 해주세요');
         return false;
     }
@@ -128,7 +128,7 @@ function validate_form() {
     }
 
     // 지부 선택 안함
-    if ($('#area_idx').val() === '' && typeof(group_idx) == "undefined") {
+    if ($('#area_idx').val() === '' && $('#area_idx').length) {
         alert('지부를 선택해 주세요');
         return false;
     }

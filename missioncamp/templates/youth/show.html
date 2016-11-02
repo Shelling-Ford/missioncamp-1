@@ -1,0 +1,31 @@
+{% extends 'youth/page.html' %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <div class="page-header">
+    <h2>개인 신청 조회</h2>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <section class="well">
+      <table class="table">
+        <tr><td>이름</td><td>{{ member.name }}</td></tr>
+        <tr><td>지부</td><td>{{ area_name }}</td></tr>
+        <tr><td>연락처</td><td>{{ member.contact }}</td></tr>
+        <tr><td>출석교회</td><td>{{ member.church }}</td></tr>
+        <tr><td>생년월일</td><td>{{ member.birth }}</td></tr>
+        <tr><td>성별</td><td>{{ member.sex|sex }}</td></tr>
+        <tr><td>참가구분</td><td>{{ member.persontype }}</td></tr>
+        {% if member.persontype == '중학생' or member.persontype == '고등학생' %}
+        <tr><td>학교</td><td>{{ membership_data.sch1 }}</td></tr>
+        <tr><td>학년</td><td>{{ membership_data.sch2 }}</td></tr>
+        {% endif %}
+        <tr><td>단체버스 이용 여부</td><td>{{ member.bus_yn|yesno }}</td></tr>
+        <tr><td>선교캠프 참여 경험</td><td>{{ member.newcomer_yn|yesno }}</td></tr>
+        <tr><td>인터콥 훈련 여부</td><td>{{ ", ".join(membership_data.training) }}</td></tr>
+        <tr><td>등록 날자</td><td>{{ member.regdate }}</td></tr>
+        <tr><td>메모</td><td>{{ member.memo }}</td></tr>
+      </table>
+    </section>
+  </div>
+</div>
+{% endblock %}

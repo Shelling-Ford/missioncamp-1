@@ -84,15 +84,15 @@ footer {
         </div>
         <div class="collapse navbar-collapse" id="primary-navigation">
           <ul class="nav navbar-nav">
-            <li><a href="{{ url_for('.invitation') }}">초대의 글</a></li>
-    				<li><a href="{{ url_for('.recommendation') }}">추천의 글</a></li>
-            <li><a href="{{ url_for('.reg_individual') }}">개인 신청</a></li>
+            <li><a href="{{ url_for('.page', page_id='invitation') }}">초대의 글</a></li>
+    				<li><a href="{{ url_for('.page', page_id='recommendation') }}">추천의 글</a></li>
+            <li><a href="{{ url_for('.registration') }}">개인 신청</a></li>
             <li><a href="{{ url_for('.reg_group') }}">단체 신청</a></li>
             <li><a href="{{ url_for('.login') }}">신청 조회</a></li>
             <li><a href="/">홈으로</a></li>
-          <!--  
+          <!--{#
             <li><a href="{{ url_for('.room_check') }}">숙소확인</a></li>
-           --> 
+           #}-->
           </ul>
         </div>
       </div>

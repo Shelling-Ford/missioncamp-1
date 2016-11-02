@@ -75,7 +75,7 @@ function validate_form() {
   var group_idx = $('input[name=group_idx]').val()
 
   // 이메일 중복검사
-  if (!isChecked && typeof(group_idx) == "undefined" ) {
+  if (!isChecked && $('#userid').length) {
     alert('아이디와 비밀번호를 입력해주세요');
     return false;
   }
@@ -99,7 +99,7 @@ function validate_form() {
   }
 
   // 지부 선택 안함
-  if ($('#area_idx').val() === '' && typeof(group_idx) == "undefined" ) {
+  if ($('area_idx').length && $('#area_idx').val() === '') {
     alert('지부를 선택해 주세요');
     return false;
   }
@@ -136,13 +136,13 @@ function validate_form() {
 
   //  개인 신청일 경우
   // 신청자가 중고등학생 일 경우 학교를 입력하게 함.
-  if ($('input[name=persontype]:checked').val() === '어린이' && typeof(group_idx) == "undefined" ) {
-    if ($('#sch1').val() === '') {
+  if ($('input[name=persontype]:checked').val() === '어린이') {
+    if ($('#sch1').length && $('#sch1').val() === '') {
       alert('학교를 입력해주세요');
       return false;
     }
 
-    if ($('#sch2').val() === '') {
+    if ($('#sch2').length && $('#sch2').val() === '') {
       alert('학년을 입력해주세요');
       return false;
     }

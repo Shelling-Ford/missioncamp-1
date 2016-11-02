@@ -1,0 +1,17 @@
+{% extends 'youth/page.html' %}
+{% import 'macros.html' as macros %}
+
+{% block content %}
+<div class="container" id="main-content">
+  <section class="page-header">
+    <h2>{{ page_header }}</h2>
+  </section>
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
+    {{ macros.render_form(form, action_url='', action_text='신청 완료', class_='form-horizontal', editmode=editmode) }}
+  </div>
+</div> <!-- .container -->
+{% endblock %}
+
+{% block script %}
+<script src="{{ script }}"></script>
+{% endblock %}

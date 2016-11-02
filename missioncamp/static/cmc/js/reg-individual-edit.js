@@ -1,20 +1,20 @@
 /* global $, document, alert */
 $(document).ready(function () {
     'use strict';
-    if($('input[name=persontype]').val() != '대학생') {
+    if($('input[name=persontype]:checked').val() != '대학생') {
         $('#campus_group').hide();
         $('#major_group').hide();
     }
 
-    if($('input[name=persontype]').val() != '청년') {
+    if($('input[name=persontype]:checked').val() != '청년') {
         $('#job_group').hide();
     }
 
-    if($('input[name=fullcamp_yn]').val() == '1') {
+    if($('input[name=fullcamp_yn]:checked').val() == '1') {
         $('#date_of_arrival_group').hide();
-        $('#date_of_leave_group').hide();    
+        $('#date_of_leave_group').hide();
     }
-    
+
     // 참가구분 == 청년 일때 직업란 보여줌
     // 그 외는 모두 숨김
     $('input[name=persontype]').change(function () {

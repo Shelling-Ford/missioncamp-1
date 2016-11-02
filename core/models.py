@@ -1,14 +1,18 @@
-# -*-coding:utf-8-*-
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, desc, or_, func
-from sqlalchemy.orm import relationship, backref
-from core.database import db
-from core.functions import getAttendArray
+'''core.models.py
+'''
 import datetime
 import hashlib
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, desc, or_, func
+from sqlalchemy.orm import relationship, backref
+from flask_login import UserMixin
+from core.database import db
+from core.functions import getAttendArray
 
 
 # 지부
 class Area(db.Base):
+    '''class Area
+    '''
     __tablename__ = "area"
 
     idx = Column(Integer, primary_key=True)
@@ -19,10 +23,14 @@ class Area(db.Base):
 
     @classmethod
     def get(cls, idx):
+        '''Area.get
+        '''
         return db.session.query(cls).filter(cls.idx == idx).first()
 
     @classmethod
     def get_list(cls, camp):
+        '''Area.get_list
+        '''
         result = []
         if camp == '*':
             area_list = db.session.query(cls).filter(cls.type != 4).order_by(cls.type, cls.name).all()
@@ -36,17 +44,23 @@ class Area(db.Base):
     # 주어진 area_idx에 해당하는 area_name을 반환하는 함수
     @classmethod
     def get_name(cls, idx):
+        '''Area.get_name
+        '''
         area = db.session.query(cls).filter(cls.idx == idx).one()
         return area.name
 
     @classmethod
     def get_idx(cls, chaptercode):
+        '''Area.get_idx
+        '''
         area = db.session.query(cls).filter(cls.chaptercode == chaptercode).one()
         return area.idx
 
 
 # 캠프
 class Camp(db.Base):
+    '''class Camp
+    '''
     __tablename__ = 'camp'
 
     idx = Column(Integer, primary_key=True)
@@ -59,12 +73,16 @@ class Camp(db.Base):
 
     @classmethod
     def get(cls, idx):
+        '''Camp.get
+        '''
         return db.session.query(cls).filter(cls.idx == idx).first()
 
     # camp_idx 반환, year와 term을 파라메터로 넘겨줄 경우 해당 연도와 학기의 camp_idx를 반환해주고
     # year와 term파라메터가 없을 경우 GlobalOptions에 등록되어있는 year와 term을 현재 활성화되어있는 캠프의 camp_idx를 반환해줌.
     @classmethod
     def get_idx(cls, code, year=None, term=None):
+        '''Camp.get_idx
+        '''
         if year is None or year == 0:
             year = GlobalOptions.get_year()
         if term is None or term == 0:
@@ -74,6 +92,8 @@ class Camp(db.Base):
     # 캠프가 진행되는 날자를 리스트 형태로 반환해주는 함수
     @classmethod
     def get_date_list(cls, camp_idx):
+        '''Camp.get_date_list
+        '''
         camp = db.session.query(cls).filter(cls.idx == camp_idx).one()
         startday = camp.startday
         campday = camp.campday
@@ -87,7 +107,9 @@ class Camp(db.Base):
 
 
 # 개인 신청서 / 단체 멤버 신청서
-class Member(db.Base):
+class Member(db.Base, UserMixin):
+    '''Member
+    '''
     __tablename__ = 'member'
 
     idx = Column(Integer, primary_key=True)
@@ -165,7 +187,7 @@ class Member(db.Base):
                 elif key in pass_keys:
                     pass
                 elif key == 'name':
-                    filter_list = [getattr(cls, key).like('%' + v + '%') for v in value]
+                    filter_list = [(cls, key).like('%' + v + '%') for v in value]
                 else:
                     filter_list = []
                     for v in value:
@@ -372,7 +394,7 @@ class Member(db.Base):
     def login_check(cls, camp_idx, userid, pwd):
         count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.userid == userid,
-            cls.pwd == hashlib.sha224(pwd).hexdigest(),
+            cls.pwd == hashlib.sha224(pwd.encode('utf-8')).hexdigest(),
             cls.cancel_yn == 0
         ).count()
         return True if count > 0 else False
@@ -621,7 +643,7 @@ class Group(db.Base):
     def login_check(cls, camp_idx, groupid, pwd):
         count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.groupid == groupid,
-            cls.pwd == hashlib.sha224(pwd).hexdigest(),
+            cls.pwd == hashlib.sha224(pwd.encode('utf-8')).hexdigest(),
             cls.cancel_yn == 0
         ).count()
         return True if count > 0 else False

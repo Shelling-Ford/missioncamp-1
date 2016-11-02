@@ -1,0 +1,47 @@
+{% extends 'cmc/page.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <h2>개인 신청 조회</h2>
+  </div>
+  <div class="col-xs-12 col-sm-6">
+    <section class="well">
+      <table class="table">
+        <tr><td>이름</td><td>{{ member.name }}</td></tr>
+        <tr><td>지부</td><td>{{ area_name }}</td></tr>
+        <tr><td>연락처</td><td>{{ member.contact }}</td></tr>
+        <tr><td>출석교회</td><td>{{ member.church }}</td></tr>
+        <tr><td>생년월일</td><td>{{ member.birth }}</td></tr>
+        <tr><td>성별</td><td>{{ member.sex|sex }}</td></tr>
+        <tr><td>참가구분</td><td>{{ member.persontype }}</td></tr>
+        <tr><td>단체버스 이용 여부</td><td>{{ member.bus_yn|yesno }}</td></tr>
+        <tr><td>2017년 겨울 FO/MIT 참여 여부</td><td>{{ member.mit_yn|yesno }}</td></tr>
+        <tr><td>선교캠프 참여 경험</td><td>{{ member.newcomer_yn|yesno }}</td></tr>
+        <tr><td>비전스쿨 수료여부</td><td>{{ membership_data.vision_yn|yesno }}</td></tr>
+        <tr><td>전체참석 여부</td><td>{% if member.fullcamp_yn %} 전체참석 {% else %} 부분참석 {% endif %}</td></tr>
+        <tr><td>캠프 참석 기간</td><td>{{ member.date_of_arrival }} ~ {{ member.date_of_leave }}</td></tr>
+        {% if member.persontype == '청년' %}
+        <tr><td>직업/직종</td><td>{{ membership_data.job }}</td></tr>
+        {% elif member.persontype == '대학생' %}
+        <tr><td>캠퍼스</td><td>{{ membership_data.campus }}</td></tr>
+        <tr><td>전공</td><td>{{ membership_data.major }}</td></tr>
+        {% endif %}
+        <tr><td>인터콥 훈련 여부</td><td>{{ ", ".join(membership_data.training) }}</td></tr>
+        <tr><td>통역 필요</td><td>{{ member.language }}</td></tr>
+        <tr><td>등록 날자</td><td>{{ member.regdate }}</td></tr>
+        <tr><td>메모</td><td>{{ member.memo }}</td></tr>
+        <tr>
+          <td colspan="2">
+            <p style="text-align:center">
+              <a class="btn btn-default" href="{{ url_for('.edit_registration') }}">수정</a>&nbsp;&nbsp;
+              <a class="btn btn-default" href="{{ url_for('.cancel_registration') }}">신청취소</a>
+              <a href="{{ url_for('.logout') }}" class="btn btn-default">로그아웃</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -35,11 +35,14 @@ def get_locale():
 
 cbtj_app = get_app('cbtj')
 cmc_app = get_app('cmc')
+kids_app = get_app('kids')
+ws_app = get_app('ws')
+youth_app = get_app('youth')
 app.register_blueprint(cbtj_app)
 app.register_blueprint(cmc_app)
-# context.register_blueprint(kids)
-# context.register_blueprint(ws)
-# context.register_blueprint(youth)
+app.register_blueprint(kids_app)
+app.register_blueprint(ws_app)
+app.register_blueprint(youth_app)
 
 db.Base.metadata.create_all(db.engine)
 
@@ -47,3 +50,17 @@ db.Base.metadata.create_all(db.engine)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# template filters
+@app.template_filter("yesno")
+def yesno(value):
+    return '예' if value else '아니오'
+
+@app.template_filter("sex")
+def sex(value):
+    if value == 'M':
+        return '남자'
+    elif value == 'F':
+        return '여자'
+    else:
+        return '오류'

@@ -9,26 +9,28 @@
         {{ macros.render_field(form.email, placeholder='Input email', type='email') }}
 #}
 {% macro render_field(field, label_visible=true, static=false) -%}
-    <div id="{{ field.id}}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
-        {% if (field.type != 'HiddenField' and field.type !='CSRFTokenField') and label_visible %}
-            <label id="{{ field.id }}_label" for="{{ field.id }}" class="control-label col-sm-4">{{ field.label }}</label>
-        {% endif %}
-        <div class="col-sm-8">
-          {% if static %}
-            <p class="form-control-static">{{ field.data }}</p>
-          {% else %}
-            {{ field(class_='form-control', **kwargs) }}
-          {% endif %}
-          {% if field.id == 'userid' or field.id == 'groupid' %}
-          <p id="id_check"></p>
-          {% endif %}
+    {% if field.type !='CSRFTokenField' %}
+        <div id="{{ field.id}}_group" class="form-group {% if field.errors %}has-error{% endif %} {{ kwargs.pop('class_', '') }}">
+            {% if label_visible %}
+            <label id="{{ field.id }}_label" for="{{ field.id }}" class="control-label col-sm-4">{{ field.label|safe }}</label>
+            {% endif %}
+            <div class="col-sm-8">
+              {% if static %}
+                <p class="form-control-static">{{ field.data }}</p>
+              {% else %}
+                {{ field(class_='form-control', **kwargs) }}
+              {% endif %}
+              {% if field.id == 'userid' or field.id == 'groupid' %}
+              <p id="id_check"></p>
+              {% endif %}
+            </div>
+            {% if field.errors %}
+                {% for e in field.errors %}
+                    <p class="help-block">{{ e }}</p>
+                {% endfor %}
+            {% endif %}
         </div>
-        {% if field.errors %}
-            {% for e in field.errors %}
-                <p class="help-block">{{ e }}</p>
-            {% endfor %}
-        {% endif %}
-    </div>
+    {% endif %}
 {%- endmacro %}
 
 {% macro render_select_field(field) -%}
@@ -90,8 +92,9 @@
         <div class="radio col-sm-8">
         {% for value, label, _ in field.iter_choices() %}
             <label>
-                <input type="radio" name="{{ field.id }}" id="{{ field.id }}" value="{{ value }}" {% if value == field.data %} checked {% endif %}>{{ label }}
+                <input type="radio" name="{{ field.id }}" value="{{ value }}" {% if value == field.data %} checked {% endif %}>{{ label|safe }}
             </label>
+            {% if field.id == 'stafftype' %}<br/>{% endif %}
         {% endfor %}
         </div>
         {% if field.errors %}
@@ -152,27 +155,29 @@
             {{ caller() }}
         {% else %}
             {% for f in form %}
-                {% if f.type == 'MultiCheckboxField' %}
-                    {{ render_checkbox_field(f) }}
-                {% elif f.type == 'RadioField' %}
-                    {{ render_radio_field(f) }}
-                {% elif f.type == 'ContactField' %}
-                    {{ render_contact_field(f) }}
-                {% elif f.type == 'SelectField' %}
-                    {{ render_select_field(f) }}
-                {% else %}
-                    {% if editmode %}
-                        {% if f.id == 'userid' or f.id =='groupid' %}
-                            {{ render_field(f, static=true) }}
-                        {% elif f.id == 'pwd' %}
-                            {{ render_field(f, placeholder='변경할 경우에만 입력하세요...') }}
+                {% if f.widget.__class__.__name__ != 'HiddenInput' %}
+                    {% if f.type == 'MultiCheckboxField' %}
+                        {{ render_checkbox_field(f) }}
+                    {% elif f.type == 'RadioField' %}
+                        {{ render_radio_field(f) }}
+                    {% elif f.type == 'ContactField' %}
+                        {{ render_contact_field(f) }}
+                    {% elif f.type == 'SelectField' %}
+                        {{ render_select_field(f) }}
+                    {% else %}
+                        {% if editmode %}
+                            {% if f.id == 'userid' or f.id =='groupid' %}
+                                {{ render_field(f, static=true) }}
+                            {% elif f.id == 'pwd' %}
+                                {{ render_field(f, placeholder='변경할 경우에만 입력하세요...') }}
+                            {% else %}
+                                {{ render_field(f) }}
+                            {% endif %}
                         {% else %}
                             {{ render_field(f) }}
                         {% endif %}
-                    {% else %}
-                        {{ render_field(f) }}
                     {% endif %}
-                {% endif %}
+                {% endif  %}
             {% endfor %}
         {% endif %}
         <button type="submit" class="{{ btn_class }} col-sm-offset-4">{{ action_text }} </button>

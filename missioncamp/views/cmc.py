@@ -71,10 +71,10 @@ def camp():
 
 
 #아이디 중복체크
-@context.route('/individual/check-userid', methods=['POST'])
+@context.route('/check-userid', methods=['POST'])
 @context.route('/group/member/check-userid', methods=['POST'])
 def check_userid():
-    campidx = Camp.get_idx('cmc')
+    campidx = Camp.get_idx(campcode)
     userid = request.form.get('userid')
     return "%d" % Member.check_userid(campidx, userid)
 

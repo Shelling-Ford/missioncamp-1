@@ -187,7 +187,7 @@ class Member(db.Base, UserMixin):
                 elif key in pass_keys:
                     pass
                 elif key == 'name':
-                    filter_list = [(cls, key).like('%' + v + '%') for v in value]
+                    filter_list = [getattr(cls, key).like('%' + v + '%') for v in value]
                 else:
                     filter_list = []
                     for v in value:

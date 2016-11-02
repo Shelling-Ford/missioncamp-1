@@ -184,7 +184,7 @@ class RegistrationForm(Form):
             self.sch2.choices = form_config.SCH2_CHOICES[camp]
             self.mit_yn.widget = HiddenInput()
 
-        if camp != 'kids':
+        if camp == 'kids':
             self.bus_yn.widget = HiddenInput()
             self.language.widget = HiddenInput()
             self.fullcamp_yn.widget = HiddenInput()

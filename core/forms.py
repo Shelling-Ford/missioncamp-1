@@ -165,6 +165,7 @@ class RegistrationForm(Form):
 
         if camp not in ['ws', 'kids']:
             self.pname.widget = HiddenInput()
+        else:
             self.userid.label = '아이디'
 
         if camp != 'ws':

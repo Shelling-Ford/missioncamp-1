@@ -23,7 +23,7 @@ def get_member_list_with_count(**kwargs):
     params = dict()
 
     skip = kwargs['skip'] if 'skip' in kwargs else 0
-    print skip
+    print(skip)
 
     keys = ['campcode', 'area', 'name', 'camp']
     for k in keys:

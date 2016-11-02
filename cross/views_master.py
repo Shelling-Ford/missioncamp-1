@@ -5,7 +5,7 @@ from flask_login import login_required
 from flask_principal import Permission, RoleNeed
 
 from core.models import Area, Room, GlobalOptions
-from core.forms.master import AreaForm
+from core.forms import AreaForm
 
 # Blueprint 초기화
 master = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')

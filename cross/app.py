@@ -4,18 +4,15 @@ import os
 import sys
 
 from flask import Flask, render_template
-import views_main
-from views import CmcView, CbtjView, WsView, YouthView, KidsView
-from views_master import master
-from parking import context as parking
+from cross import views_main
+from cross.views import CmcView, CbtjView, WsView, YouthView, KidsView
+from cross.views_master import master
+# from parking import context as parking
 
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(os.path.dirname(cur_dir))
 sys.path.insert(0, root_dir)
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
 context = Flask(__name__)
 context.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
 
@@ -46,7 +43,7 @@ context.register_blueprint(youth_view.context)
 kids_view = KidsView()
 context.register_blueprint(kids_view.context)
 context.register_blueprint(master)
-context.register_blueprint(parking)
+# context.register_blueprint(parking)
 
 views_main.register_view(context)
 

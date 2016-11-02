@@ -172,7 +172,7 @@ class Member(db.Base, UserMixin):
         membership_keys = ['training', 'campus', 'job', 'foreigner']
         payment_keys = ['complete']
         pass_keys = ['page', 'year', 'term']
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             filter_list = None
             if value is not None and value != '':
                 value = [value] if type(value) is not list else value
@@ -249,7 +249,7 @@ class Member(db.Base, UserMixin):
     @classmethod
     def get_old_list(cls, camp_idx, offset=None, **kwargs):
         result = db.session.query(cls).filter(cls.camp_idx == camp_idx)
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             if value is not None and value != '':
                 attr = getattr(cls, key)
                 result = result.filter(attr == value)
@@ -307,7 +307,7 @@ class Member(db.Base, UserMixin):
 
             membership_keys = ['job', 'campus', 'major', 'sm_yn', 'training', 'route', 'stafftype', 'pname', 'sch1', 'sch2']
             membership_list = []
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 value = value[0] if type(value) is list and len(value) == 1 else value
                 # if value is not None and value != '':
                 if key == 'pwd':
@@ -700,7 +700,7 @@ class Group(db.Base):
                     group.pwd = formData['pwd']
 
             kwargs.pop('group_idx', None)
-            for key, value in kwargs.iteritems():
+            for key, value in kwargs.items():
                 if key == 'pwd':
                     if value is not None and value != '':
                         setattr(group, key, hashlib.sha224(value).hexdigest())

@@ -30,7 +30,7 @@ def migrate(campcode):
         if results is not None and len(results) > 0:
             member.insert(results)
         else:
-            print '%s not found.' % campcode
+            print('%s not found.' % campcode)
 
         bank_results = intercp_driver.select_all("SELECT * FROM %s_bank" % campcode)
 
@@ -40,7 +40,7 @@ def migrate(campcode):
                 {'$set': {'bank': result}}
             )
 
-        print "%s migration done." % campcode
+        print("%s migration done." % campcode)
 
 def migrate_all():
     mongo_driver = MongoDriver()

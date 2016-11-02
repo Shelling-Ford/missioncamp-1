@@ -427,15 +427,15 @@ class MetaView():
                     camp_idx = [camp_idx, Camp.get_idx('cbtj')]
                     # if 'camp' in params:
                     #     camp_idx = Camp.get_idx(params['camp']
-                                                
+
                 # elif self.camp == 'ws':
                 #    camp_idx = [camp_idx, Camp.get_idx('cbtj2')]
 
-                print camp_idx
-                print params
+                print(camp_idx)
+                print(params)
 
                 member_list = Member.get_list(camp_idx, orderby=['camp_idx', 'sex', 'area_idx'], isnull='room_idx', **params)
-                
+
                 count = Member.count(camp_idx, isnull='room_idx', **params)
                 area_list = Area.get_list(self.camp)
                 if type(camp_idx) is list:

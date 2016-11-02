@@ -2,7 +2,7 @@
 from flask import render_template, flash, redirect, url_for, session, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_principal import Principal, Identity, AnonymousIdentity, identity_loaded, RoleNeed
-from models import AdminUser, BtjUser
+from cross.models import AdminUser, BtjUser
 from core.models import Area
 
 
@@ -53,7 +53,7 @@ def register_view(context):
                 identity.provides.add(RoleNeed('hq'))
                 identity.provides.add(RoleNeed('branch'))
                 camp_list = current_user.camp.split(',')
-                print camp_list
+                print(camp_list)
                 for camp in camp_list:
                     identity.provides.add(RoleNeed(camp))
             if current_user.role == 'branch':

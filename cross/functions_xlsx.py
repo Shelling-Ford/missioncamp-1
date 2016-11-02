@@ -4,9 +4,9 @@ import datetime
 from core.models import Member, Camp
 
 try:
-    import cStringIO as StringIO
-except:
-    import StringIO
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 def multi_getattr(obj, attr, default=None):

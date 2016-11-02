@@ -241,12 +241,12 @@ class RegistrationForm(Form):
         member.church = self.church.data
         member.birth = self.birth.data
         member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data if self.bus_yn is not None else 0
-        member.mit_yn = self.mit_yn.data if self.mit_yn is not None else 0
+        member.bus_yn = self.bus_yn.data if self.bus_yn not in [None, 'None', '', 'none', 'null'] else 0
+        member.mit_yn = self.mit_yn.data if self.mit_yn not in [None, 'None', '', 'none', 'null'] else 0
         member.attend_yn = 0
         member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
-        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn is not None else 1
+        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
         if self.fullcamp_yn.data == "1":
             date_list = Camp.get_date_list(member.camp_idx)
             member.date_of_arrival = datetime.datetime.strftime(date_list[0][0], "%Y-%m-%d")

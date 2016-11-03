@@ -6,7 +6,7 @@ from core.models import Member, Camp
 try:
     from StringIO import StringIO
 except ImportError:
-    from io import StringIO
+    from io import BytesIO as StringIO
 
 
 def multi_getattr(obj, attr, default=None):
@@ -24,7 +24,7 @@ def multi_getattr(obj, attr, default=None):
 class XlsxBuilder():
 
     def __init__(self):
-        self.output = StringIO.StringIO()
+        self.output = StringIO()
         self.workbook = xlsxwriter.Workbook(self.output)
         self.worksheet = self.workbook.add_worksheet()
         self.date_format = self.workbook.add_format({'num_format': 'yyyy-mm-dd'})
@@ -138,7 +138,7 @@ def get_document(camp_idx, **kwargs):
     kwargs.pop('page', None)
     member_list = Member.get_list(camp_idx, **kwargs)
 
-    output = StringIO.StringIO()
+    output = StringIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
 
@@ -190,7 +190,7 @@ def get_document(camp_idx, **kwargs):
 
 
 def get_old_document(member_list, db_type='mysql'):
-    output = StringIO.StringIO()
+    output = StringIO()
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet()
 

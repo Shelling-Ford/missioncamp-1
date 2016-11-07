@@ -116,7 +116,7 @@ def get_member_list_query(query, req, orderby=None):
 
     # order_by
     if orderby is None:
-        filtered_query.order_by(desc(Member.idx))
+        filtered_query = filtered_query.order_by(desc(Member.idx))
     else:
         orderby = orderby if isinstance(orderby, list) else [orderby]
         filtered_query = filtered_query.order_by(*[desc(getattr(Member, o)) \
@@ -181,9 +181,10 @@ def register_view(app, campcode):
 
         # pagination
         page = int(request.args.get('page', 1))
+        count = filtered_query.count()
         filtered_query = filtered_query.limit(50).offset((page-1)*50)
         member_list = filtered_query.all()
-        count = filtered_query.count()
+
 
         group = None
 
@@ -597,6 +598,9 @@ def register_view(app, campcode):
     @app.route('/promotion-list')
     @login_required
     def promotion_list():
+        '''
+        홍보물 신청 리스트
+        '''
         camp_idx = Camp.get_idx(campcode)
         promotion_list = Promotion.get_list(camp_idx)
         return render_template('%s/promotion_list.html' % campcode, promotions=promotion_list)

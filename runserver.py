@@ -1,4 +1,6 @@
-from missioncamp.app import app
+''' 개발환경에서 서버를 실행하기 위한 모듈
+'''
+from missioncamp.app import APP as app
 import sys
 import os
 

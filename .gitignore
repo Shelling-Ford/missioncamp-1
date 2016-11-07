@@ -1,7 +1,6 @@
 *.pyc
 .remote-sync.json
 config.py
-.pylintrc
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -13,5 +13,4 @@ with open(activate_this) as f:
     code = compile(f.read(), activate_this, 'exec')
     exec(code)
 
-from cross.app import context as app
-application = app
+from cross.app import APP as application

@@ -4,6 +4,8 @@
 	<li><a href="{{ url_for('cmc.home') }}">통계</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=0, page=1) }}">신청자목록</a></li>
 	<li><a href="{{ url_for('cmc.member_list', cancel_yn=1) }}">취소자목록</a></li>
+
+	{% if (current_user.role == 'hq' and current_user.camp == 'cmc') or current_user.role == 'master' %}
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			지난자료&nbsp;<span class="caret" />
@@ -24,11 +26,12 @@
 			숙소&nbsp;<span class="caret" />
 		</a>
 		<ul class="dropdown-menu">
-			<li><a href="{{ url_for('cmc.roomassign', cancel_yn=0) }}">숙소배치</a></li>
+			<li><a href="{{ url_for('cmc.roomassign', cancel_yn=0, room_idx='none') }}">숙소배치</a></li>
             <!--<li><a href="{{ url_for('cbtj.roomassign', cancel_yn=0) }}">청직숙소배치</a></li>-->
 			<li><a href="{{ url_for('cmc.room') }}">숙소현황</a></li>
 			<li><a href="{{ url_for('cmc.roomsetting') }}">숙소셋팅</a></li>
 		</ul>
 	</li>
+	{% endif %}
 </ul>
 {% endblock %}

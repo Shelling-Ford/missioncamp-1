@@ -1,35 +1,56 @@
+''' 하나의 폼 양식을 여러 곳에서 재활용하기 위해 선언된 wtforms 클래스를 모아둔 모듈
+'''
 import datetime
 import hashlib
 from flask import request
-from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField, RadioField
+from wtforms import Form, StringField, SelectField, SelectMultipleField, \
+PasswordField, HiddenField, RadioField
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput, HiddenInput
 from core.models import Area, Group, Camp, Member, Membership
-from core.database import db
+from core.database import DB as db
 from core import form_config
 
 
 class ContactField(StringField):
-    pass
+    ''' 연락처 필드
+    '''
+    data = ""
 
 
 class MultiCheckboxField(SelectMultipleField):
+    ''' 다중 선택을 위한 필드
+    '''
     widget = ListWidget(prefix_label=False)
     option_widget = CheckboxInput()
+    data = ""
 
 
 class RoomCheckForm(Form):
+    ''' 숙소 배치 확인을 위한 폼
+    '''
     contact = ContactField('연락처')
     name = StringField('이름')
     logintype = RadioField('구분', choices=[('개인', '개인'), ('단체', '단체')])
 
+    def set_form_data(self, contact, name, logintype):
+        ''' 폼의 내용을 입력함
+        '''
+        self.contact.data = contact
+        self.name.data = name
+        self.logintype.data = logintype
+
 
 class AreaForm(Form):
+    ''' 크로스에서 지부 설정 변경을 위한 폼
+    '''
     idx = HiddenField()
     name = StringField(u'지부명')
     type = StringField(u'유형')
     camp = StringField(u'캠프')
 
     def set_area_data(self, area):
+        ''' area 모델의 내용을 폼에 적용함
+        '''
         self.idx.data = area.idx
         self.name.data = area.name
         self.type.data = area.type
@@ -37,6 +58,8 @@ class AreaForm(Form):
 
 
 class GroupForm(Form):
+    ''' 단체 등록 및 수정을 위한 폼
+    '''
     groupid = StringField('단체 아이디')
     pwd = PasswordField('비밀번호')
     pwd2 = PasswordField('비밀번호 확인')
@@ -50,6 +73,8 @@ class GroupForm(Form):
     group_idx = HiddenField()
 
     def set_camp(self, camp):
+        ''' 어떤 캠프의 단체등록 폼인지 지정함
+        '''
         self.area_idx.choices = Area.get_list(camp)
         if camp == 'youth':
             self.grouptype.choices = form_config.GROUP_TYPES[camp]
@@ -57,6 +82,8 @@ class GroupForm(Form):
             self.grouptype.widget = HiddenInput()
 
     def set_group_data(self, group):
+        ''' group 모델의 내용을 폼에 적용함
+        '''
         self.groupid.data = group.groupid
         self.name.data = group.name
         self.leadername.data = group.leadername
@@ -70,19 +97,23 @@ class GroupForm(Form):
             self.grouptype.data = group.grouptype
 
     def populate_obj(self, group):
+        ''' 폼의 내용을 group 모델 오브젝트에 저장함
+        '''
         group.groupid = self.groupid.data
         group.name = self.name.data
         group.leadername = self.leadername.data
-        hp = request.form.get('hp')
+        hp1 = request.form.get('hp')
         hp2 = request.form.get('hp2')
         hp3 = request.form.get('hp3')
-        contact = "{0}-{1}-{2}".format(hp, hp2, hp3)
+        contact = "{0}-{1}-{2}".format(hp1, hp2, hp3)
         group.leadercontact = contact
         group.leaderjob = self.leaderjob.data
         group.area_idx = self.area_idx.data
         group.memo = self.memo.data
 
     def insert(self, camp_idx):
+        ''' 폼으로 입력받은 정보를 바탕으로 새로운 group 정보를 데이터베이스에 저장
+        '''
         group = Group()
         group.camp_idx = camp_idx
         group.regdate = datetime.datetime.today()
@@ -97,17 +128,21 @@ class GroupForm(Form):
         return group.idx
 
     def update(self, idx):
+        ''' 폼으로 입력받은 정보를 바탕으로 기존 group 정보를 데이터베이스에 업데이트
+        '''
         group = Group.get(idx)
         if self.pwd.data is not None and self.pwd.data != '':
             group.pwd = hashlib.sha224(self.pwd.data.encode('utf-8')).hexdigest()
         self.populate_obj(group)
         db.session.commit()
 
-
+# 생년월일 선택을 위한 년도 리스트
 YEARS = [("{0}".format(i), "{0}".format(i)) for i in range(2015, 1940, -1)]
 
 
 class RegistrationForm(Form):
+    ''' 캠프 신청을 위한 폼. 개인 또는 단체의 멤버
+    '''
     group_yn = False
     camp = ''
     group_idx = None
@@ -138,12 +173,15 @@ class RegistrationForm(Form):
     date_of_arrival = SelectField('캠프오는날')
     date_of_leave = SelectField('집에가는날')
     newcomer_yn = RadioField('선교캠프가<br/>처음인가요?', choices=[(1, '예'), (0, '아니오')])
-    vision_yn = RadioField('비전스쿨 수료여부', choices=[(1, '예'), (0, '아니오')])  # membership for ['cmc', 'cbtj']
+    # membership for ['cmc', 'cbtj']
+    vision_yn = RadioField('비전스쿨 수료여부', choices=[(1, '예'), (0, '아니오')])
     training = MultiCheckboxField('인터콥 훈련여부')  # membership for all
     language = SelectField('통역필요', choices=[(i, i) for i in form_config.LANGUAGES])
     memo = StringField('남기고싶은 말', widget=TextArea())
 
     def set_camp(self, camp):
+        ''' 어떤 캠프의 신청폼인지 지정해줌.
+        '''
         self.camp = camp
         self.area_idx.choices = Area.get_list(camp)
         self.persontype.choices = [(i, i) for i in form_config.PERSONTYPES[camp]]
@@ -194,18 +232,22 @@ class RegistrationForm(Form):
 
 
     def set_group_mode(self, group_idx, group_area_idx):
+        ''' 개인 신청인지 단체의 멤버신청인지 정해줌
+        '''
         self.group_yn = True
         self.userid.widget = HiddenInput()
         self.pwd.widget = HiddenInput()
         self.pwd2.widget = HiddenInput()
         self.area_idx.widget = HiddenInput()
-        print(self.area_idx.widget.__class__.__name__)
+        # print(self.area_idx.widget.__class__.__name__)
         self.group_idx = group_idx
         self.group_area_idx = group_area_idx
         self.sch1.widget = HiddenInput()
         self.sch2.widget = HiddenInput()
 
     def set_member_data(self, member):
+        ''' member 모델 객체의 내용으로 폼을 채움
+        '''
         membership_data = member.get_membership_data()
         self.idx.data = member.idx
         if member.group_idx is None:
@@ -232,21 +274,27 @@ class RegistrationForm(Form):
             getattr(self, membership_field).data = membership_data.get(membership_field)
 
     def populate_obj(self, member):
+        ''' 폼의 내용으로 member 모델 객체의 내용을 채움
+        '''
         member.name = self.name.data
         if self.group_yn is False:
             member.area_idx = self.area_idx.data
         else:
             member.area_idx = self.group_area_idx
-        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
+        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') \
+        + '-' + request.form.get('hp3')
         member.church = self.church.data
         member.birth = self.birth.data
         member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data if self.bus_yn not in [None, 'None', '', 'none', 'null'] else 0
-        member.mit_yn = self.mit_yn.data if self.mit_yn not in [None, 'None', '', 'none', 'null'] else 0
+        member.bus_yn = self.bus_yn.data if self.bus_yn not in \
+        [None, 'None', '', 'none', 'null'] else 0
+        member.mit_yn = self.mit_yn.data if self.mit_yn not in \
+        [None, 'None', '', 'none', 'null'] else 0
         member.attend_yn = 0
         member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
-        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
+        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in \
+        [None, 'None', '', 'none', 'null'] else 1
         if self.fullcamp_yn.data == "1":
             date_list = Camp.get_date_list(member.camp_idx)
             member.date_of_arrival = datetime.datetime.strftime(date_list[0][0], "%Y-%m-%d")
@@ -258,6 +306,8 @@ class RegistrationForm(Form):
         member.memo = self.memo.data
 
     def populate_membership(self, member_idx):
+        ''' member의 가변필드인 membership 테이블에 폼의 내용을 업데이트함.
+        '''
         camp_idx = Camp.get_idx(self.camp)
         membership_fields = form_config.MEMBERSHIP_FIELDS[self.camp]
 
@@ -281,6 +331,8 @@ class RegistrationForm(Form):
         db.session.commit()
 
     def insert(self):
+        ''' 폼의 내용을 가지고 member테이블에 신규 행을 삽입함.
+        '''
         member = Member()
         member.camp_idx = Camp.get_idx(self.camp)
         if self.group_yn is False:
@@ -301,6 +353,8 @@ class RegistrationForm(Form):
         return member.idx
 
     def update(self, idx):
+        ''' 폼의 내용을 가지고 member테이블의 기존 행을 업데이트함.
+        '''
         member = db.session.query(Member).filter(Member.idx == idx).one()
         db.session.query(Membership).filter(Membership.member_idx == member.idx).delete()
         if self.pwd.data is not None and self.pwd.data != '':

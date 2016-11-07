@@ -24,7 +24,10 @@
               <div class="col-sm-11"><table class="table1" style="margin-top:11px;"><tr>
             {% endif %}
             {% if room.cap > 0 %}
-            <td style="text-align:center"><a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>{{ room_stat['cnt'][room.room.idx] }} ({{ room_stat['a_cnt'][room.room.idx]}}) / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}</td>
+            <td style="text-align:center">
+              <a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>
+              {{ room_stat['cnt'][room.room.idx] }} ({{ room_stat['a_cnt'][room.room.idx]}}) / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}
+            </td>
             {% set i = i + 1 %}
             {% endif %}
             {% if i % 15 == 0 %}
@@ -55,13 +58,13 @@
         <div class="checkbox">
           <label><input type="checkbox" name="complete" value="1" {% if 'complete=1' in request.url %} checked {% endif %}/>&nbsp;부분납&nbsp;</label>
           <label><input type="checkbox" name="complete" value="2" {% if 'complete=2' in request.url %} checked {% endif %}/>&nbsp;완납&nbsp;</label>
-          <label><input type="checkbox" name="job" value="목회자" {% if 'job=목회자' in request.url %} checked {% endif %}/>&nbsp;목회자&nbsp;</label>
-          <label><input type="checkbox" name="training" value="없음" {% if 'training=없음' in request.url %} checked {% endif %}/>&nbsp;훈련여부없음&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="M"  {% if 'sex=M' in request.url %} checked {% endif %}/>&nbsp;남자&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="F"  {% if 'sex=F' in request.url %} checked {% endif %}/>&nbsp;여자&nbsp;</label>
         </div>
       </div>
-      <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign', cancel_yn=0) }}" class="btn btn-warning">필터 초기화</a>
-      {% set passlist = ['name', 'page', 'area_idx', 'group_idx', 'cancel_yn', 'complete', 'sex', 'job', 'training'] %}
-      {% for key, value in request.args.iteritems() %}
+      <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign') }}" class="btn btn-warning">필터 초기화</a>
+      {% set passlist = ['name', 'page', 'area_idx', 'group_idx', 'cancel_yn', 'complete', 'sex'] %}
+      {% for key, value in request.args.items() %}
       {% if key not in passlist %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
       {% endfor %}
       <input type="hidden" name="cancel_yn" value="0"/>
@@ -71,7 +74,7 @@
   </div><!-- row -->
   <div class="row">
     <form id='form1' action="" method="post">
-      <table class="table1" style="width:100%">
+      <table class="table" style="width:100%">
         <thead>
           <tr>
             <th>No.</th>
@@ -84,7 +87,6 @@
             <th>지부</th>
             <th>단체</th>
             <th>성별</th>
-            <th>재정납부</th>
             <th>재정클레임</th>
             <th>상태</th>
             {% if request.args.get('cancel_yn',0)|int == 0 %}
@@ -105,23 +107,14 @@
           <tr>
             <td>{{ i }}</td>
             <td><input type="checkbox" name="member_idx" value="{{ m.idx }}"/></td>
-            <td>{% if m.camp.code == 'cbtj2' %}<span style="color:green">청직</span>{% elif m.camp.code == 'ws' %}<span style="color:orange">여남시</span>{% endif %}</td>
+            <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
             <td>{{ m.regdate }}</td>
             <td>{% if m.attend_yn %}<span style="color:blue">O</span>{% else %}<span style="color:gray">X</span>{% endif %}</td>
             <td>{{ m.persontype }}</td>
-            {% if m.camp.code == 'cbtj2' %}
-            <td><a href="{{ url_for('cbtj.member', member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
-            {% else %}
             <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
-            {% endif %}
             <td>{{ m.area.name }}</td>
-            {% if m.camp.code == 'cbtj2' %}
-            <td>{% if not m.group.name == None %} <a href="{{ url_for('cbtj.member_list', group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
-            {% else %}
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
-            {% endif %}
             <td>{{ m.sex }}</td>
-            <td>{% if m.payment is not none and m.payment.amount is not none %}{{ m.payment.amount }}{% endif %}</td>
             <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
             <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
             {% if request.args.get('cancel_yn',0)|int == 0 %}

@@ -3,12 +3,12 @@ from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import NoResultFound
-from core.database import btjkorea_db
-from core.database import db
+from core.database import BTJKOREA_DB as btjkorea_db
+from core.database import DB as db
 import datetime
 
 
-class AdminUser(db.Base, UserMixin):
+class AdminUser(db.base, UserMixin):
     __tablename__ = 'admin'
 
     idx = Column(Integer, primary_key=True)
@@ -69,7 +69,7 @@ class ModelSerializer():
 
 
 # BTJKorea 인증을 위한 모델 클래스
-class BtjUser(btjkorea_db.Base, ModelSerializer, UserMixin):
+class BtjUser(btjkorea_db.base, ModelSerializer, UserMixin):
     __tablename__ = 'g5_member'
 
     mb_no = Column(Integer, primary_key=True)
@@ -108,7 +108,7 @@ class BtjUser(btjkorea_db.Base, ModelSerializer, UserMixin):
             btjuser.camp = "cmc,cbtj,ws,youth,kids"
             return btjuser
 
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             filter_list = None
             if value is not None and value != '':
                 value = [value] if type(value) is not list else value

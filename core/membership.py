@@ -1,4 +1,7 @@
 # -*-coding:utf-8-*-
+''' deprecated
+    삭제예정
+'''
 memberships = [
     {
         'name': 'job',

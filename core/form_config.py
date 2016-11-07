@@ -84,10 +84,16 @@ STAFF_TYPES = {
         ("어린이스탭", "어린이스탭"),
         ("키즈스탭", "키즈스탭"),
         ("판매스탭", "판매스탭"),
-        ("기타", "기타<span style='color:red; font-size:9px;'>(**위의 스텝에 해당되지 않는경우 남기고 싶은 말에 남겨 주세요)</span>")
+        ("기타", """기타
+        <span style='color:red; font-size:9px;'>
+        (**위의 스텝에 해당되지 않는경우 남기고 싶은 말에 남겨 주세요)
+        </span>
+        """)
     ]
 }
 SCH2_CHOICES = {
-    'kids': [('예비1학년', '예비1학년')].extend([("{0}".format(i), "{0} 학년".format(i)) for i in range(1, 7)]),
-    'youth': [("{0}".format(i), "{0} 학년".format(i)) for i in range(1, 4)]
+    'kids': [
+        ('예비1학년', '예비1학년'),
+    ].extend([("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 7)]),
+    'youth': [("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 4)]
 }

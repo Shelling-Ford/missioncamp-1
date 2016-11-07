@@ -1,7 +1,7 @@
 {% extends 'cmc/page.html' %}
 
 {% block content %}
-<div class="container-fluid">
+<div class="container">
   {% if group is not none %}
   <section class="page-header">
     <h2>단체</h2>
@@ -50,10 +50,11 @@
       {% endfor %}
     </select>
     <button type="submit" class="btn btn-default">검색</button>
+    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
     {% for key, value in request.args.items() %}
     {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
     {% endfor %}
-    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>&nbsp;
+
   </form>
   <br/>
   <br/>
@@ -61,8 +62,10 @@
   <span>** 녹색 [체크] 버튼을 누르면 출석체크가 되면서 붉은색 [취소] 버튼으로 바뀝니다. [취소] 버튼을 다시 누르면 출첵이 취소됩니다.</span>
   <br/>
   <br/>
+</div>
+<div class="container-fluid">
 
-  <table class="table1" style="width:100%">
+  <table class="table" style="width:100%">
     <thead>
       <tr>
         <th>No.</th>

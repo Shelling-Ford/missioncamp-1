@@ -11,7 +11,7 @@
     <td>{{ i }}</td>
     {% else %}
       {% if 'complete=1' in request.url and 'complete=2' in request.url %}
-        <td><a href="{{ url_for('.roomassign', page=i, **params) }}&complete=2">{{ i }}</a></td>
+        <td><a href="{{ url_for('.roomassign', page=i, **params) }}&amp;complete=2">{{ i }}</a></td>
       {% else %}
         <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
       {% endif %}

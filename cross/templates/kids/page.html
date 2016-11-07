@@ -13,6 +13,8 @@
 		</ul>
 	</li>
 	<li><a href="{{ url_for('kids.member_list', cancel_yn=1) }}">취소자목록</a></li>
+
+	{% if (current_user.role == 'hq' and current_user.camp == 'kids') or current_user.role == 'master' %}
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			지난통계<span class="caret">
@@ -22,15 +24,17 @@
 			<li><a href="{{ url_for('kids.home', year=2015, term=2) }}">2015 여름</a></li>
 		</ul>
 	</li>
+
 	<li class="dropdown">
 		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
 			숙소&nbsp;<span class="caret">
 		</a>
 		<ul class="dropdown-menu">
-			<li><a href="{{ url_for('kids.roomassign', cancel_yn=0) }}">숙소배치</a></li>
+			<li><a href="{{ url_for('kids.roomassign', cancel_yn=0, room_idx='none') }}">숙소배치</a></li>
 			<li><a href="{{ url_for('kids.room', cancel_yn=0) }}">숙소현황</a></li>
 			<li><a href="{{ url_for('kids.roomsetting') }}">숙소셋팅</a></li>
 		</ul>
 	</li>
+	{% endif %}
 </ul>
 {% endblock %}

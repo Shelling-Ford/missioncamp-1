@@ -10,54 +10,66 @@ from flask_babel import Babel
 # from missioncamp.views.ws import context as ws
 # from missioncamp.views.youth import context as youth
 
-from core.database import db
+from core.database import DB as db
 from missioncamp.views import get_app
 
 import os
 import sys
 
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(cur_dir)
+CUR_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(CUR_DIR)
 
-app = Flask(__name__)
-app.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
+APP = Flask(__name__)
+APP.secret_key = 'r&rbtrtk3hd36u#9k=8cb*!m@8o1t)zp=mws#s&a!jvvty9yis'
 
-babel = Babel(app)
+BABEL = Babel(APP)
 
 
-@babel.localeselector
+@BABEL.localeselector
 def get_locale():
+    '''
+    언어 선택기
+    '''
     lang = request.args.get('lang')
     if lang is None:
         lang = request.accept_languages.best_match(['ko', 'ko_KR', 'en', 'en_US', 'en_GB'])
     return lang
 
-cbtj_app = get_app('cbtj')
-cmc_app = get_app('cmc')
-kids_app = get_app('kids')
-ws_app = get_app('ws')
-youth_app = get_app('youth')
-app.register_blueprint(cbtj_app)
-app.register_blueprint(cmc_app)
-app.register_blueprint(kids_app)
-app.register_blueprint(ws_app)
-app.register_blueprint(youth_app)
+CBTJ_APP = get_app('cbtj')
+CMC_APP = get_app('cmc')
+KIDS_APP = get_app('kids')
+WS_APP = get_app('ws')
+YOUTH_APP = get_app('youth')
+APP.register_blueprint(CBTJ_APP)
+APP.register_blueprint(CMC_APP)
+APP.register_blueprint(KIDS_APP)
+APP.register_blueprint(WS_APP)
+APP.register_blueprint(YOUTH_APP)
 
-db.Base.metadata.create_all(db.engine)
+db.base.metadata.create_all(db.engine)
 
 
-@app.route('/')
+@APP.route('/')
 def index():
+    '''
+    선교캠프 통합 메인 페이지
+    '''
     return render_template('index.html')
 
 # template filters
-@app.template_filter("yesno")
+@APP.template_filter("yesno")
 def yesno(value):
+    '''
+    value가 false이거나 None이면 아니오, 나머지는 예를 출력하도록 하는 템플릿 필터
+    '''
     return '예' if value else '아니오'
 
-@app.template_filter("sex")
+@APP.template_filter("sex")
 def sex(value):
+    '''
+    성별을 한글로 출력해주는 템플릿 필터
+    '''
     if value == 'M':
         return '남자'
     elif value == 'F':

@@ -87,7 +87,8 @@ class XlsxBuilder():
             u'캠퍼스': obj.get('campus', ''),
             u'전공': obj.get('major', ''),
             u'인터콥훈련여부': ','.join(obj.get('training', [])),
-            u'비전스쿨': boolean[int(obj.get('vision_yn', ''))],
+            u'비전스쿨': boolean[int(obj.get('vision_yn', '0') \
+            if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)],
         }
 
         return func_map[label]

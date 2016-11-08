@@ -5,6 +5,7 @@
 from sqlalchemy.sql import text
 from core.database import DB as db
 
+
 def get_basic_stat(camp_idx):
     '''
     캠프코드를 이용해 전체 통계를 구해주는 함수
@@ -51,8 +52,8 @@ def get_basic_stat(camp_idx):
     query_params = {'camp_idx': camp_idx}
 
     stat = {
-        'summary':[], 'area':[], 'persontype':[], 'group_name':[], 'campus': [],
-        'training':[], 'job': [], 'ages': []
+        'summary': [], 'area': [], 'persontype': [], 'group_name': [], 'campus': [],
+        'training': [], 'job': [], 'ages': []
     }
     for s in sql:
         results = db.session.execute(s, query_params)
@@ -129,8 +130,7 @@ def get_basic_stat(camp_idx):
     for r in results:
         stat['job'].append(dict(r))
 
-    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", \
-    query_params).fetchone()
+    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params).fetchone()
     year = camp[2]
 
     # 연령별 통계

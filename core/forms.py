@@ -3,8 +3,7 @@
 import datetime
 import hashlib
 from flask import request
-from wtforms import Form, StringField, SelectField, SelectMultipleField, \
-PasswordField, HiddenField, RadioField
+from wtforms import Form, StringField, SelectField, SelectMultipleField, PasswordField, HiddenField, RadioField
 from wtforms.widgets import TextArea, ListWidget, CheckboxInput, HiddenInput
 from core.models import Area, Group, Camp, Member, Membership
 from core.database import DB as db
@@ -45,8 +44,7 @@ class AreaForm(Form):
     '''
     idx = HiddenField()
     name = StringField('지부명')
-    type = SelectField('유형', choices=[("1", '1: 국내'), ("2", '2: 해외'), ("3", \
-    '3: 기타'), ("4", '4: 오류')])
+    type = SelectField('유형', choices=[("1", '1: 국내'), ("2", '2: 해외'), ("3", '3: 기타'), ("4", '4: 오류')])
     camp = StringField('캠프')
 
     def set_area_data(self, area):
@@ -164,7 +162,7 @@ class RegistrationForm(Form):
     contact = ContactField('연락처')
     church = StringField('소속교회')
     persontype = RadioField('참가구분')
-    stafftype = RadioField('스탭구분') # membership for ws
+    stafftype = RadioField('스탭구분')  # membership for ws
     job = SelectField('직업/직종')  # membership for ['cmc', 'cbtj']
     job_name = StringField('직장명')  # membership for cbtj
     campus = StringField('캠퍼스')  # membership for cmc
@@ -234,7 +232,6 @@ class RegistrationForm(Form):
             self.date_of_arrival.widget = HiddenInput()
             self.date_of_leave.widget = HiddenInput()
 
-
     def set_group_mode(self, group_idx, group_area_idx):
         ''' 개인 신청인지 단체의 멤버신청인지 정해줌
         '''
@@ -285,20 +282,16 @@ class RegistrationForm(Form):
             member.area_idx = self.area_idx.data
         else:
             member.area_idx = self.group_area_idx
-        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') \
-        + '-' + request.form.get('hp3')
+        member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
         member.church = self.church.data
         member.birth = self.birth.data
         member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data if self.bus_yn not in \
-        [None, 'None', '', 'none', 'null'] else 0
-        member.mit_yn = self.mit_yn.data if self.mit_yn not in \
-        [None, 'None', '', 'none', 'null'] else 0
+        member.bus_yn = self.bus_yn.data if self.bus_yn not in [None, 'None', '', 'none', 'null'] else 0
+        member.mit_yn = self.mit_yn.data if self.mit_yn not in [None, 'None', '', 'none', 'null'] else 0
         member.attend_yn = 0
         member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
-        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in \
-        [None, 'None', '', 'none', 'null'] else 1
+        member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
         if self.fullcamp_yn.data == "1":
             date_list = Camp.get_date_list(member.camp_idx)
             member.date_of_arrival = datetime.datetime.strftime(date_list[0][0], "%Y-%m-%d")

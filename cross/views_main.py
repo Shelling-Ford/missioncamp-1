@@ -20,7 +20,6 @@ def register_view(app):
     login_manager.login_message = "로그아웃 되었습니다. 먼저 로그인하시기 바랍니다."
     login_manager.login_message_category = "info"
 
-
     # flask-login login_manager
     @login_manager.user_loader
     def load_user(adminid):
@@ -28,7 +27,6 @@ def register_view(app):
         '''
         user = db.session.query(AdminUser).filter(AdminUser.adminid == adminid).one()
         return user
-
 
     @app.route('/', methods=['GET', 'POST'])
     def home():
@@ -43,11 +41,9 @@ def register_view(app):
             pwd = request.form.get('pwd', None)
 
             if bkdb.session.execute("SELECT count(*) FROM `g5_member` \
-            WHERE mb_id = '{}' AND mb_password = PASSWORD('{}')".format(userid, \
-            pwd)).fetchone()[0] > 0:  # btjkorea 인증에 성공할경우
+            WHERE mb_id = '{}' AND mb_password = PASSWORD('{}')".format(userid, pwd)).fetchone()[0] > 0:  # btjkorea 인증에 성공할경우
                 try:
-                    adminuser = db.session.query(AdminUser).filter(AdminUser.adminid \
-                    == userid).one()
+                    adminuser = db.session.query(AdminUser).filter(AdminUser.adminid == userid).one()
                 except NoResultFound:
                     adminuser = AdminUser()
 
@@ -59,8 +55,7 @@ def register_view(app):
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
                 else:
                     adminuser.role = 'branch'
-                    adminuser.area_idx = db.session.query(Area).filter(\
-                    Area.chaptercode == btjuser.chaptercode).first()
+                    adminuser.area_idx = db.session.query(Area).filter(Area.chaptercode == btjuser.chaptercode).first()
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
 
                 if adminuser.idx is None:
@@ -70,10 +65,8 @@ def register_view(app):
                 login_user(adminuser)
 
                 return redirect(url_for('cmc.home'))
-            elif db.session.query(AdminUser).filter(AdminUser.adminid == userid, \
-            AdminUser.adminpw == pwd).count() > 0:
-                adminuser = db.session.query(AdminUser).filter(AdminUser.adminid \
-                == userid).one()
+            elif db.session.query(AdminUser).filter(AdminUser.adminid == userid, AdminUser.adminpw == pwd).count() > 0:
+                adminuser = db.session.query(AdminUser).filter(AdminUser.adminid == userid).one()
 
                 login_user(adminuser)
                 camp = adminuser.camp.split(',')[0]

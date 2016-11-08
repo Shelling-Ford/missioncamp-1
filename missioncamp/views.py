@@ -12,6 +12,7 @@ from core.forms import RegistrationForm, GroupForm
 from core.models import Member, Area, Camp, Group, Promotion
 from core.database import DB as db
 
+
 def login_required(logintype):
     '''
     해당 뷰가 로그인 필수 항목일 경우 이 함수를 데코레이터로 붙인다.
@@ -40,8 +41,7 @@ def get_app(campcode):
     캠프 코드를 받아서 세대별 뷰를 등록하기 위한 블루프린트를 반환함.
     '''
     if campcode in ['cmc', 'cbtj', 'ws', 'kids', 'youth']:
-        app = Blueprint(campcode, __name__, template_folder='templates', \
-        url_prefix='/{0}'.format(campcode))
+        app = Blueprint(campcode, __name__, template_folder='templates', url_prefix='/{0}'.format(campcode))
         register_view(app, campcode)
         return app
     else:
@@ -133,8 +133,7 @@ def register_view(app, campcode):
             'camp': campcode,
             'member': member,
             'membership_data': member.get_membership_data(),
-            'area_name': db.session.query(Area).filter(Area.idx == \
-            member.area_idx).one().name
+            'area_name': db.session.query(Area).filter(Area.idx == member.area_idx).one().name
         }
         return render_template('{0}/show.html'.format(campcode), **params)
 
@@ -159,8 +158,8 @@ def register_view(app, campcode):
                 campidx = Camp.get_idx(campcode)
                 if logintype == '개인':
                     if Member.login_check(campidx, userid, pwd):
-                        idx = db.session.query(Member).filter(Member.camp_idx == \
-                        campidx, Member.userid == userid).one().idx
+                        idx = db.session.query(Member).filter(Member.camp_idx == campidx,
+                                                              Member.userid == userid).one().idx
                         session['type'] = '개인'
                         session['idx'] = idx
                         return redirect(url_for('.member_info'))
@@ -168,8 +167,8 @@ def register_view(app, campcode):
                         flash('아이디 또는 비밀번호가 잘못되었습니다.')
                 elif logintype == '단체':
                     if Group.login_check(campidx, userid, pwd):
-                        idx = db.session.query(Group).filter(Group.camp_idx == \
-                        campidx, Group.groupid == userid).one().idx
+                        idx = db.session.query(Group).filter(Group.camp_idx == campidx,
+                                                             Group.groupid == userid).one().idx
                         session['type'] = '단체'
                         session['idx'] = idx
                         return redirect(url_for('.group_info'))
@@ -196,7 +195,6 @@ def register_view(app, campcode):
             flash(u'신청이 취소되었습니다')
             return redirect(url_for('.home'))
         return render_template('{0}/cancel.html'.format(campcode))
-
 
     @app.route('/check-userid', methods=['POST'])
     @app.route('/group/member/check-userid', methods=['POST'])
@@ -234,9 +232,8 @@ def register_view(app, campcode):
             flash('신청이 완료되었습니다.')
             return redirect(url_for('.group_info'))
 
-        return render_template('{0}/form.html'.format(campcode), form=form, \
-        page_header="단체신청", script=url_for('static', \
-        filename='common/js/reg-group.js'))
+        return render_template('{0}/form.html'.format(campcode), form=form,
+                               page_header="단체신청", script=url_for('static', filename='common/js/reg-group.js'))
 
     @app.route('/group/info')
     @login_required(logintype='단체')
@@ -246,11 +243,10 @@ def register_view(app, campcode):
         '''
         idx = session['idx']
         group = db.session.query(Group).filter(Group.idx == idx).one()
-        member_list = db.session.query(Member).filter(Member.group_idx == idx, \
-        Member.cancel_yn == 0).all()
-        return render_template('{0}/group/show.html'.format(campcode), \
-        group=group, area=db.session.query(Area).filter(Area.idx == \
-        Group.area_idx).one().name, member_list=member_list)
+        member_list = db.session.query(Member).filter(Member.group_idx == idx, Member.cancel_yn == 0).all()
+        return render_template('{0}/group/show.html'.format(campcode), group=group,
+                               area=db.session.query(Area).filter(Area.idx == Group.area_idx).one().name,
+                               member_list=member_list)
 
     @app.route('/group/edit', methods=["GET", "POST"])
     @login_required(logintype='단체')
@@ -269,9 +265,8 @@ def register_view(app, campcode):
 
         group = db.session.query(Group).filter(Group.idx == idx).one()
         form.set_group_data(group)
-        return render_template('{0}/form.html'.format(campcode), form=form, \
-        page_header="단체신청 수정", script=url_for('static', \
-        filename='common/js/reg-group-edit.js'), editmode=True)
+        return render_template('{0}/form.html'.format(campcode), form=form, page_header="단체신청 수정",
+                               script=url_for('static', filename='common/js/reg-group-edit.js'), editmode=True)
 
     @app.route('/group/cancel', methods=["GET", "POST"])
     @login_required(logintype='단체')
@@ -318,7 +313,8 @@ def register_view(app, campcode):
             flash("멤버가 추가되었습니다.")
             return redirect(url_for(".group_info"))
 
-        return render_template('{0}/form.html'.format(campcode), form=form, page_header="멤버 추가", script=url_for('static', filename='{0}/js/reg-individual.js'.format(campcode)))
+        return render_template('{0}/form.html'.format(campcode), form=form, page_header="멤버 추가",
+                               script=url_for('static', filename='{0}/js/reg-individual.js'.format(campcode)))
 
     @app.route('/group/member/edit/<member_idx>', methods=["GET", "POST"])
     @login_required(logintype='단체')
@@ -339,7 +335,8 @@ def register_view(app, campcode):
 
         member = db.session.query(Member).filter(Member.idx == member_idx).one()
         form.set_member_data(member)
-        return render_template('{0}/form.html'.format(campcode), form=form, page_header="멤버 수정", script=url_for('static', filename='{0}/js/reg-individual-edit.js'.format(campcode)))
+        return render_template('{0}/form.html'.format(campcode), form=form, page_header="멤버 수정",
+                               script=url_for('static', filename='{0}/js/reg-individual-edit.js'.format(campcode)))
 
     @app.route('/group/member/cancel/<member_idx>', methods=["GET", "POST"])
     @login_required(logintype='단체')

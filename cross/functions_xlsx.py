@@ -66,13 +66,11 @@ class XlsxBuilder():
             u'가는날': multi_getattr(obj, 'date_of_leave', 0),
             u'통역필요': multi_getattr(obj, 'language', ''),
             u'등록날자': multi_getattr(obj, 'regdate', 0),
-            u'숙소': ''.join([multi_getattr(obj, 'room.building', ''), \
-            multi_getattr(obj, 'room.number', '')]),
+            u'숙소': ''.join([multi_getattr(obj, 'room.building', ''), multi_getattr(obj, 'room.number', '')]),
             u'메모': multi_getattr(obj, 'memo', ''),
         }
 
         return func_map[label]
-
 
     @staticmethod
     def get_membership_value(obj, label):
@@ -87,8 +85,7 @@ class XlsxBuilder():
             u'캠퍼스': obj.get('campus', ''),
             u'전공': obj.get('major', ''),
             u'인터콥훈련여부': ','.join(obj.get('training', [])),
-            u'비전스쿨': boolean[int(obj.get('vision_yn', '0') \
-            if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)],
+            u'비전스쿨': boolean[int(obj.get('vision_yn', '0') if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)],
         }
 
         return func_map[label]
@@ -147,10 +144,8 @@ class XlsxBuilder():
             membership = member.get_membership_data()
             for label in label_list:
                 if label in date_type_label:
-                    if isinstance(self.get_value(member, label), datetime.datetime) \
-                    or isinstance(self.get_value(member, label), datetime.date):
-                        self.worksheet.write_datetime(row, col, self.get_value(member, \
-                        label), self.date_format)
+                    if isinstance(self.get_value(member, label), datetime.datetime) or isinstance(self.get_value(member, label), datetime.date):
+                        self.worksheet.write_datetime(row, col, self.get_value(member, label), self.date_format)
                     else:
                         self.worksheet.write(row, col, "")
                 elif label in membership_type_label:

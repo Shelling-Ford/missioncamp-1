@@ -1,12 +1,11 @@
 '''
 세대별 크로스 뷰 공통부분을 관리하는 모듈
 '''
-# pylint: disable=W0612,R
+# pylint: disable=W0612,C0301,R0912,R0914
 import datetime
 from functools import wraps
 from flask import Blueprint
-from flask import request, render_template, redirect, abort, url_for, session, \
-flash
+from flask import request, render_template, redirect, abort, url_for, session, flash
 from flask.helpers import make_response
 from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
@@ -14,10 +13,10 @@ from sqlalchemy import desc, or_
 
 from core.forms import RegistrationForm
 from core.database import DB as db
-from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, \
-Promotion
+from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, Promotion
 from cross.functions_xlsx import XlsxBuilder
 from cross import statistics
+
 
 def role_required(role, camp='*'):
     '''
@@ -37,8 +36,7 @@ def role_required(role, camp='*'):
                 return func(*args, **kwargs)
 
             if role == 'hq':
-                if current_user.role not in ['hq', 'master'] or camp not in \
-                ["*", current_user.camp]:
+                if current_user.role not in ['hq', 'master'] or camp not in current_user.camp.split(','):
                     flash('이 페이지에 대한 접근 권한이 없습니다.')
                     return redirect(url_for('.home', next=request.url))
                 else:
@@ -97,16 +95,14 @@ def get_member_list_query(query, req, orderby=None):
 
     complete_list = request.args.getlist('complete', None)
     if complete_list is not None and len(complete_list) > 0:
-        filtered_query = filtered_query.filter(*[Member.payment.has(complete=complete) \
-        for complete in complete_list])
+        filtered_query = filtered_query.filter(*[Member.payment.has(complete=complete) for complete in complete_list])
 
     # order_by
     if orderby is None:
         filtered_query = filtered_query.order_by(desc(Member.idx))
     else:
         orderby = orderby if isinstance(orderby, list) else [orderby]
-        filtered_query = filtered_query.order_by(*[desc(getattr(Member, o)) \
-        for o in orderby])
+        filtered_query = filtered_query.order_by(*[desc(getattr(Member, o)) for o in orderby])
 
     return filtered_query
 
@@ -116,12 +112,12 @@ def get_app(campcode):
     캠프 코드를 받아서 세대별 뷰를 등록하기 위한 블루프린트를 반환함.
     '''
     if campcode in ['cmc', 'cbtj', 'ws', 'kids', 'youth']:
-        app = Blueprint(campcode, __name__, template_folder='templates', \
-        url_prefix='/{0}'.format(campcode))
+        app = Blueprint(campcode, __name__, template_folder='templates', url_prefix='/{0}'.format(campcode))
         register_view(app, campcode)
         return app
     else:
         return None
+
 
 def register_view(app, campcode):
     '''
@@ -140,8 +136,7 @@ def register_view(app, campcode):
         stat = statistics.get_basic_stat(camp_idx)
         attend_stat = Member.get_attend_stat(camp_idx)
         partial_stat = Member.get_partial_stat(camp_idx)
-        return render_template('{0}/home.html'.format(campcode), \
-        stat=stat, attend_stat=attend_stat, partial_stat=partial_stat)
+        return render_template('{0}/home.html'.format(campcode), stat=stat, attend_stat=attend_stat, partial_stat=partial_stat)
 
     @app.route('/list')
     @login_required
@@ -158,8 +153,7 @@ def register_view(app, campcode):
         if (campcode == 'cmc' or campcode == 'cbtj') and receptionmode:
             cmc_idx = Camp.get_idx('cmc')
             cbtj_idx = Camp.get_idx('cbtj')
-            filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, \
-            Member.camp_idx == cbtj_idx))
+            filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, Member.camp_idx == cbtj_idx))
         else:
             filtered_query = query.filter(Member.camp_idx == camp_idx)
 
@@ -168,17 +162,17 @@ def register_view(app, campcode):
         # pagination
         page = int(request.args.get('page', 1))
         count = filtered_query.count()
-        filtered_query = filtered_query.limit(50).offset((page-1)*50)
+        filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
         member_list = filtered_query.all()
-
 
         group = None
 
         area_list = Area.get_list(campcode)
         group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
-        return render_template('%s/list.html' % campcode, members=member_list, \
-        group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2), \
-        area_list=area_list, group_list=group_list)
+        return render_template('%s/list.html' % campcode, members=member_list,
+                               group=group, count=count - (page - 1) * 50,
+                               nav=range(1, int(count / 50) + 2),
+                               area_list=area_list, group_list=group_list)
 
     @app.route('/toggle-attend')
     @login_required
@@ -214,9 +208,9 @@ def register_view(app, campcode):
             area_list = Area.get_list(campcode)
             group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
 
-            return render_template('%s/member.html' % campcode, member=member, \
-            room_list=room_list, area_list=area_list, group_list=group_list, \
-            membership=member.get_membership_data())
+            return render_template('%s/member.html' % campcode, member=member,
+                                   room_list=room_list, area_list=area_list,
+                                   group_list=group_list, membership=member.get_membership_data())
         else:
             abort(404)
 
@@ -261,8 +255,7 @@ def register_view(app, campcode):
         staff_name = request.form.get('staff_name')
 
         try:
-            payment = db.session.query(Payment).filter(Payment.member_idx == \
-            member_idx).one()
+            payment = db.session.query(Payment).filter(Payment.member_idx == member_idx).one()
             payment.amount = amount
             payment.complete = complete
             payment.claim = claim
@@ -294,8 +287,7 @@ def register_view(app, campcode):
         '''
         member_idx = request.args.get('member_idx', 0)
         try:
-            payment = db.session.query(Payment).filter(Payment.member_idx == \
-            member_idx).one()
+            payment = db.session.query(Payment).filter(Payment.member_idx == member_idx).one()
             db.session.delete(payment)
             db.session.commit()
         except NoResultFound:
@@ -447,30 +439,26 @@ def register_view(app, campcode):
             cmc_idx = Camp.get_idx('cmc')
             cbtj_idx = Camp.get_idx('cbtj')
             room_stat = Room.get_stat(camp_idx=[cmc_idx, cbtj_idx])
-            filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, \
-            Member.camp_idx == cbtj_idx))
-            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-            == cmc_idx).all()
+            filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, Member.camp_idx == cbtj_idx))
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == cmc_idx).all()
         else:
             filtered_query = query.filter(Member.camp_idx == camp_idx)
             room_stat = Room.get_stat(camp_idx=camp_idx)
-            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-            == camp_idx).all()
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == camp_idx).all()
 
-        filtered_query = get_member_list_query(filtered_query, request, \
-        orderby=['camp_idx', 'sex', 'area_idx'])
+        filtered_query = get_member_list_query(filtered_query, request, orderby=['camp_idx', 'sex', 'area_idx'])
 
         page = int(request.args.get('page', 1))
-        filtered_query = filtered_query.limit(50).offset((page-1)*50)
+        filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
         member_list = filtered_query.all()
         count = filtered_query.count()
 
         area_list = Area.get_list(campcode)
         group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
-        return render_template('%s/room_assign.html' % campcode, room_list=\
-        room_list, members=member_list, count=count-(page-1)*50, \
-        nav=range(1, int(count/50)+2), area_list=area_list, group_list=\
-        group_list, room_stat=room_stat)
+        return render_template('%s/room_assign.html' % campcode, room_list=room_list,
+                               members=member_list, count=count - (page - 1) * 50,
+                               nav=range(1, int(count / 50) + 2), area_list=area_list,
+                               group_list=group_list, room_stat=room_stat)
 
     @app.route('/room', methods=['POST', 'GET'])
     @login_required
@@ -497,22 +485,18 @@ def register_view(app, campcode):
             if campcode == 'cmc' or campcode == 'cbtj':
                 cmc_idx = Camp.get_idx('cmc')
                 cbtj_idx = Camp.get_idx('cbtj')
-                filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, \
-                Member.camp_idx == cbtj_idx))
+                filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, Member.camp_idx == cbtj_idx))
                 room_stat = Room.get_stat(camp_idx=[cmc_idx, cbtj_idx])
-                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-                == cmc_idx).all()
+                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == cmc_idx).all()
             else:
                 filtered_query = query.filter(Member.camp_idx == camp_idx)
                 room_stat = Room.get_stat(camp_idx=camp_idx)
-                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-                == camp_idx).all()
+                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == camp_idx).all()
 
-            filtered_query = get_member_list_query(filtered_query, request, \
-            orderby=['camp_idx', 'sex', 'area_idx'])
+            filtered_query = get_member_list_query(filtered_query, request, orderby=['camp_idx', 'sex', 'area_idx'])
 
             page = int(request.args.get('page', 1))
-            filtered_query = filtered_query.limit(50).offset((page-1)*50)
+            filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
 
             if request.args.get('room_idx', None) is not None:
                 member_list = filtered_query.all()
@@ -524,9 +508,9 @@ def register_view(app, campcode):
             area_list = Area.get_list(campcode)
             group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
 
-            return render_template('%s/room.html' % campcode, room_list=room_list,\
-            members=member_list, count=count, area_list=area_list, group_list=\
-            group_list, room_stat=room_stat)
+            return render_template('%s/room.html' % campcode, room_list=room_list,
+                                   members=member_list, count=count, area_list=area_list,
+                                   group_list=group_list, room_stat=room_stat)
 
     @app.route('/roomsetting', methods=['POST', 'GET'])
     @login_required
@@ -544,12 +528,10 @@ def register_view(app, campcode):
                 roomsetting.save()
 
         camp_idx = Camp.get_idx(campcode)
-        room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-        == camp_idx).all()
+        room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == camp_idx).all()
         if room_list is None or len(room_list) == 0:
             Roomsetting.init(camp_idx)
-            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
-            == camp_idx).all()
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == camp_idx).all()
 
         return render_template('%s/room_setting.html' % campcode, room_list=room_list)
 

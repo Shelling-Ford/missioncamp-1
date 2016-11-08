@@ -1,6 +1,6 @@
 '''core.models.py
 '''
-# pylint: disable=R0903
+# pylint: disable=R0903,C0301
 import datetime
 import hashlib
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, or_, func
@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship, backref
 from flask_login import UserMixin
 from core.database import DB as db
 
-# 지부
+
 class Area(db.base):
     ''' 지부
     '''
@@ -26,12 +26,9 @@ class Area(db.base):
         '''
         result = []
         if camp == '*':
-            area_list = db.session.query(cls).filter(cls.type != 4)\
-            .order_by(cls.type, cls.name).all()
+            area_list = db.session.query(cls).filter(cls.type != 4).order_by(cls.type, cls.name).all()
         else:
-            area_list = db.session.query(cls).filter(or_(cls.camp == '*', \
-            cls.camp.like("%" + camp + "%")), cls.type != 4).order_by(cls.type, \
-            cls.name).all()
+            area_list = db.session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%{}%".format(camp))), cls.type != 4).order_by(cls.type, cls.name).all()
 
         for area in area_list:
             result.append((area.idx, area.name))
@@ -59,13 +56,10 @@ class Camp(db.base):
         '''Camp.get_idx
         '''
         if year is None or year == 0:
-            year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
-            == 'current_year').one().value)
+            year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_year').one().value)
         if term is None or term == 0:
-            term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
-            == 'current_term').one().value)
-        return db.session.query(cls).filter(cls.code == code, cls.year == year, \
-        cls.term == term).one().idx
+            term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_term').one().value)
+        return db.session.query(cls).filter(cls.code == code, cls.year == year, cls.term == term).one().idx
 
     # 캠프가 진행되는 날자를 리스트 형태로 반환해주는 함수
     @classmethod
@@ -123,8 +117,7 @@ class Member(db.base, UserMixin):
     attend4 = Column(Integer)
     attend_time = Column(DateTime)
 
-    membership = relationship("Membership", order_by="Membership.key", \
-    backref=backref("membership_member"))
+    membership = relationship("Membership", order_by="Membership.key", backref=backref("membership_member"))
     payment = relationship("Payment", uselist=False, backref=backref("payment_member"))
     group = relationship("Group", backref=backref("group_members", lazy='dynamic'))
     area = relationship("Area", backref=backref("area_member", lazy='dynamic'))
@@ -196,28 +189,15 @@ class Member(db.base, UserMixin):
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
-        count = db.session.query(
-            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), \
-            func.sum(cls.attend4)
-        ).filter(*filter_list).filter(cls.cancel_yn == 0).one()
-        r_count = db.session.query(
-            func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), \
-            func.sum(cls.attend4)
-        ).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment != \
-        None).one()
-        a_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), \
-        func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list)\
-        .filter(cls.attend_yn == 1).one()
+        count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.cancel_yn == 0).one()
+        r_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment.isnot(None)).one()
+        a_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.attend_yn == 1).one()
 
         stat = [
-            {'cnt': count[0], 'r_cnt': r_count[0] if r_count[0] is not None \
-        else 0, 'a_cnt': a_count[0] if a_count[0] is not None else 0},
-            {'cnt': count[1], 'r_cnt': r_count[1] if r_count[1] is not None \
-        else 0, 'a_cnt': a_count[1] if a_count[1] is not None else 0},
-            {'cnt': count[2], 'r_cnt': r_count[2] if r_count[2] is not None \
-        else 0, 'a_cnt': a_count[2] if a_count[2] is not None else 0},
-            {'cnt': count[3], 'r_cnt': r_count[3] if r_count[3] is not None \
-        else 0, 'a_cnt': a_count[3] if a_count[3] is not None else 0},
+            {'cnt': count[0], 'r_cnt': r_count[0] if r_count[0] is not None else 0, 'a_cnt': a_count[0] if a_count[0] is not None else 0},
+            {'cnt': count[1], 'r_cnt': r_count[1] if r_count[1] is not None else 0, 'a_cnt': a_count[1] if a_count[1] is not None else 0},
+            {'cnt': count[2], 'r_cnt': r_count[2] if r_count[2] is not None else 0, 'a_cnt': a_count[2] if a_count[2] is not None else 0},
+            {'cnt': count[3], 'r_cnt': r_count[3] if r_count[3] is not None else 0, 'a_cnt': a_count[3] if a_count[3] is not None else 0},
         ]
 
         return stat
@@ -231,10 +211,8 @@ class Member(db.base, UserMixin):
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
-        stmt = db.session.query((cls.attend1 + cls.attend2 + cls.attend3 + \
-        cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
-        count = db.session.query(stmt, func.count('partial'))\
-        .group_by('partial').all()
+        stmt = db.session.query((cls.attend1 + cls.attend2 + cls.attend3 + cls.attend4).label('partial')).filter(or_(*filter_list)).subquery()
+        count = db.session.query(stmt, func.count('partial')).group_by('partial').all()
         return count
 
     @classmethod
@@ -256,25 +234,20 @@ class Member(db.base, UserMixin):
                 member.attend4 = 0
             else:
                 camp = db.session.query(Camp).filter(Camp.idx == member.camp_idx).one()
-                if camp.code == 'ws' or camp.code == 'youth' or camp.code == \
-                'kids' or camp.code == 'cbtj2':
+                if camp.code == 'ws' or camp.code == 'youth' or camp.code == 'kids' or camp.code == 'cbtj2':
                     if member.date_of_arrival.year == 2015:
-                        member.date_of_arrival = \
-                        member.date_of_arrival.replace(year=2016)
+                        member.date_of_arrival = member.date_of_arrival.replace(year=2016)
 
                     if member.date_of_leave.year == 2015:
-                        member.date_of_leave = \
-                        member.date_of_leave.replace(year=2016)
+                        member.date_of_leave = member.date_of_leave.replace(year=2016)
 
-                i = (member.date_of_arrival-camp.startday).days
-                interval = range(0, (member.date_of_leave - \
-                member.date_of_arrival).days+1)
+                i = (member.date_of_arrival - camp.startday).days
+                interval = range(0, (member.date_of_leave - member.date_of_arrival).days + 1)
                 attend = [0, 0, 0, 0]
                 for j in interval:
-                    attend[i+j] = 1
+                    attend[i + j] = 1
 
-                if attend != [member.attend1, member.attend2, member.attend3, \
-                member.attend4]:
+                if attend != [member.attend1, member.attend2, member.attend3, member.attend4]:
                     member.attend1 = attend[0]
                     member.attend2 = attend[1]
                     member.attend3 = attend[2]
@@ -344,8 +317,7 @@ class Group(db.base):
         '''
         아이디 중복체크
         '''
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.groupid == groupid).count()
+        return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.groupid == groupid).count()
 
     @classmethod
     def login_check(cls, camp_idx, groupid, pwd):
@@ -411,9 +383,7 @@ class Room(db.base):
         if camp_idx is not None:
             filter_list = [Member.camp_idx == idx for idx in camp_idx]
 
-        count = db.session.query(Member.room_idx, func.count(Member.idx), \
-        func.sum(Member.attend_yn)).filter(or_(*filter_list), Member.cancel_yn == 0)\
-        .group_by(Member.room_idx)
+        count = db.session.query(Member.room_idx, func.count(Member.idx), func.sum(Member.attend_yn)).filter(or_(*filter_list), Member.cancel_yn == 0).group_by(Member.room_idx)
 
         for room_idx, cnt, a_cnt in count.all():
             if room_idx is not None:

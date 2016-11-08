@@ -7,6 +7,7 @@ from sqlalchemy import Column, Integer, String
 from core.database import BTJKOREA_DB as btjkorea_db
 from core.database import DB as db
 
+
 class AdminUser(db.base, UserMixin):
     '''
     크로스 사용자

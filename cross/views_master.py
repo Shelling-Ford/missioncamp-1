@@ -11,16 +11,15 @@ from core.forms import AreaForm
 # Blueprint 초기화
 MASTER = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')
 
+
 @MASTER.route('/')
 @login_required
 def home():
     '''
     현재 년도와 현제 텀을 보여줌.
     '''
-    year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
-    == 'current_year').one().value)
-    term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
-    == 'current_term').one().value)
+    year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_year').one().value)
+    term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_term').one().value)
     return render_template('master/home.html', current_year=year, current_term=term)
 
 
@@ -51,8 +50,7 @@ def area(idx):
             지부 추가를 할 경우인데 이름이 겹치는지 확인할 것
             '''
             try:
-                area_obj = db.session.query(Area).filter(Area.name == name, \
-                Area.type == area_type).one()
+                area_obj = db.session.query(Area).filter(Area.name == name, Area.type == area_type).one()
             except NoResultFound:
                 area_obj = Area()
         else:

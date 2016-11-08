@@ -3,12 +3,9 @@
 
 {% block content %}
 <div class="container">
-    {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
+    {{ macros.render_stat(stat=stat, metrics=metrics)}}
     <br/>
-    {{ macros.render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3)}}
-    <br/>
-    {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
-    <br/>
+    {#
     <p>단체교회별</p>
     <table class="table1">
         <tr>
@@ -16,18 +13,18 @@
             {% for s in stat.group_name %}
             {% if s.name is not none and '교회' in s.name %}
             <td><a href="{{ url_for('.member_list', cancel_yn=0, **request.args) }}&amp;group_idx={{ s.param }}">{{ s.name }}</a></td>
-            
+
             {% if not s.cnt == 0 %}
             <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
             {% else %}
             <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
             {% endif %}
-            
+
             {% set i = i + 1 %}
             {% if i % 4 == 0 %}
             </tr><tr>
             {% endif %}
-            
+
             {% endif %}
             {% endfor %}
         </tr>
@@ -40,24 +37,25 @@
             {% for s in stat.group_name %}
             {% if s.name is not none and '교회' not in s.name %}
             <td>{{ s.name }}</td>
-            
+
             {% if not s.cnt == 0 %}
             <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
             {% else %}
             <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
             {% endif %}
-            
+
             {% set i = i + 1 %}
             {% if i % 4 == 0 %}
             </tr><tr>
             {% endif %}
-            
+
             {% endif %}
             {% endfor %}
         </tr>
     </table>
     <br/>
     {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key='training', cols=3)}}
+    #}
     <br/>
 </div>
 {% endblock %}

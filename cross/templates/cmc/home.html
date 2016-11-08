@@ -3,20 +3,7 @@
 
 {% block content %}
 <div class="container">
-  {{ macros.render_stat(stat=stat.summary, title='요약', cols=2, first_row_cols=1)}}
-  <br/>
-  {{ macros.render_stat(stat=stat.persontype, title='참가유형별', param_key='persontype', cols=3)}}
-  <br/>
-  {{ macros.render_stat(stat=stat.area, title='지부별', param_key='area_idx')}}
-  <br/>
-  {{ macros.render_stat(stat=stat.group_name, title='단체별', param_key='group_idx')}}
-  <br/>
-  {{ macros.render_stat(stat=stat.campus, title='캠퍼스별', param_key='campus')}}
-  <br/>
-  {{ macros.render_stat(stat=stat.training, title='인터콥 훈련 유형별', param_key="training", cols=3)}}
-  <br/>
-  {{ macros.render_stat(stat=stat.job, title='직군별', param_key="job", cols=3)}}
-  <br/>
+  {{ macros.render_stat(stat=stat, metrics=metrics)}}
   <p><a href="list?cancel_yn=0&amp;foreigner=외국인">외국인 신청자 목록 보기</a></p>
   <br/>
   <p>일자별 통계</p>

@@ -344,6 +344,9 @@ class RegistrationForm(Form):
         member.cancel_reason = None
         member.room_idx = None
         member.smallgroup_num = None
+
+        attend = member.get_attend_array()
+        member.attend1, member.attend2, member.attend3, member.attend4 = attend
         db.session.add(member)
         db.session.commit()
         self.populate_membership(member.idx)
@@ -357,6 +360,8 @@ class RegistrationForm(Form):
         if self.pwd.data is not None and self.pwd.data != '':
             member.pwd = hashlib.sha224(self.pwd.data.encode('utf-8')).hexdigest()
         self.populate_obj(member)
+        attend = member.get_attend_array()
+        member.attend1, member.attend2, member.attend3, member.attend4 = attend
         db.session.commit()
         self.populate_membership(member.idx)
         return

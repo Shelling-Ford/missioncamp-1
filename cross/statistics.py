@@ -2,136 +2,72 @@
 캠프코드를 이용해 전체 통계를 구해주는 모듈
 '''
 # pylint: disable=C0103
+from sqlalchemy import func
 from sqlalchemy.sql import text
 from core.database import DB as db
+from core.models import Member, Membership, Camp
+from cross.stat_metrics import METRICS as metrics
 
 
-def get_basic_stat(camp_idx):
+def get_query(camp_idx, *args, group_by=None):
     '''
-    캠프코드를 이용해 전체 통계를 구해주는 함수
+    항목별 통계를 쉽게 뽑아내기 위한 메타쿼리
     '''
-    query_option = ''
-    sql = []
-    # 전체
-    sql.append(text("""
-        SELECT 'total' as 'tag', '전체' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0
-    """ % query_option))
-    # 개인
-    sql.append(text("""
-        SELECT '개인' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL
-    """ % query_option))
-    # 단체
-    sql.append(text("""
-        SELECT '단체' as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL
-    """ % query_option))
-    # 성별
-    sql.append(text("""
-        SELECT CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `sex`
-    """ % query_option))
-    # 개인 성별
-    sql.append(text("""
-        SELECT CONCAT('개인 ', CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END) as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NULL GROUP BY `sex`
-    """ % query_option))
-    # 단체 성별
-    sql.append(text("""
-        SELECT CONCAT('단체 ', CASE WHEN `sex` = 'M' THEN '남' WHEN `sex` = 'F' THEN '여' END) as `name`, COUNT(*) AS `cnt`, COUNT(`amount`) AS `r_cnt`, SUM(`attend_yn`) AS `a_cnt`
-        FROM `member` `m` LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `g`.`name` IS NOT NULL GROUP BY `sex`
-    """ % query_option))
+    if group_by is None:
+        base_query = db.session.query(func.count('*'), func.count(Member.payment), func.sum(Member.attend_yn))
+    else:
+        base_query = db.session.query(getattr(Member, group_by), func.count('*'), func.count(Member.payment), func.sum(Member.attend_yn))
+    base_query = base_query.select_from(Member).outerjoin(Member.payment).filter(Member.camp_idx == camp_idx, Member.cancel_yn == 0)
 
-    query_params = {'camp_idx': camp_idx}
+    filtered_query = base_query
+    for key, value in args:
+        if value in ['none', 'not_none']:
+            if value == 'none':
+                filtered_query = filtered_query.filter(getattr(Member, key).is_(None))
+            else:
+                filtered_query = filtered_query.filter(getattr(Member, key).isnot(None))
+        else:
+            filtered_query = filtered_query.filter(getattr(Member, key) == value)
 
-    stat = {
-        'summary': [], 'area': [], 'persontype': [], 'group_name': [], 'campus': [],
-        'training': [], 'job': [], 'ages': []
-    }
-    for s in sql:
-        results = db.session.execute(s, query_params)
-        for r in results:
-            stat['summary'].append(dict(r))
+    if group_by is not None:
+        filtered_query = filtered_query.group_by(getattr(Member, group_by))
 
-    # 지부별
-    query = text("""
-        SELECT `a`.`idx` `idx`, `a`.`idx` `param`, `a`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `area` `a` ON `m`.`area_idx` = `a`.`idx` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0 GROUP BY `a`.`name`
-    """ % query_option)
+    return filtered_query
 
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['area'].append(dict(r))
 
-    # 참가구분별
-    query = text("""
-        SELECT `m`.`persontype` `name`, `m`.`persontype` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0 GROUP BY `persontype`
-    """ % query_option)
+def get_membership_query(camp_idx, membership_key):
+    '''
+    가변필드를 기준으로 한 메타쿼리
+    '''
+    base_query = db.session.query(Membership.value, func.count('*'), func.count(Member.payment), func.sum(Member.attend_yn))
+    base_query = base_query.select_from(Member).outerjoin(Member.payment).outerjoin(Member.membership).filter(Member.camp_idx == camp_idx, Member.cancel_yn == 0)
 
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['persontype'].append(dict(r))
+    filtered_query = base_query.filter(Membership.key == membership_key).group_by(Membership.value)
+    return filtered_query
 
-    # 단체별
-    query = text("""
-        SELECT `g`.`idx` `idx`, `g`.`idx` `param`, `g`.`name` `name`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        LEFT JOIN `group` `g` ON `m`.`group_idx` = `g`.`idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 GROUP BY `g`.`idx` ORDER BY `g`.`name`
-    """ % query_option)
 
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['group_name'].append(dict(r))
+def get_stat(camp_idx):
+    '''
+    통계
+    '''
+    results = dict()
+    basic = dict()
+    for key, value in metrics['basic'].items():
+        basic[key] = get_query(camp_idx, *value).one()
+    results['basic'] = basic
 
-    # 캠퍼스별
-    query = text("""
-        SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'campus' GROUP BY `ms`.`value`
-    """ % query_option)
+    group_by = dict()
+    for key, value in metrics['group_by'].items():
+        rows = get_query(camp_idx, group_by=value).all()
+        group_by[key] = (value, rows)
+    results['group_by'] = group_by
 
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['campus'].append(dict(r))
-
-    # 인터콥훈련여부별
-    query = text("""
-        SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'training' GROUP BY `ms`.`value`
-    """ % query_option)
-
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['training'].append(dict(r))
-
-    # 직업/직군별
-    query = text("""
-        SELECT `ms`.`value` `name`, `ms`.`value` `param`, COUNT(*) `cnt`, COUNT(`amount`) `r_cnt`, SUM(`attend_yn`) `a_cnt`
-        FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-        LEFT JOIN `membership` `ms` ON `ms`.`member_idx` = `m`.`idx`
-        WHERE (`m`.`camp_idx` = :camp_idx %s) AND `m`.`cancel_yn` = 0 AND `ms`.`key` = 'job' GROUP BY `ms`.`value`
-    """ % query_option)
-
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['job'].append(dict(r))
-
-    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params).fetchone()
-    year = camp[2]
+    camp = db.session.query(Camp).filter(Camp.idx == camp_idx).one()
+    membership = dict()
+    for key, value in metrics["membership"][camp.code].items():
+        rows = get_membership_query(camp_idx, value).all()
+        membership[key] = (value, rows)
+    results['membership'] = membership
 
     # 연령별 통계
     query = text("""
@@ -139,13 +75,9 @@ def get_basic_stat(camp_idx):
         FROM (
             SELECT LEFT(%s-(MID(`m`.`birth`,1,4)),1)*10 AS `ages`, `p`.`amount` `amount`, `m`.`attend_yn` `attend_yn`
             FROM `member` `m` LEFT JOIN `payment` `p` ON `m`.`idx` = `p`.`member_idx`
-            WHERE (`camp_idx` = :camp_idx %s) AND `cancel_yn` = 0
+            WHERE (`camp_idx` = %s) AND `cancel_yn` = 0
         ) `mem`
         GROUP BY `mem`.`ages`
-    """ % (year, query_option))
-
-    results = db.session.execute(query, query_params)
-    for r in results:
-        stat['ages'].append(dict(r))
-
-    return stat
+    """ % (camp.year, camp_idx))
+    results['ages'] = db.session.execute(query)
+    return results

@@ -44,6 +44,7 @@ def index():
     '''
     return render_template('index.html')
 
+
 # template filters
 @APP.template_filter("yesno")
 def yesno(value):
@@ -51,6 +52,7 @@ def yesno(value):
     value가 false이거나 None이면 아니오, 나머지는 예를 출력하도록 하는 템플릿 필터
     '''
     return '예' if value else '아니오'
+
 
 @APP.template_filter("sex")
 def sex(value):

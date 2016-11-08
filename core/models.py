@@ -163,21 +163,18 @@ class Member(db.base, UserMixin):
 
         return membership_data
 
-    def get_attend_array(self, date_of_arrival, date_of_leave):
+    def get_attend_array(self):
         '''
         참석일수 관련 배열 가져오기
         '''
         camp = db.session.query(Camp).filter(Camp.idx == self.camp_idx).one()
 
-        date_of_arrival = datetime.datetime.strptime(date_of_arrival, '%Y-%m-%d').date()
-        date_of_leave = datetime.datetime.strptime(date_of_leave, '%Y-%m-%d').date()
-
-        i = (date_of_arrival - camp.startday).days
-        interval = range(0, (date_of_leave - date_of_arrival).days + 1)
         attend = [0, 0, 0, 0]
-        for j in interval:
-            attend[i + j] = 1
-
+        if self.date_of_arrival is not None and self.date_of_leave is not None:
+            i = (self.date_of_arrival - camp.startday).days
+            interval = range(0, (self.date_of_leave - self.date_of_arrival).days + 1)
+            for j in interval:
+                attend[i + j] = 1
         return attend
 
     @classmethod
@@ -222,38 +219,24 @@ class Member(db.base, UserMixin):
         '''
         member_list = db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
         for member in member_list:
-            if member.fullcamp_yn == 1:
-                date_list = Camp.get_date_list(member.camp_idx)
-                member.date_of_arrival = date_list[0][0]
-                member.date_of_leave = date_list[-1][0]
+            camp = db.session.query(Camp).filter(Camp.idx == camp_idx).one()
 
             if member.cancel_yn == 1:
-                member.attend1 = 0
-                member.attend2 = 0
-                member.attend3 = 0
-                member.attend4 = 0
+                member.attend1, member.attend2, member.attend3, member.attend4 = (0, 0, 0, 0)
             else:
-                camp = db.session.query(Camp).filter(Camp.idx == member.camp_idx).one()
-                if camp.code == 'ws' or camp.code == 'youth' or camp.code == 'kids' or camp.code == 'cbtj2':
-                    if member.date_of_arrival.year == 2015:
-                        member.date_of_arrival = member.date_of_arrival.replace(year=2016)
+                if member.fullcamp_yn == 1:
+                    date_list = Camp.get_date_list(member.camp_idx)
+                    member.date_of_arrival = date_list[0][0]
+                    member.date_of_leave = date_list[-1][0]
 
-                    if member.date_of_leave.year == 2015:
-                        member.date_of_leave = member.date_of_leave.replace(year=2016)
-
-                i = (member.date_of_arrival - camp.startday).days
-                interval = range(0, (member.date_of_leave - member.date_of_arrival).days + 1)
-                attend = [0, 0, 0, 0]
-                for j in interval:
-                    attend[i + j] = 1
-
-                if attend != [member.attend1, member.attend2, member.attend3, member.attend4]:
-                    member.attend1 = attend[0]
-                    member.attend2 = attend[1]
-                    member.attend3 = attend[2]
-                    member.attend4 = attend[3]
-
-            db.session.commit()
+                    if camp.campday == 4:
+                        member.attend1, member.attend2, member.attend3, member.attend4 = (1, 1, 1, 1)
+                    else:
+                        member.attend1, member.attend2, member.attend3, member.attend4 = (1, 1, 1, 0)
+                else:
+                    attend = member.get_attend_array()
+                    member.attend1, member.attend2, member.attend3, member.attend4 = attend
+        db.session.commit()
 
 
 # 세대별 기타 정보

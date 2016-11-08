@@ -8,6 +8,7 @@ from core.models import Area, Room, GlobalOptions
 from core.database import DB as db
 from core.forms import AreaForm
 
+
 # Blueprint 초기화
 MASTER = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')
 
@@ -20,6 +21,7 @@ def home():
     '''
     year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_year').one().value)
     term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key == 'current_term').one().value)
+
     return render_template('master/home.html', current_year=year, current_term=term)
 
 

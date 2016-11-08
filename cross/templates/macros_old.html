@@ -1,0 +1,67 @@
+{% macro render_stat(stat, title, cols=4, first_row_cols=0, param_key=none) -%}
+<p>{{ title }}</p>
+<table class="table1">
+  <tr>
+    {% set i = 0 %}
+    {% for s in stat %}
+    {% if param_key is not none %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, **request.args) }}&amp;{{ param_key }}={{ s.param }}">{{ s.name }}</a></td>
+    {% elif s.name == '전체' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '개인' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='none', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '단체' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='not_none', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '남' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, sex='M', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '여' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, sex='F', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '개인 남' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='none', sex='M', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '단체 남' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='not_none', sex='M', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '개인 여' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='none', sex='F', **request.args) }}">{{ s.name }}</a></td>
+    {% elif s.name == '단체 여' %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, group_idx='not_none', sex='F', **request.args) }}">{{ s.name }}</a></td>
+    {% else %}
+    <td>{{ s.name }}</td>
+    {% endif %}
+    {% if not s.cnt == 0 %}
+    <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
+    {% else %}
+    <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
+    {% endif %}
+    {% set i = i + 1 %}
+    {% if i % cols == first_row_cols %}
+    </tr><tr>
+    {% endif %}
+    {% endfor %}
+  </tr>
+</table>
+{%- endmacro %}
+
+{% macro cbtj_render_stat(stat, title, cols=4, first_row_cols=0, param_key=none, camp='cbtj') -%}
+<p>{{ title }}</p>
+<table class="table1">
+  <tr>
+    {% set i = 0 %}
+    {% for s in stat %}
+    {% if param_key is not none %}
+    <td><a href="{{ url_for('.member_list', cancel_yn=0, **request.args) }}&amp;{{ param_key }}={{ s.param }}&amp;camp={{ camp }}">{{ s.name }}</a></td>
+    {% else %}
+    <td>{{ s.name }}</td>
+    {% endif %}
+    {% if not s.cnt == 0 %}
+    <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [{{ '%.2f' % (s.r_cnt / s.cnt * 100) }} %]</span> / <span style="color:green">{{ s.a_cnt }} [{{ '%.2f' % ( s.a_cnt / s.cnt * 100 ) }} %]</span></td>
+    {% else %}
+    <td>{{ s.cnt }} / <span style="color:red">{{ s.r_cnt }} [0.00 %]</span> / <span style="color:green">{{ s.a_cnt }} [0.00 %]</span></td>
+    {% endif %}
+    {% set i = i + 1 %}
+    {% if i % cols == first_row_cols %}
+    </tr><tr>
+    {% endif %}
+    {% endfor %}
+  </tr>
+</table>
+{%- endmacro %}

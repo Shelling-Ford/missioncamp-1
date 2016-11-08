@@ -4,6 +4,8 @@ import os
 import sys
 
 from flask import Flask
+from core.database import DB as db
+from core.models import Area, Group
 from cross import views_main
 from cross.views import get_app
 from cross.views_master import MASTER as master
@@ -22,3 +24,25 @@ APP.register_blueprint(get_app('kids'))
 APP.register_blueprint(get_app('ws'))
 APP.register_blueprint(get_app('youth'))
 APP.register_blueprint(master)
+
+
+# template filters
+@APP.template_filter("area_name")
+def area_name(idx):
+    '''
+    area_idx로 지부 이름을 반환함.
+    '''
+    area = db.session.query(Area).filter(Area.idx == idx).one()
+    return area.name
+
+
+@APP.template_filter("group_name")
+def group_name(idx):
+    '''
+    group_idx로 단체 이름을 반환함.
+    '''
+    if idx is not None:
+        group = db.session.query(Group).filter(Group.idx == idx).one()
+        return group.name
+    else:
+        return '없음'

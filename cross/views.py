@@ -16,6 +16,7 @@ from core.database import DB as db
 from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, Promotion
 from cross.functions_xlsx import XlsxBuilder
 from cross import statistics
+from cross.stat_metrics import METRICS as metrics
 
 
 def role_required(role, camp='*'):
@@ -36,13 +37,13 @@ def role_required(role, camp='*'):
                 return func(*args, **kwargs)
 
             if role == 'hq':
-                if current_user.role not in ['hq', 'master'] or camp not in current_user.camp.split(','):
+                if current_user.role not in ['hq', 'master'] or camp not in ['*', *current_user.camp.split(',')]:
                     flash('이 페이지에 대한 접근 권한이 없습니다.')
                     return redirect(url_for('.home', next=request.url))
                 else:
                     return func(*args, **kwargs)
             else:
-                if camp not in ["*", current_user.camp]:
+                if camp not in ["*", *current_user.camp.split(',')]:
                     flash('이 페이지에 대한 접근 권한이 없습니다.')
                     return redirect(url_for('.home', next=request.url))
                 else:
@@ -133,10 +134,12 @@ def register_view(app, campcode):
         year = int(request.args.get('year', 0))
         term = int(request.args.get('term', 0))
         camp_idx = Camp.get_idx(campcode, year, term)
-        stat = statistics.get_basic_stat(camp_idx)
+
+        stat = statistics.get_stat(camp_idx)
         attend_stat = Member.get_attend_stat(camp_idx)
         partial_stat = Member.get_partial_stat(camp_idx)
-        return render_template('{0}/home.html'.format(campcode), stat=stat, attend_stat=attend_stat, partial_stat=partial_stat)
+        return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
+                               attend_stat=attend_stat, partial_stat=partial_stat)
 
     @app.route('/list')
     @login_required
@@ -549,7 +552,7 @@ def register_view(app, campcode):
     # 엑셀 다운로드
     @app.route('/excel-down', methods=['GET'])
     @login_required
-    @role_required('hq')
+    @role_required('hq', campcode)
     def excel_down():
         '''
         엑셀다운로드

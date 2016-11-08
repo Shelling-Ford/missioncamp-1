@@ -128,8 +128,8 @@ def get_basic_stat(camp_idx):
     for r in results:
         stat['job'].append(dict(r))
 
-    camp = db.select_one("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params)
-    year = camp['year']
+    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params).fetchone()
+    year = camp[2]
 
     # 연령별 통계
     query = text("""

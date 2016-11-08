@@ -14,6 +14,9 @@ master = Blueprint('master', __name__, template_folder='templates', url_prefix='
 @master.route('/')
 @login_required
 def home():
+    '''
+    현재 년도와 현제 텀을 보여줌.
+    '''
     current_year = GlobalOptions.get_year()
     current_term = GlobalOptions.get_term()
     return render_template('master/home.html', current_year=current_year, current_term=current_term)
@@ -57,7 +60,7 @@ def area(idx):
         area_obj.type = area_type
         area_obj.camp = camp
 
-        if area_obj.idx == None:
+        if area_obj.idx is None:
             db.session.add(area_obj)
         db.session.commit()
 

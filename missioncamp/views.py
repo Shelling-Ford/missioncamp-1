@@ -159,7 +159,8 @@ def register_view(app, campcode):
                 if logintype == '개인':
                     if Member.login_check(campidx, userid, pwd):
                         idx = db.session.query(Member).filter(Member.camp_idx == campidx,
-                                                              Member.userid == userid).one().idx
+                                                              Member.userid == userid,
+                                                              Member.cancel_yn == 0).one().idx
                         session['type'] = '개인'
                         session['idx'] = idx
                         return redirect(url_for('.member_info'))
@@ -168,7 +169,8 @@ def register_view(app, campcode):
                 elif logintype == '단체':
                     if Group.login_check(campidx, userid, pwd):
                         idx = db.session.query(Group).filter(Group.camp_idx == campidx,
-                                                             Group.groupid == userid).one().idx
+                                                             Group.groupid == userid,
+                                                             Group.cancel_yn == 0).one().idx
                         session['type'] = '단체'
                         session['idx'] = idx
                         return redirect(url_for('.group_info'))

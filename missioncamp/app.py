@@ -1,21 +1,13 @@
 '''missioncamp.app.py
 '''
-# 공유 패키지에서 함수를 호출하기 위해 path지정을 해줌
-from flask import Flask, render_template, request
-from flask_babel import Babel
-
-# from missioncamp.views.cbtj import context as cbtj
-# from missioncamp.views.cmc import context as cmc
-# from missioncamp.views.kids import context as kids
-# from missioncamp.views.ws import context as ws
-# from missioncamp.views.youth import context as youth
-
-from core.database import DB as db
-from missioncamp.views import get_app
-
 import os
 import sys
 
+from flask import Flask, render_template, request
+from flask_babel import Babel
+
+from core.database import DB as db
+from missioncamp.views import get_app
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CUR_DIR)
@@ -36,16 +28,11 @@ def get_locale():
         lang = request.accept_languages.best_match(['ko', 'ko_KR', 'en', 'en_US', 'en_GB'])
     return lang
 
-CBTJ_APP = get_app('cbtj')
-CMC_APP = get_app('cmc')
-KIDS_APP = get_app('kids')
-WS_APP = get_app('ws')
-YOUTH_APP = get_app('youth')
-APP.register_blueprint(CBTJ_APP)
-APP.register_blueprint(CMC_APP)
-APP.register_blueprint(KIDS_APP)
-APP.register_blueprint(WS_APP)
-APP.register_blueprint(YOUTH_APP)
+APP.register_blueprint(get_app('cbtj'))
+APP.register_blueprint(get_app('cmc'))
+APP.register_blueprint(get_app('kids'))
+APP.register_blueprint(get_app('ws'))
+APP.register_blueprint(get_app('youth'))
 
 db.base.metadata.create_all(db.engine)
 

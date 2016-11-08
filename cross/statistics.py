@@ -1,6 +1,7 @@
 '''
 캠프코드를 이용해 전체 통계를 구해주는 모듈
 '''
+# pylint: disable=C0103
 from sqlalchemy.sql import text
 from core.database import DB as db
 
@@ -128,7 +129,8 @@ def get_basic_stat(camp_idx):
     for r in results:
         stat['job'].append(dict(r))
 
-    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", query_params).fetchone()
+    camp = db.session.execute("SELECT * FROM `camp` WHERE `idx` = :camp_idx", \
+    query_params).fetchone()
     year = camp[2]
 
     # 연령별 통계

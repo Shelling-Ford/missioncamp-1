@@ -1,5 +1,6 @@
 ''' database.py
 '''
+# pylint: disable=R0903
 from urllib.parse import quote_plus as urlquote
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker

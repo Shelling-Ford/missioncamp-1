@@ -17,9 +17,11 @@ def home():
     '''
     현재 년도와 현제 텀을 보여줌.
     '''
-    current_year = GlobalOptions.get_year()
-    current_term = GlobalOptions.get_term()
-    return render_template('master/home.html', current_year=current_year, current_term=current_term)
+    year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
+    == 'current_year').one().value)
+    term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
+    == 'current_term').one().value)
+    return render_template('master/home.html', current_year=year, current_term=term)
 
 
 @master.route('/area-list')

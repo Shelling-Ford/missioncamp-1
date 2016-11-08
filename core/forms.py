@@ -45,7 +45,8 @@ class AreaForm(Form):
     '''
     idx = HiddenField()
     name = StringField('지부명')
-    type = SelectField('유형', choices=[("1", '1: 국내'), ("2", '2: 해외'), ("3", '3: 기타'), ("4", '4: 오류')])
+    type = SelectField('유형', choices=[("1", '1: 국내'), ("2", '2: 해외'), ("3", \
+    '3: 기타'), ("4", '4: 오류')])
     camp = StringField('캠프')
 
     def set_area_data(self, area):
@@ -130,7 +131,7 @@ class GroupForm(Form):
     def update(self, idx):
         ''' 폼으로 입력받은 정보를 바탕으로 기존 group 정보를 데이터베이스에 업데이트
         '''
-        group = Group.get(idx)
+        group = db.session.query(Group).filter(Group.idx == idx).one()
         if self.pwd.data is not None and self.pwd.data != '':
             group.pwd = hashlib.sha224(self.pwd.data.encode('utf-8')).hexdigest()
         self.populate_obj(group)

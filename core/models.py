@@ -1,5 +1,6 @@
 '''core.models.py
 '''
+# pylint: disable=R0903
 import datetime
 import hashlib
 from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, or_, func
@@ -20,12 +21,6 @@ class Area(db.base):
     chaptercode = Column(String(10))
 
     @classmethod
-    def get(cls, idx):
-        '''Area.get
-        '''
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
     def get_list(cls, camp):
         '''Area.get_list
         '''
@@ -42,21 +37,6 @@ class Area(db.base):
             result.append((area.idx, area.name))
         return result
 
-    # 주어진 area_idx에 해당하는 area_name을 반환하는 함수
-    @classmethod
-    def get_name(cls, idx):
-        '''Area.get_name
-        '''
-        area = db.session.query(cls).filter(cls.idx == idx).one()
-        return area.name
-
-    @classmethod
-    def get_idx(cls, chaptercode):
-        '''Area.get_idx
-        '''
-        area = db.session.query(cls).filter(cls.chaptercode == chaptercode).one()
-        return area.idx
-
 
 # 캠프
 class Camp(db.base):
@@ -72,12 +52,6 @@ class Camp(db.base):
     campday = Column(Integer)
     name = Column(String(45))
 
-    @classmethod
-    def get(cls, idx):
-        '''Camp.get
-        '''
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
     # camp_idx 반환, year와 term을 파라메터로 넘겨줄 경우 해당 연도와 학기의 camp_idx를 반환해주고
     # year와 term파라메터가 없을 경우 GlobalOptions에 등록되어있는 year와 term을 현재 활성화되어있는 캠프의 camp_idx를 반환해줌.
     @classmethod
@@ -85,9 +59,11 @@ class Camp(db.base):
         '''Camp.get_idx
         '''
         if year is None or year == 0:
-            year = GlobalOptions.get_year()
+            year = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
+            == 'current_year').one().value)
         if term is None or term == 0:
-            term = GlobalOptions.get_term()
+            term = int(db.session.query(GlobalOptions).filter(GlobalOptions.key \
+            == 'current_term').one().value)
         return db.session.query(cls).filter(cls.code == code, cls.year == year, \
         cls.term == term).one().idx
 
@@ -159,25 +135,17 @@ class Member(db.base, UserMixin):
         return self.idx
 
     @classmethod
-    def get_idx(cls, camp_idx, userid):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.userid == userid).first().idx
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).one()
-
-    @classmethod
-    def find(cls, camp_idx, userid):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.userid == userid).first()
-
-    @classmethod
     def check_userid(cls, camp_idx, userid):
+        '''
+        아이디 중복체크
+        '''
         return db.session.query(cls).filter(cls.camp_idx == camp_idx, cls.userid == userid).count()
 
     @classmethod
     def login_check(cls, camp_idx, userid, pwd):
+        '''
+        로그인 체크
+        '''
         count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.userid == userid,
             cls.pwd == hashlib.sha224(pwd.encode('utf-8')).hexdigest(),
@@ -186,21 +154,27 @@ class Member(db.base, UserMixin):
         return True if count > 0 else False
 
     def get_membership_data(self):
+        '''
+        가변필드 받아오기
+        '''
         membership_data = dict()
 
-        for t in self.membership:
-            if t.key == 'training' or t.key == 'route':
-                if t.key in membership_data:
-                    membership_data[t.key].append(t.value)
+        for feild in self.membership:
+            if feild.key == 'training' or feild.key == 'route':
+                if feild.key in membership_data:
+                    membership_data[feild.key].append(feild.value)
                 else:
-                    membership_data[t.key] = [t.value]
+                    membership_data[feild.key] = [feild.value]
             else:
-                membership_data[t.key] = t.value
+                membership_data[feild.key] = feild.value
 
         return membership_data
 
     def get_attend_array(self, date_of_arrival, date_of_leave):
-        camp = Camp.get(self.camp_idx)
+        '''
+        참석일수 관련 배열 가져오기
+        '''
+        camp = db.session.query(Camp).filter(Camp.idx == self.camp_idx).one()
 
         date_of_arrival = datetime.datetime.strptime(date_of_arrival, '%Y-%m-%d').date()
         date_of_leave = datetime.datetime.strptime(date_of_leave, '%Y-%m-%d').date()
@@ -215,7 +189,10 @@ class Member(db.base, UserMixin):
 
     @classmethod
     def get_attend_stat(cls, camp_idx):
-        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        '''
+        참석일수 관련 통계표 가져오기
+        '''
+        camp_idx = camp_idx if isinstance(camp_idx, list) else [camp_idx]
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
@@ -247,7 +224,10 @@ class Member(db.base, UserMixin):
 
     @classmethod
     def get_partial_stat(cls, camp_idx):
-        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        '''
+        참석일수별 통계표 가져오기
+        '''
+        camp_idx = camp_idx if isinstance(camp_idx, list) else [camp_idx]
         if camp_idx is not None:
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
@@ -259,6 +239,9 @@ class Member(db.base, UserMixin):
 
     @classmethod
     def fix_attend_error(cls, camp_idx):
+        '''
+        참석일수별 배열 재설정
+        '''
         member_list = db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
         for member in member_list:
             if member.fullcamp_yn == 1:
@@ -272,7 +255,7 @@ class Member(db.base, UserMixin):
                 member.attend3 = 0
                 member.attend4 = 0
             else:
-                camp = Camp.get(member.camp_idx)
+                camp = db.session.query(Camp).filter(Camp.idx == member.camp_idx).one()
                 if camp.code == 'ws' or camp.code == 'youth' or camp.code == \
                 'kids' or camp.code == 'cbtj2':
                     if member.date_of_arrival.year == 2015:
@@ -290,14 +273,14 @@ class Member(db.base, UserMixin):
                 for j in interval:
                     attend[i+j] = 1
 
-                if not attend == [member.attend1, member.attend2, member.attend3, \
+                if attend != [member.attend1, member.attend2, member.attend3, \
                 member.attend4]:
                     member.attend1 = attend[0]
                     member.attend2 = attend[1]
                     member.attend3 = attend[2]
                     member.attend4 = attend[3]
 
-            db.commit()
+            db.session.commit()
 
 
 # 세대별 기타 정보
@@ -311,19 +294,7 @@ class Membership(db.base):
     member_idx = Column(Integer, ForeignKey('member.idx'))
     key = Column(String(100))
     value = Column(String(100))
-
-    member = relationship("Member", backref='member_memberships')
-
-    def get_id(self):
-        return self.idx
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def get_list(cls, member_idx):
-        return db.session.query(cls).filter(cls.member_idx == member_idx).first()
+    # member = relationship("Member", backref='member_memberships')
 
 
 # 입금 정보
@@ -340,46 +311,6 @@ class Payment(db.base):
     staff_name = Column(String(45))
     paydate = Column(DateTime)
     code = Column(String(45))
-
-    def get_id(self):
-        return self.idx
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def find(cls, member_idx):
-        return db.session.query(cls).filter(cls.member_idx == member_idx).first()
-
-    @classmethod
-    def save(cls, member_idx, amount, complete, claim, staff_name, paydate=None):
-        if paydate is None or paydate == '':
-            paydate = "%s" % datetime.datetime.today().date()
-
-        payment = cls.find(member_idx)
-        if payment is None:
-            payment = cls()
-            payment.member_idx = member_idx
-            payment.amount = amount
-            payment.complete = complete
-            payment.claim = claim
-            payment.paydate = paydate
-            payment.staff_name = staff_name
-            db.session.add(payment)
-        else:
-            payment.amount = amount
-            payment.complete = complete
-            payment.claim = claim
-            payment.paydate = paydate
-            payment.staff_name = staff_name
-
-        db.session.commit()
-
-    @classmethod
-    def delete(cls, member_idx):
-        db.session.query(cls).filter(cls.member_idx == member_idx).delete()
-        db.session.commit()
 
 
 # 단체
@@ -408,122 +339,25 @@ class Group(db.base):
     member = relationship("Member", order_by="Member.idx", backref="member_group")
     area = relationship("Area", backref=backref("area_group", lazy='dynamic'))
 
-    def get_id(self):
-        return self.idx
-
-    @classmethod
-    def get_idx(cls, camp_idx, groupid):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.groupid == groupid).one().idx
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def find(cls, camp_idx, groupid):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.groupid == groupid).first()
-
-    @classmethod
-    def get_list(cls, camp_idx):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.cancel_yn == 0).all()
-
     @classmethod
     def check_groupid(cls, camp_idx, groupid):
+        '''
+        아이디 중복체크
+        '''
         return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
         cls.groupid == groupid).count()
 
     @classmethod
     def login_check(cls, camp_idx, groupid, pwd):
+        '''
+        로그인 체크
+        '''
         count = db.session.query(cls).filter(
             cls.camp_idx == camp_idx, cls.groupid == groupid,
             cls.pwd == hashlib.sha224(pwd.encode('utf-8')).hexdigest(),
             cls.cancel_yn == 0
         ).count()
         return True if count > 0 else False
-
-    @classmethod
-    def inc_mem_num(cls, idx):
-        group = db.session.query(cls).filter(cls.idx == idx).one()
-        group.mem_num += 1
-        db.session.commit()
-
-    @classmethod
-    def dec_mem_num(cls, idx):
-        group = db.session.query(cls).filter(cls.idx == idx).one()
-        group.mem_num -= 1
-        if group.mem_num < 0:
-            group.mem_num = 0
-        db.session.commit()
-
-    @classmethod
-    def insert(cls, camp_idx, formData):
-        group = cls()
-        group.camp_idx = camp_idx
-        group.name = formData['name']
-        group.groupid = formData['groupid']
-        group.pwd = formData['pwd']
-        group.leadername = formData['leadername']
-        group.leadercontact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
-        group.leaderjob = formData['leaderjob']
-        group.area_idx = formData['area_idx']
-        group.mem_num = 0
-        group.grouptype = formData['grouptype'] if 'grouptype' in formData else None
-        group.regdate = datetime.datetime.today()
-        group.canceldate = None
-        group.cancel_yn = 0
-        group.cancel_reason = None
-        group.memo = formData['memo']
-
-        db.session.add(group)
-        db.session.commit()
-        return group.idx
-
-    @classmethod
-    def update(cls, idx, formData=None, **kwargs):
-        group = cls.get(idx)
-        if group is not None:
-            if formData is not None:
-                form_keys = ['name', 'leadername', 'leaderjob', 'area_idx', 'memo']
-
-                for key in form_keys:
-                    setattr(group, key, formData[key] if key in formData else None)
-
-                group.leadercontact = formData['hp'] + '-' + formData['hp2'] + '-' + formData['hp3']
-                if 'pwd' in formData and formData['pwd'] is not None and formData['pwd'] != '':
-                    group.pwd = formData['pwd']
-
-            kwargs.pop('group_idx', None)
-            for key, value in kwargs.items():
-                if key == 'pwd':
-                    if value is not None and value != '':
-                        setattr(group, key, hashlib.sha224(value).hexdigest())
-                elif key == 'hp2' or key == 'hp3':
-                    pass
-                elif key == 'hp':
-                    setattr(group, 'leadercontact', '-'.join([kwargs.get('hp'), \
-                    kwargs.get('hp2'), kwargs.get('hp3')]))
-                else:
-                    setattr(group, key, value)
-
-        db.session.commit()
-
-    @classmethod
-    def cancel(cls, idx, reason):
-        group = cls.get(idx)
-        group.cancel_yn = 1
-        group.cancel_reason = reason
-        group.canceldate = datetime.datetime.today()
-
-        member_list = Member.get_list(group_idx=idx)
-        for member in member_list:
-            if member.cancel_yn == 0:
-                member.cancel_yn = 1
-                member.cancel_reason = reason
-                member.canceldate = datetime.datetime.today()
-        db.session.commit()
 
 
 # 청소년 홍보물
@@ -541,38 +375,6 @@ class Promotion(db.base):
     created = Column(DateTime)
     memo = Column(String(255))
 
-    def __init__(self, camp_idx, church_name, name, address, contact, memo, idx=None):
-        self.idx = idx
-        self.camp_idx = camp_idx
-        self.church_name = church_name
-        self.name = name
-        self.address = address
-        self.contact = contact
-        self.memo = memo
-
-    def get_id(self):
-        return self.idx
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def find(cls, camp_idx, church_name):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx, \
-        cls.church_name == church_name).first()
-
-    @classmethod
-    def get_list(cls, camp_idx):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
-
-    @classmethod
-    def insert(cls, camp_idx, church_name, name, address, contact, memo):
-        promotion = cls(camp_idx, church_name, name, address, contact, memo)
-        promotion.created = datetime.datetime.now()
-        db.session.add(promotion)
-        db.session.commit()
-
 
 class GlobalOptions(db.base):
     ''' 옵션
@@ -581,14 +383,6 @@ class GlobalOptions(db.base):
 
     key = Column(String(45), primary_key=True)
     value = Column(String(200))
-
-    @classmethod
-    def get_year(cls):
-        return int(db.session.query(cls).filter(cls.key == 'current_year').one().value)
-
-    @classmethod
-    def get_term(cls):
-        return int(db.session.query(cls).filter(cls.key == 'current_term').one().value)
 
 
 class Room(db.base):
@@ -601,16 +395,11 @@ class Room(db.base):
     number = Column(String(45))
 
     @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).first()
-
-    @classmethod
-    def get_list(cls):
-        return db.session.query(cls).order_by(cls.building, cls.number).all()
-
-    @classmethod
     def get_stat(cls, camp_idx):
-        room_list = cls.get_list()
+        '''
+        숙소 통계 가져오기
+        '''
+        room_list = db.session.query(cls).all()
         stat = dict()
         cnt_stat = dict()
         a_cnt_stat = dict()
@@ -618,7 +407,7 @@ class Room(db.base):
             cnt_stat[room.idx] = 0
             a_cnt_stat[room.idx] = 0
 
-        camp_idx = [camp_idx] if type(camp_idx) is not list else camp_idx
+        camp_idx = camp_idx if isinstance(camp_idx, list) else [camp_idx]
         if camp_idx is not None:
             filter_list = [Member.camp_idx == idx for idx in camp_idx]
 
@@ -651,12 +440,11 @@ class Roomsetting(db.base):
     room = relationship("Room", backref=backref("room_roomsetting", lazy='dynamic'))
 
     @classmethod
-    def get_list(cls, camp_idx):
-        return db.session.query(cls).filter(cls.camp_idx == camp_idx).all()
-
-    @classmethod
     def init(cls, camp_idx):
-        room_list = Room.get_list()
+        '''
+        모든 숙소 0으로 초기화
+        '''
+        room_list = db.session.query(Room).all()
         for room in room_list:
             roomsetting = cls()
             roomsetting.camp_idx = camp_idx
@@ -664,11 +452,4 @@ class Roomsetting(db.base):
             roomsetting.cap = 0
             roomsetting.memo = ''
             db.session.add(roomsetting)
-        db.session.commit()
-
-    @classmethod
-    def get(cls, idx):
-        return db.session.query(cls).filter(cls.idx == idx).one()
-
-    def save(self):
         db.session.commit()

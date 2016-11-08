@@ -59,7 +59,8 @@ def register_view(app):
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
                 else:
                     adminuser.role = 'branch'
-                    adminuser.area_idx = Area.get_idx(btjuser.chaptercode)
+                    adminuser.area_idx = db.session.query(Area).filter(\
+                    Area.chaptercode == btjuser.chaptercode).first()
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
 
                 if adminuser.idx is None:

@@ -52,20 +52,6 @@ def role_required(role, camp='*'):
         return decorated_function
     return set_decorator
 
-def get_user_area():
-    '''
-    btjkorea아이디의 지부가 본부가 아닌경우
-    지부코드를 이용해 선교캠프용 지부 idx를 반환함
-    '''
-    try:
-        chaptercode = current_user.chaptercode
-        if not chaptercode == '01':
-
-            return Area.get_idx(chaptercode)  # chaptercode를 이용해서 idx 반환
-        else:
-            return None
-    except NoResultFound:
-        return None
 
 def get_member_list_query(query, req, orderby=None):
     '''
@@ -78,7 +64,7 @@ def get_member_list_query(query, req, orderby=None):
     filtered_query = filtered_query.filter(Member.cancel_yn == cancel_yn)
 
     area_idx = req.args.get('area_idx', None)
-    user_area_idx = get_user_area()
+    user_area_idx = current_user.area_idx
     if user_area_idx is not None:
         '''
         비티제이 코리아 지부 아이디는 자기 지부 목록만 조회 가능
@@ -189,7 +175,7 @@ def register_view(app, campcode):
         group = None
 
         area_list = Area.get_list(campcode)
-        group_list = Group.get_list(camp_idx)
+        group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
         return render_template('%s/list.html' % campcode, members=member_list, \
         group=group, count=count-(page-1)*50, nav=range(1, int(count/50)+2), \
         area_list=area_list, group_list=group_list)
@@ -204,7 +190,7 @@ def register_view(app, campcode):
         member_idx = request.args.get('member_idx')
         attend = request.args.get('attend', 0)
 
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         member.attend_yn = attend
         if attend == "1":
             member.attend_time = datetime.datetime.today()
@@ -222,11 +208,11 @@ def register_view(app, campcode):
         신청자 상세
         '''
         if member_idx != 0:
-            member = Member.get(member_idx)
+            member = db.session.query(Member).filter(Member.idx == member_idx).one()
             camp_idx = member.camp_idx
-            room_list = Room.get_list()
+            room_list = db.session.query(Room).all()
             area_list = Area.get_list(campcode)
-            group_list = Group.get_list(camp_idx)
+            group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
 
             return render_template('%s/member.html' % campcode, member=member, \
             room_list=room_list, area_list=area_list, group_list=group_list, \
@@ -249,7 +235,7 @@ def register_view(app, campcode):
             flash('수정이 완료되었습니다')
             return redirect(url_for('.member', member_idx=member_idx))
 
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         form.set_member_data(member)
 
         params = {
@@ -326,7 +312,7 @@ def register_view(app, campcode):
         '''
         member_idx = request.form.get('member_idx', 0)
         room_idx = request.form.get('idx', 0)
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         member.room_idx = room_idx
         db.session.commit()
 
@@ -344,7 +330,7 @@ def register_view(app, campcode):
         숙소배치정보 삭제
         '''
         member_idx = request.args.get('member_idx', 0)
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         member.room_idx = None
         db.session.commit()
 
@@ -363,7 +349,7 @@ def register_view(app, campcode):
         '''
         member_idx = request.form.get('member_idx', 0)
         area_idx = request.form.get('area_idx', 0)
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         member.area_idx = area_idx
         db.session.commit()
 
@@ -382,7 +368,7 @@ def register_view(app, campcode):
         '''
         member_idx = request.form.get('member_idx', 0)
         group_idx = request.form.get('group_idx', 0)
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         member.group_idx = group_idx
         db.session.commit()
 
@@ -405,7 +391,7 @@ def register_view(app, campcode):
         if request.method == 'POST':
             cancel_reason = request.form.get('cancel_reason', None)
             idx = session['idx']
-            member = Member.get(idx)
+            member = db.session.query(Member).filter(Member.idx == member_idx).one()
             member.cancel_yn = 1
             member.cancel_reason = cancel_reason
             member.attend1 = 0
@@ -463,11 +449,13 @@ def register_view(app, campcode):
             room_stat = Room.get_stat(camp_idx=[cmc_idx, cbtj_idx])
             filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, \
             Member.camp_idx == cbtj_idx))
-            room_list = Roomsetting.get_list(cmc_idx)
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+            == cmc_idx).all()
         else:
             filtered_query = query.filter(Member.camp_idx == camp_idx)
             room_stat = Room.get_stat(camp_idx=camp_idx)
-            room_list = Roomsetting.get_list(camp_idx)
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+            == camp_idx).all()
 
         filtered_query = get_member_list_query(filtered_query, request, \
         orderby=['camp_idx', 'sex', 'area_idx'])
@@ -478,7 +466,7 @@ def register_view(app, campcode):
         count = filtered_query.count()
 
         area_list = Area.get_list(campcode)
-        group_list = Group.get_list(camp_idx)
+        group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
         return render_template('%s/room_assign.html' % campcode, room_list=\
         room_list, members=member_list, count=count-(page-1)*50, \
         nav=range(1, int(count/50)+2), area_list=area_list, group_list=\
@@ -512,11 +500,13 @@ def register_view(app, campcode):
                 filtered_query = query.filter(or_(Member.camp_idx == cmc_idx, \
                 Member.camp_idx == cbtj_idx))
                 room_stat = Room.get_stat(camp_idx=[cmc_idx, cbtj_idx])
-                room_list = Roomsetting.get_list(cmc_idx)
+                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+                == cmc_idx).all()
             else:
                 filtered_query = query.filter(Member.camp_idx == camp_idx)
                 room_stat = Room.get_stat(camp_idx=camp_idx)
-                room_list = Roomsetting.get_list(camp_idx)
+                room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+                == camp_idx).all()
 
             filtered_query = get_member_list_query(filtered_query, request, \
             orderby=['camp_idx', 'sex', 'area_idx'])
@@ -532,7 +522,7 @@ def register_view(app, campcode):
                 count = 0
 
             area_list = Area.get_list(campcode)
-            group_list = Group.get_list(camp_idx)
+            group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
 
             return render_template('%s/room.html' % campcode, room_list=room_list,\
             members=member_list, count=count, area_list=area_list, group_list=\
@@ -549,15 +539,17 @@ def register_view(app, campcode):
             params = request.form.to_dict()
             for key, value in params.items():
                 k = key.split('-')
-                roomsetting = Roomsetting.get(k[1])
+                roomsetting = db.session.query(Roomsetting).filter(Roomsetting.idx == k[1]).one()
                 setattr(roomsetting, k[0], value)
                 roomsetting.save()
 
         camp_idx = Camp.get_idx(campcode)
-        room_list = Roomsetting.get_list(camp_idx)
+        room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+        == camp_idx).all()
         if room_list is None or len(room_list) == 0:
             Roomsetting.init(camp_idx)
-            room_list = Roomsetting.get_list(camp_idx)
+            room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx \
+            == camp_idx).all()
 
         return render_template('%s/room_setting.html' % campcode, room_list=room_list)
 
@@ -602,5 +594,5 @@ def register_view(app, campcode):
         홍보물 신청 리스트
         '''
         camp_idx = Camp.get_idx(campcode)
-        promotion_list = Promotion.get_list(camp_idx)
+        promotion_list = db.session.query(Promotion).filter(Promotion.camp_idx == camp_idx).all()
         return render_template('%s/promotion_list.html' % campcode, promotions=promotion_list)

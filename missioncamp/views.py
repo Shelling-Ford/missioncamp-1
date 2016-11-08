@@ -109,7 +109,7 @@ def register_view(app, campcode):
             flash(u'수정이 완료되었습니다')
             return redirect(url_for('.member_info'))
 
-        member = Member.get(idx)
+        member = db.session.query(Member).filter(Member.idx == idx).one()
         form.set_member_data(member)
 
         params = {
@@ -128,12 +128,13 @@ def register_view(app, campcode):
         신청자 정보 보기
         '''
         idx = session['idx']
-        member = Member.get(idx)
+        member = db.session.query(Member).filter(Member.idx == idx).one()
         params = {
             'camp': campcode,
             'member': member,
             'membership_data': member.get_membership_data(),
-            'area_name': Area.get_name(member.area_idx)
+            'area_name': db.session.query(Area).filter(Area.idx == \
+            member.area_idx).one().name
         }
         return render_template('{0}/show.html'.format(campcode), **params)
 
@@ -158,7 +159,8 @@ def register_view(app, campcode):
                 campidx = Camp.get_idx(campcode)
                 if logintype == '개인':
                     if Member.login_check(campidx, userid, pwd):
-                        idx = Member.get_idx(campidx, userid)
+                        idx = db.session.query(Member).filter(Member.camp_idx == \
+                        campidx, Member.userid == userid).one().idx
                         session['type'] = '개인'
                         session['idx'] = idx
                         return redirect(url_for('.member_info'))
@@ -166,7 +168,8 @@ def register_view(app, campcode):
                         flash('아이디 또는 비밀번호가 잘못되었습니다.')
                 elif logintype == '단체':
                     if Group.login_check(campidx, userid, pwd):
-                        idx = Group.get_idx(campidx, userid)
+                        idx = db.session.query(Group).filter(Group.camp_idx == \
+                        campidx, Group.groupid == userid).one().idx
                         session['type'] = '단체'
                         session['idx'] = idx
                         return redirect(url_for('.group_info'))
@@ -231,7 +234,9 @@ def register_view(app, campcode):
             flash('신청이 완료되었습니다.')
             return redirect(url_for('.group_info'))
 
-        return render_template('{0}/form.html'.format(campcode), form=form, page_header="단체신청", script=url_for('static', filename='common/js/reg-group.js'))
+        return render_template('{0}/form.html'.format(campcode), form=form, \
+        page_header="단체신청", script=url_for('static', \
+        filename='common/js/reg-group.js'))
 
     @app.route('/group/info')
     @login_required(logintype='단체')
@@ -240,9 +245,12 @@ def register_view(app, campcode):
         단체신청 조회
         '''
         idx = session['idx']
-        group = Group.get(idx)
-        member_list = db.session.query(Member).filter(Member.group_idx == idx, Member.cancel_yn == 0).all()
-        return render_template('{0}/group/show.html'.format(campcode), group=group, area=Area.get_name(group.area_idx), member_list=member_list)
+        group = db.session.query(Group).filter(Group.idx == idx).one()
+        member_list = db.session.query(Member).filter(Member.group_idx == idx, \
+        Member.cancel_yn == 0).all()
+        return render_template('{0}/group/show.html'.format(campcode), \
+        group=group, area=db.session.query(Area).filter(Area.idx == \
+        Group.area_idx).one().name, member_list=member_list)
 
     @app.route('/group/edit', methods=["GET", "POST"])
     @login_required(logintype='단체')
@@ -259,9 +267,11 @@ def register_view(app, campcode):
             flash("단체 정보 수정이 완료되었습니다.")
             return redirect(url_for('.group_info'))
 
-        group = Group.get(idx)
+        group = db.session.query(Group).filter(Group.idx == idx).one()
         form.set_group_data(group)
-        return render_template('{0}/form.html'.format(campcode), form=form, page_header="단체신청 수정", script=url_for('static', filename='common/js/reg-group-edit.js'), editmode=True)
+        return render_template('{0}/form.html'.format(campcode), form=form, \
+        page_header="단체신청 수정", script=url_for('static', \
+        filename='common/js/reg-group-edit.js'), editmode=True)
 
     @app.route('/group/cancel', methods=["GET", "POST"])
     @login_required(logintype='단체')
@@ -272,7 +282,7 @@ def register_view(app, campcode):
         if request.method == "POST":
             idx = session['idx']
             cancel_reason = request.form.get('cancel_reason', None)
-            group = Group.get(idx)
+            group = db.session.query(Group).filter(Group.idx == idx).one()
             group.cancel_yn = 1
             group.cancel_reason = cancel_reason
             group.canceldate = datetime.datetime.today()
@@ -296,7 +306,7 @@ def register_view(app, campcode):
         단체 멤버 추가
         '''
         idx = session['idx']
-        group = Group.get(idx)
+        group = db.session.query(Group).filter(Group.idx == idx).one()
         form = RegistrationForm(request.form)
         form.set_camp(campcode)
         form.set_group_mode(group_idx=idx, group_area_idx=group.area_idx)
@@ -317,7 +327,7 @@ def register_view(app, campcode):
         단체 멤버 수정
         '''
         idx = session['idx']
-        group = Group.get(idx)
+        group = db.session.query(Group).filter(Group.idx == idx).one()
         form = RegistrationForm(request.form)
         form.set_camp(campcode)
         form.set_group_mode(group_idx=idx, group_area_idx=group.area_idx)
@@ -327,7 +337,7 @@ def register_view(app, campcode):
             flash("성공적으로 수정되었습니다.")
             return redirect(url_for(".group_info"))
 
-        member = Member.get(member_idx)
+        member = db.session.query(Member).filter(Member.idx == member_idx).one()
         form.set_member_data(member)
         return render_template('{0}/form.html'.format(campcode), form=form, page_header="멤버 수정", script=url_for('static', filename='{0}/js/reg-individual-edit.js'.format(campcode)))
 
@@ -339,14 +349,14 @@ def register_view(app, campcode):
         '''
         if request.method == "POST":
             cancel_reason = request.form.get('cancel_reason', None)
-            member = Member.get(member_idx)
+            member = db.session.query(Member).filter(Member.idx == member_idx).one()
             member.cancel_yn = 1
             member.cancel_reason = cancel_reason
             member.canceldate = datetime.datetime.today()
             db.session.commit()
 
             idx = session['idx']
-            group = Group.get(idx)
+            group = db.session.query(Group).filter(Group.idx == idx).one()
             group.mem_num -= 1
             if group.mem_num < 0:
                 group.mem_num = 0
@@ -378,8 +388,17 @@ def register_view(app, campcode):
         memo = request.form.get('memo', None)
         next_url = request.form.get('next', None)
 
-        Promotion.insert(camp_idx, church_name, name, address, contact, memo)
-        flash(u'홍보물 신청이 완료되었습니다')
+        promotion = Promotion()
+        promotion.camp_idx = camp_idx
+        promotion.church_name = church_name
+        promotion.name = name
+        promotion.address = address
+        promotion.contact = contact
+        promotion.memo = memo
+        db.session.add(promotion)
+        db.session.commit()
+
+        flash('홍보물 신청이 완료되었습니다')
         if next_url is not None:
             return redirect(next_url)
         else:

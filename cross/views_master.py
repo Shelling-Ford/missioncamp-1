@@ -1,21 +1,18 @@
-# -*-coding:utf-8-*-
+'''
+크로스 최종관리자 설정을 위한 화면
+'''
 from flask import render_template, redirect, url_for, request, Blueprint
-# from flask.helpers import make_response
 from flask_login import login_required
-from flask_principal import Permission, RoleNeed
-
+from sqlalchemy.orm.exc import NoResultFound
 from core.models import Area, Room, GlobalOptions
+from core.database import DB as db
 from core.forms import AreaForm
 
 # Blueprint 초기화
 master = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')
 
-master_permission = Permission(RoleNeed('master'))
-
-
 @master.route('/')
 @login_required
-@master_permission.require(http_exception=403)
 def home():
     current_year = GlobalOptions.get_year()
     current_term = GlobalOptions.get_term()
@@ -24,43 +21,63 @@ def home():
 
 @master.route('/area-list')
 @login_required
-@master_permission.require(http_exception=403)
 def area_list():
-    area_list = Area.get_list('*')
-    return render_template('master/area_list.html', area_list=area_list)
+    '''
+    전체 지부 목록
+    '''
+    a_list = db.session.query(Area).order_by(Area.type).all()
+    return render_template('master/area_list.html', area_list=a_list)
 
 
-@master.route('/area', methods=['GET', 'POST'])
+@master.route('/area', methods=['GET', 'POST'], defaults={"idx": None})
+@master.route('/area/<idx>', methods=['GET', 'POST'])
 @login_required
-@master_permission.require(http_exception=403)
-def area():
+def area(idx):
+    '''
+    지부 수정
+    '''
     if request.method == 'POST':
-        idx = request.form.get('idx', None)
         name = request.form.get('name')
-        type = request.form.get('type')
+        area_type = request.form.get('type')
         camp = request.form.get('camp')
 
         if idx is None:
-            Area.insert(name, type, camp)
+            '''
+            지부 추가를 할 경우인데 이름이 겹치는지 확인할 것
+            '''
+            try:
+                area_obj = db.session.query(Area).filter(Area.name == name, \
+                Area.type == area_type).one()
+            except NoResultFound:
+                area_obj = Area()
         else:
-            Area.update(idx, name, type, camp)
+            area_obj = db.session.query(Area).filter(Area.idx == idx).one()
+
+        area_obj.name = name
+        area_obj.type = area_type
+        area_obj.camp = camp
+
+        if area_obj.idx == None:
+            db.session.add(area_obj)
+        db.session.commit()
 
         return redirect(url_for('.area_list'))
 
-    else:
-        area_idx = request.args.get('area_idx', None)
-        form = AreaForm()
+    area_idx = request.args.get('area_idx', None)
+    form = AreaForm()
 
-        if area_idx is not None:
-            area = Area.get(area_idx)
-            form.set_area_data(area)
+    if area_idx is not None:
+        area_obj = db.session.query(Area).filter(Area.idx == area_idx).one()
+        form.set_area_data(area_obj)
 
-        return render_template('master/form.html', form=form)
+    return render_template('master/form.html', form=form)
 
 
 @master.route('/room-list')
 @login_required
-@master_permission.require(http_exception=403)
 def room_list():
-    room_list = Room.get_list()
-    return render_template('master/room_list.html', room_list=room_list)
+    '''
+    숙소 전체목록 보기
+    '''
+    r_list = db.session.query(Room).order_by(Room.building, Room.number).all()
+    return render_template('master/room_list.html', room_list=r_list)

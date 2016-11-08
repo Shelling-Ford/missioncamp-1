@@ -44,9 +44,9 @@ class AreaForm(Form):
     ''' 크로스에서 지부 설정 변경을 위한 폼
     '''
     idx = HiddenField()
-    name = StringField(u'지부명')
-    type = StringField(u'유형')
-    camp = StringField(u'캠프')
+    name = StringField('지부명')
+    type = SelectField('유형', choices=[("1", '1: 국내'), ("2", '2: 해외'), ("3", '3: 기타'), ("4", '4: 오류')])
+    camp = StringField('캠프')
 
     def set_area_data(self, area):
         ''' area 모델의 내용을 폼에 적용함

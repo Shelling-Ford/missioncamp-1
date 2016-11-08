@@ -51,6 +51,9 @@ ul {
 						<li><a href="{{ url_for('ws.home') }}">여남시</a></li>
 						<li><a href="{{ url_for('kids.home') }}">어린이</a></li>
 						<li><a href="{{ url_for('youth.home') }}">청소년</a></li>
+						{% if current_user.role == 'master' %}
+						<li><a href="{{ url_for('master.home') }}">관리자</a></li>
+						{% endif %}
 						<li><a href="{{ url_for('logout') }}">로그아웃</a></li>
 					</ul>
         </div>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container">
-  <div class="col-sm-2">
+  <div style="width: 200px; float: left;">
     {% set i = 0 %}
     <table class="table1">
       <thead>
@@ -16,12 +16,17 @@
         {% for area in area_list %}
         <tr>
           <td><a href="{{ url_for('.area', area_idx=area.idx) }}">{{ area.name }}</a></td>
-          <td>{{ area.type }}</td>
+          <td>
+            {% if area.type == '1' %}1: 국내
+            {% elif area.type == '2' %}2: 해외
+            {% elif area.type == '3' %}3: 기타
+            {% else %}4: 오류{% endif %}
+          </td>
           <td>{{ area.camp }}</td>
         </tr>
         {% set i = i + 1 %}
         {% if i % 30 == 0 %}
-        </tbody></table></div><div class="col-sm-2"><table class="table1"><thead><tr><th>지부명</th><th>유형</th><th>캠프</th></tr></thead><tbody>
+        </tbody></table></div><div style="width: 200px; float: left;"><table class="table1"><thead><tr><th>지부명</th><th>유형</th><th>캠프</th></tr></thead><tbody>
         {% endif %}
         {% endfor %}
       </tbody>

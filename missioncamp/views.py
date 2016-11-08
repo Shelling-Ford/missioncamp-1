@@ -247,7 +247,7 @@ def register_view(app, campcode):
         group = db.session.query(Group).filter(Group.idx == idx).one()
         member_list = db.session.query(Member).filter(Member.group_idx == idx, Member.cancel_yn == 0).all()
         return render_template('{0}/group/show.html'.format(campcode), group=group,
-                               area=db.session.query(Area).filter(Area.idx == Group.area_idx).one().name,
+                               area=db.session.query(Area).filter(Area.idx == group.area_idx).one().name,
                                member_list=member_list)
 
     @app.route('/group/edit', methods=["GET", "POST"])

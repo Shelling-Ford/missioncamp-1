@@ -190,7 +190,7 @@ class Member(db.base, UserMixin):
             filter_list = [cls.camp_idx == idx for idx in camp_idx]
 
         count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.cancel_yn == 0).one()
-        r_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment.isnot(None)).one()
+        r_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.cancel_yn == 0).filter(cls.payment != None).one()
         a_count = db.session.query(func.sum(cls.attend1), func.sum(cls.attend2), func.sum(cls.attend3), func.sum(cls.attend4)).filter(*filter_list).filter(cls.attend_yn == 1).one()
 
         stat = [

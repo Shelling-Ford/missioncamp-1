@@ -82,6 +82,9 @@ class GroupForm(Form):
         else:
             self.grouptype.widget = HiddenInput()
 
+        if camp == 'ws':
+            self.leaderjob.widget = HiddenInput()
+
     def set_group_data(self, group):
         ''' group 모델의 내용을 폼에 적용함
         '''

@@ -6,7 +6,7 @@ import sys
 from flask import Flask
 from cross import views_main
 from cross.views import get_app
-from cross.views_master import master
+from cross.views_master import MASTER as master
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(os.path.dirname(CUR_DIR))

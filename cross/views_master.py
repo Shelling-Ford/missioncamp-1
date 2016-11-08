@@ -9,9 +9,9 @@ from core.database import DB as db
 from core.forms import AreaForm
 
 # Blueprint 초기화
-master = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')
+MASTER = Blueprint('master', __name__, template_folder='templates', url_prefix='/master')
 
-@master.route('/')
+@MASTER.route('/')
 @login_required
 def home():
     '''
@@ -24,7 +24,7 @@ def home():
     return render_template('master/home.html', current_year=year, current_term=term)
 
 
-@master.route('/area-list')
+@MASTER.route('/area-list')
 @login_required
 def area_list():
     '''
@@ -34,8 +34,8 @@ def area_list():
     return render_template('master/area_list.html', area_list=a_list)
 
 
-@master.route('/area', methods=['GET', 'POST'], defaults={"idx": None})
-@master.route('/area/<idx>', methods=['GET', 'POST'])
+@MASTER.route('/area', methods=['GET', 'POST'], defaults={"idx": None})
+@MASTER.route('/area/<idx>', methods=['GET', 'POST'])
 @login_required
 def area(idx):
     '''
@@ -78,7 +78,7 @@ def area(idx):
     return render_template('master/form.html', form=form)
 
 
-@master.route('/room-list')
+@MASTER.route('/room-list')
 @login_required
 def room_list():
     '''

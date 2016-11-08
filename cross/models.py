@@ -1,6 +1,7 @@
 '''
 크로스에서 인증 및 로그인에 사용하는 데이터베이스 관계형 매핑 모듈
 '''
+# pylint: disable=R0903
 from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String
 from core.database import BTJKOREA_DB as btjkorea_db

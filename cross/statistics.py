@@ -39,6 +39,10 @@ def get_query(camp_idx, *args, group_by=None, area_idx=None):
 
 
 def get_joined_query(camp_idx, groupby_class, area_idx=None):
+    '''
+    항목별 통계를 쉽게 뽑아내기 위한 메타쿼리
+    조인이 필요한 경우 조인하려는 테이블의 모델 클래스를 첨부함.
+    '''
     base_query = db.session.query(groupby_class.idx, func.count('*'), func.count(Member.payment), func.sum(Member.attend_yn))
     base_query = base_query.select_from(Member).outerjoin(Member.payment).outerjoin(groupby_class).filter(Member.camp_idx == camp_idx, Member.cancel_yn == 0)
 

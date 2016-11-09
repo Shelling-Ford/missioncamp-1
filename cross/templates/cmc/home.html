@@ -9,7 +9,7 @@
   #}
   {% if current_user.role in ['hq', 'master'] %}
   <p>날자별 신청 현황</p>
-  <img src="data:image/png;base64,{{ chart }}" /><br/>
+  {{ macros.render_bar_chart(daily_apply) }}
   <br/>
   <p>일자별 통계</p>
   <table class="table1">

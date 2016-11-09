@@ -68,7 +68,7 @@ def get_member_list_query(query, req, orderby=None):
         '''
         비티제이 코리아 지부 아이디는 자기 지부 목록만 조회 가능
         '''
-        are_idx = user_area_idx
+        area_idx = user_area_idx
 
     name = req.args.get('name', None)
     if name not in [None, '']:

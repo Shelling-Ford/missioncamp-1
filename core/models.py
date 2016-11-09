@@ -171,6 +171,11 @@ class Member(db.base, UserMixin):
 
         attend = [0, 0, 0, 0]
         if self.date_of_arrival is not None and self.date_of_leave is not None:
+            if isinstance(self.date_of_arrival, str):
+                self.date_of_arrival = datetime.datetime.strptime(self.date_of_arrival, '%Y-%m-%d').date()
+            if isinstance(self.date_of_leave, str):
+                self.date_of_leave = datetime.datetime.strptime(self.date_of_leave, '%Y-%m-%d').date()
+
             i = (self.date_of_arrival - camp.startday).days
             interval = range(0, (self.date_of_leave - self.date_of_arrival).days + 1)
             for j in interval:

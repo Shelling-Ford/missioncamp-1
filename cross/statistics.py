@@ -5,7 +5,7 @@
 from sqlalchemy import func
 from sqlalchemy.sql import text
 from core.database import DB as db
-from core.models import Member, Membership, Camp
+from core.models import Member, Membership, Camp, Area, Group
 from cross.stat_metrics import METRICS as metrics
 
 
@@ -38,6 +38,17 @@ def get_query(camp_idx, *args, group_by=None, area_idx=None):
     return filtered_query
 
 
+def get_joined_query(camp_idx, groupby_class, area_idx=None):
+    base_query = db.session.query(groupby_class.idx, func.count('*'), func.count(Member.payment), func.sum(Member.attend_yn))
+    base_query = base_query.select_from(Member).outerjoin(Member.payment).outerjoin(groupby_class).filter(Member.camp_idx == camp_idx, Member.cancel_yn == 0)
+
+    if area_idx is not None:
+        base_query = base_query.filter(Member.area_idx == area_idx)
+
+    filtered_query = base_query.group_by(groupby_class.idx).order_by(groupby_class.name)
+    return filtered_query
+
+
 def get_membership_query(camp_idx, membership_key, area_idx=None):
     '''
     가변필드를 기준으로 한 메타쿼리
@@ -64,7 +75,11 @@ def get_stat(camp_idx, area_idx=None):
 
     group_by = dict()
     for key, value in metrics['group_by'].items():
-        rows = get_query(camp_idx, group_by=value, area_idx=area_idx).all()
+        if value in ['area_idx', 'group_idx']:
+            groupby_class = {'area_idx': Area, 'group_idx': Group}
+            rows = get_joined_query(camp_idx, groupby_class[value], area_idx=area_idx).all()
+        else:
+            rows = get_query(camp_idx, group_by=value, area_idx=area_idx).all()
         group_by[key] = (value, rows)
     results['group_by'] = group_by
 

@@ -13,10 +13,10 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import desc, or_
 
-import pandas as pd
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+# import pandas as pd
+# import matplotlib
+# matplotlib.use('Agg')
+# import matplotlib.pyplot as plt
 
 from core.forms import RegistrationForm
 from core.database import DB as db
@@ -155,17 +155,18 @@ def register_view(app, campcode):
 
         fromdate = datetime.datetime.strftime(datetime.datetime.today() - datetime.timedelta(days=20), "%Y-%m-%d")
 
-        df = pd.read_sql_query("""
-            SELECT DATE(regdate) AS ForDate, COUNT(*) AS NumMembers FROM
-            Member WHERE regdate >= {0} AND camp_idx = {1} GROUP BY DATE(regdate)
-            ORDER BY ForDate""".format(fromdate, camp_idx), db.engine, index_col="ForDate")
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        df.plot.bar(ax=ax)
+        # df = pd.read_sql_query("""
+        #    SELECT DATE(regdate) AS ForDate, COUNT(*) AS NumMembers FROM
+        #    Member WHERE regdate >= {0} AND camp_idx = {1} GROUP BY DATE(regdate)
+        #    ORDER BY ForDate""".format(fromdate, camp_idx), db.engine, index_col="ForDate")
+        # fig = plt.figure()
+        # ax = fig.add_subplot(1, 1, 1)
+        # df.plot.bar(ax=ax)
 
-        io = BytesIO()
-        fig.savefig(io, format='png')
-        chart = codecs.encode(io.getvalue(), 'base64')
+        # io = BytesIO()
+        # fig.savefig(io, format='png')
+        # chart = codecs.encode(io.getvalue(), 'base64')
+        chart = None
 
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
                                attend_stat=attend_stat, partial_stat=partial_stat, chart=chart.decode("utf-8"))

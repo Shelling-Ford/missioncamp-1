@@ -53,9 +53,10 @@ def register_view(app):
                 if btjuser.chaptercode == "01":
                     adminuser.role = 'hq'
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
+                    adminuser.area_idx = None
                 else:
                     adminuser.role = 'branch'
-                    adminuser.area_idx = db.session.query(Area).filter(Area.chaptercode == btjuser.chaptercode).first()
+                    adminuser.area_idx = db.session.query(Area).filter(Area.chaptercode == btjuser.chaptercode).first().idx
                     adminuser.camp = 'cmc,cbtj,ws,youth,kids'
 
                 if adminuser.idx is None:

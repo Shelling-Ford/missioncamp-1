@@ -165,11 +165,11 @@ def register_view(app, campcode):
 
         # io = BytesIO()
         # fig.savefig(io, format='png')
-        # chart = codecs.encode(io.getvalue(), 'base64')
+        # chart = codecs.encode(io.getvalue(), 'base64').decode("utf-8")
         chart = None
 
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
-                               attend_stat=attend_stat, partial_stat=partial_stat, chart=chart.decode("utf-8"))
+                               attend_stat=attend_stat, partial_stat=partial_stat, chart=chart)
 
     @app.route('/list')
     @login_required

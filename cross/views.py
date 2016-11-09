@@ -70,11 +70,14 @@ def get_member_list_query(query, req, orderby=None):
         '''
         area_idx = user_area_idx
 
+    if area_idx is not None:
+        filtered_query = filtered_query.filter(Member.area_idx == area_idx)
+
     name = req.args.get('name', None)
     if name not in [None, '']:
         filtered_query = filtered_query.filter(Member.name.like("%{}%".format(name)))
 
-    for key in ['persontype', 'sex', 'area_idx']:
+    for key in ['persontype', 'sex']:
         value = req.args.get(key, None)
         if value not in [None, '']:
             filtered_query = filtered_query.filter(getattr(Member, key) == value)

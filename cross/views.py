@@ -64,13 +64,14 @@ def get_member_list_query(query, req, orderby=None):
 
     area_idx = req.args.get('area_idx', None)
     user_area_idx = current_user.area_idx
+    print(user_area_idx)
     if user_area_idx is not None:
         '''
         비티제이 코리아 지부 아이디는 자기 지부 목록만 조회 가능
         '''
         area_idx = user_area_idx
 
-    if area_idx is not None:
+    if area_idx not in [None, '']:
         filtered_query = filtered_query.filter(Member.area_idx == area_idx)
 
     name = req.args.get('name', None)

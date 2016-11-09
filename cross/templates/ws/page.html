@@ -3,6 +3,9 @@
 {% block navs %}
 <ul class="nav navbar-nav">
 	<li><a href="{{ url_for('ws.home') }}">통계</a></li>
+	{% if current_user.role == 'branch' %}
+	<li><a href="{{ url_for('.home', area_idx=current_user.area_idx) }}">지부통계</a></li>
+	{% endif %}
 	<li><a href="{{ url_for('ws.member_list', cancel_yn=0) }}">신청자목록</a></li>
 	<li><a href="{{ url_for('ws.member_list', cancel_yn=1) }}">취소자목록</a></li>
 

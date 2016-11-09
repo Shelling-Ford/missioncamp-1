@@ -138,7 +138,11 @@ def register_view(app, campcode):
         term = int(request.args.get('term', 0))
         camp_idx = Camp.get_idx(campcode, year, term)
 
-        stat = statistics.get_stat(camp_idx)
+        area_idx = request.args.get('area_idx', None)
+        if area_idx is not None and area_idx != current_user.area_idx:
+            area_idx = current_user.area_idx
+
+        stat = statistics.get_stat(camp_idx, area_idx=area_idx)
         attend_stat = Member.get_attend_stat(camp_idx)
         partial_stat = Member.get_partial_stat(camp_idx)
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,

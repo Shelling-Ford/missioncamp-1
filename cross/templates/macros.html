@@ -21,7 +21,8 @@
 <br/>
 
 {# GROUP BY 통계 #}
-{% for name, stat_group in stat.group_by.items() %}
+{% for name in ['참가유형별', '지부별', '단체별'] %}
+{% set stat_group = stat.group_by[name] %}
 <p>{{ name }}</p>
 <table class="table1">
   {% set i = 0 %}
@@ -48,7 +49,9 @@
 {% endfor %}
 
 {# 가변필드 기준 통계 #}
-{% for name, stat_group in stat.membership.items() %}
+{% for name in ['캠퍼스별', '전공별', '직업/직군별', '직장별', '인터콥 훈련유형별'] %}
+{% if name in stat.membership %}
+{% set stat_group = stat.membership[name] %}
 <p>{{ name }}</p>
 <table class="table1">
   {% set i = 0 %}
@@ -63,6 +66,7 @@
   </tr>
 </table>
 <br/>
+{% endif %}
 {% endfor %}
 
 {# 연령별 통계 #}

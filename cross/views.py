@@ -150,7 +150,7 @@ def register_view(app, campcode):
 
         query = """
             SELECT DATE(regdate) AS ForDate, COUNT(*) AS NumMembers FROM
-            Member WHERE regdate >= '{0}' AND camp_idx = {1} GROUP BY DATE(regdate)
+            member WHERE regdate >= '{0}' AND camp_idx = {1} GROUP BY DATE(regdate)
             ORDER BY ForDate
         """.format(fromdate, camp_idx)
 

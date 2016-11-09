@@ -8,6 +8,18 @@ function checkPersontype() {
   }
 }
 
+// 참가형태 == 부분참가 일때 참가기간 선택 보여줌
+// 그 외는 모두 숨김
+function checkFullcamp() {
+  if ($('input[name=fullcamp_yn]:checked').val() === '0') {
+      $('#date_of_arrival_group').show();
+      $('#date_of_leave_group').show();
+  } else {
+      $('#date_of_arrival_group').hide();
+      $('#date_of_leave_group').hide();
+  }
+}
+
 
 $(document).ready(function () {
   'use strict';
@@ -16,6 +28,9 @@ $(document).ready(function () {
 
   checkPersontype();
   $('input[name=persontype]').change(checkPersontype);
+
+  checkFullcamp()
+  $('input[name=fullcamp_yn]').change(checkFullcamp);
 
   $('.membership').change(function () {
     if ($('#none').is(':checked')) {

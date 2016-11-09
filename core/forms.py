@@ -178,6 +178,7 @@ class RegistrationForm(Form):
     # membership for ['cmc', 'cbtj']
     vision_yn = RadioField('비전스쿨 수료여부', choices=[('1', '예'), ('0', '아니오')])
     training = MultiCheckboxField('인터콥 훈련여부')  # membership for all
+    route = MultiCheckboxField('선교캠프를<br/>알게된 경로')  # membership for ['youth']
     language = SelectField('통역필요', choices=[(i, i) for i in form_config.LANGUAGES])
     memo = StringField('남기고싶은 말', widget=TextArea())
 
@@ -231,6 +232,11 @@ class RegistrationForm(Form):
             self.fullcamp_yn.widget = HiddenInput()
             self.date_of_arrival.widget = HiddenInput()
             self.date_of_leave.widget = HiddenInput()
+
+        if camp == 'youth':
+            self.route.choices = form_config.ROUTES[camp]
+        else:
+            self.route.widget = HiddenInput()
 
     def set_group_mode(self, group_idx, group_area_idx):
         ''' 개인 신청인지 단체의 멤버신청인지 정해줌

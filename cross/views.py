@@ -11,6 +11,10 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import desc, or_
 
+import pandas
+import plotly
+from plotly.graph_objs import Layout, Bar
+
 from core.forms import RegistrationForm
 from core.database import DB as db
 from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, Promotion
@@ -155,11 +159,18 @@ def register_view(app, campcode):
             ORDER BY ForDate
         """.format(fromdate, camp_idx)
 
-        daily_apply = db.session.execute(query)
-        chart = None
+        dataframe = pandas.read_sql_query(query, db.engine)
 
+        data = [
+            Bar(
+                x=dataframe['ForDate'],  # assign x as the dataframe column 'x'
+                y=dataframe['NumMembers']
+            )
+        ]
+
+        div = plotly.offline.plot({"data": data, "layout": Layout(title="날자별 신청 현황")}, show_link=False, output_type="div", include_plotlyjs=True)
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
-                               attend_stat=attend_stat, partial_stat=partial_stat, chart=chart, daily_apply=daily_apply)
+                               attend_stat=attend_stat, partial_stat=partial_stat, plotly=div)
 
     @app.route('/list')
     @login_required

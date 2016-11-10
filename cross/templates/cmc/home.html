@@ -8,8 +8,7 @@
   <p><a href="list?cancel_yn=0&amp;foreigner=외국인">외국인 신청자 목록 보기</a></p>
   #}
   {% if current_user.role in ['hq', 'master'] %}
-  <p>날자별 신청 현황</p>
-  {{ macros.render_bar_chart(daily_apply) }}
+  {{ plotly|safe }}
   <br/>
   <p>일자별 통계</p>
   <table class="table1">

@@ -5,8 +5,7 @@
 <div class="container">
   {{ macros.render_stat(stat=stat, metrics=metrics)}}
   {% if current_user.role in ['hq', 'master'] %}
-  <p>날자별 신청 현황</p>
-  {{ macros.render_bar_chart(daily_apply) }}
+  {{ plotly|safe }}
   <br/>
   <p>일자별 통계</p>
   <table class="table1">

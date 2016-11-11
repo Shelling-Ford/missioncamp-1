@@ -11,7 +11,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import desc, or_
 
-from core.forms import RegistrationForm
+from core.forms import RegistrationForm, GroupForm
 from core.database import DB as db
 from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, Promotion
 from cross.functions_xlsx import XlsxBuilder
@@ -188,7 +188,9 @@ def register_view(app, campcode):
         filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
         member_list = filtered_query.all()
 
-        group = None
+        group_idx = request.args.get('group_idx', None)
+        if group_idx not in [None, '', 'none', 'not_none']:
+            group = db.session.query(Group).filter(Group.idx == group_idx).one()
 
         area_list = Area.get_list(campcode)
         group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()
@@ -259,6 +261,32 @@ def register_view(app, campcode):
             'form': form,
             'page_header': "개인 신청서 수정",
             'script': url_for('static', filename='{0}/js/reg-individual-edit.js'.format(campcode)),
+            'editmode': True
+        }
+        return render_template('{0}/form.html'.format(campcode), **params)
+
+    @app.route('/group/<group_idx>/edit', methods=['GET', 'POST'])
+    @login_required
+    @role_required('branch', campcode)
+    def group_edit(group_idx):
+        '''
+        신청서 수정
+        '''
+        form = GroupForm(request.form)
+        form.set_camp(campcode)
+
+        if request.method == "POST":
+            form.update(group_idx)
+            flash('수정이 완료되었습니다')
+            return redirect(url_for('.member_list'))
+
+        group = db.session.query(Group).filter(Group.idx == group_idx).one()
+        form.set_group_data(group)
+
+        params = {
+            'form': form,
+            'page_header': "단체 정보 수정",
+            # 'script': url_for('static', filename='{0}/js/reg-individual-edit.js'.format(campcode)),
             'editmode': True
         }
         return render_template('{0}/form.html'.format(campcode), **params)

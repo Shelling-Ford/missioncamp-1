@@ -59,6 +59,7 @@ class AreaForm(Form):
 class GroupForm(Form):
     ''' 단체 등록 및 수정을 위한 폼
     '''
+    camp = ''
     groupid = StringField('단체 아이디')
     pwd = PasswordField('비밀번호')
     pwd2 = PasswordField('비밀번호 확인')
@@ -74,6 +75,7 @@ class GroupForm(Form):
     def set_camp(self, camp):
         ''' 어떤 캠프의 단체등록 폼인지 지정함
         '''
+        self.camp = camp
         self.area_idx.choices = Area.get_list(camp)
         if camp == 'youth':
             self.grouptype.choices = form_config.GROUP_TYPES[camp]

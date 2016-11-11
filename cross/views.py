@@ -191,6 +191,8 @@ def register_view(app, campcode):
         group_idx = request.args.get('group_idx', None)
         if group_idx not in [None, '', 'none', 'not_none']:
             group = db.session.query(Group).filter(Group.idx == group_idx).one()
+        else:
+            group = None
 
         area_list = Area.get_list(campcode)
         group_list = db.session.query(Group).filter(Group.camp_idx == camp_idx).all()

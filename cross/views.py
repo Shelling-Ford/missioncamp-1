@@ -578,7 +578,8 @@ def register_view(app, campcode):
                 k = key.split('-')
                 roomsetting = db.session.query(Roomsetting).filter(Roomsetting.idx == k[1]).one()
                 setattr(roomsetting, k[0], value)
-                roomsetting.save()
+                db.session.commit()
+                # roomsetting.save()
 
         camp_idx = Camp.get_idx(campcode)
         room_list = db.session.query(Roomsetting).filter(Roomsetting.camp_idx == camp_idx).all()

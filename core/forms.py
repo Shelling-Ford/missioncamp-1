@@ -205,6 +205,7 @@ class RegistrationForm(Form):
             self.job.choices = [(i, i) for i in form_config.JOBS]
         else:
             self.vision_yn.widget = HiddenInput()
+            self.mit_yn.widget = HiddenInput()
 
         if camp not in ['ws', 'kids']:
             self.pname.widget = HiddenInput()
@@ -226,7 +227,6 @@ class RegistrationForm(Form):
             self.sch2.widget = HiddenInput()
         else:
             self.sch2.choices = form_config.SCH2_CHOICES[camp]
-            self.mit_yn.widget = HiddenInput()
 
         if camp == 'kids':
             self.bus_yn.widget = HiddenInput()

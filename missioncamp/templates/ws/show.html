@@ -16,8 +16,10 @@
         <tr><td>성별</td><td>{{ member.sex|sex }}</td></tr>
         <tr><td>참가구분</td><td>{{ member.persontype }}</td></tr>
         <tr><td>단체버스 이용 여부</td><td>{{ member.bus_yn|yesno }}</td></tr>
+        <!--
         <tr><td>2017년 겨울 FO/MIT 참여 여부</td><td>{{ member.mit_yn|yesno }}</td></tr>
-        <tr><td>선교캠프 참여 경험</td><td>{{ member.newcomer_yn|yesno }}</td></tr>
+      -->
+        <tr><td>선교캠프 참여 경험</td><td>{% if member.newcomer_yn % }없음{% else %}있음{% endif %}</td></tr>
         <tr><td>전체참석 여부</td><td>{% if member.fullcamp_yn %} 전체참석 {% else %} 부분참석 {% endif %}</td></tr>
         <tr><td>캠프 참석 기간</td><td>{{ member.date_of_arrival }} ~ {{ member.date_of_leave }}</td></tr>
         {% if member.persontype == '일반' %}

@@ -15,7 +15,7 @@
         <tr><td>생년월일</td><td>{{ member.birth }}</td></tr>
         <tr><td>성별</td><td>{{ member.sex|sex }}</td></tr>
         <tr><td>참가구분</td><td>{{ member.persontype }}</td></tr>
-        <tr><td>선교캠프 참여 경험</td><td>{{ member.newcomer_yn|yesno }}</td></tr>
+        <tr><td>선교캠프 참여 경험</td><td>{% if member.newcomer_yn % }없음{% else %}있음{% endif %}</td></tr>
         {% if member.persontype == '어린이' or member.persontype == '키즈' %}
         <tr><td>보호자 이름</td><td>{{ membership_data.pname }}</td></tr>
         {% endif %}

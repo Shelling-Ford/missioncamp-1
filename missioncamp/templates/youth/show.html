@@ -20,7 +20,7 @@
         <tr><td>학년</td><td>{{ membership_data.sch2 }}</td></tr>
         {% endif %}
         <tr><td>단체버스 이용 여부</td><td>{{ member.bus_yn|yesno }}</td></tr>
-        <tr><td>선교캠프 참여 경험</td><td>{% if member.newcomer_yn % }없음{% else %}있음{% endif %}</td></tr>
+        <tr><td>선교캠프 참여 경험</td><td>{% if member.newcomer_yn %}없음{% else %}있음{% endif %}</td></tr>
         <tr><td>인터콥 훈련 여부</td><td>{{ ", ".join(membership_data.training) }}</td></tr>
         <tr><td>등록 날자</td><td>{{ member.regdate }}</td></tr>
         <tr><td>메모</td><td>{{ member.memo }}</td></tr>

@@ -300,7 +300,7 @@ class RegistrationForm(Form):
         member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
         member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
-        if self.fullcamp_yn.data == "1":
+        if self.camp == 'kids' or self.fullcamp_yn.data == "1":
             date_list = Camp.get_date_list(member.camp_idx)
             member.date_of_arrival = datetime.datetime.strftime(date_list[0][0], "%Y-%m-%d")
             member.date_of_leave = datetime.datetime.strftime(date_list[-1][0], "%Y-%m-%d")

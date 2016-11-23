@@ -439,6 +439,7 @@ def register_view(app, campcode):
             member = db.session.query(Member).filter(Member.idx == member_idx).one()
             member.cancel_yn = 1
             member.cancel_reason = cancel_reason
+            member.cancel_date = datetime.datetime.today()
             member.attend1 = 0
             member.attend2 = 0
             member.attend3 = 0

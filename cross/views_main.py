@@ -33,7 +33,7 @@ def register_view(app):
         ''' 로그인 되었을 경우 캠프별 랜딩페이지로 이동하고 로그인되지 않았을 경우 로그인 폼을 보여준다.
         '''
         if current_user.is_authenticated:
-            camp = current_user.camp
+            camp = current_user.camp.split(',')[0]
             return redirect(url_for('%s.home' % camp))
 
         if request.method == 'POST':

@@ -425,7 +425,7 @@ def register_view(app, campcode):
 
     @app.route('/member-cancel', methods=['GET', 'POST'])
     @login_required
-    @role_required('hq')
+    @role_required('branch', campcode)
     def member_cancel():
         '''
         신청취소

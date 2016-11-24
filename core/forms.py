@@ -141,7 +141,7 @@ class GroupForm(Form):
         db.session.commit()
 
 # 생년월일 선택을 위한 년도 리스트
-YEARS = [("{0}".format(i), "{0}".format(i)) for i in range(2015, 1940, -1)]
+YEARS = [("{0}".format(i), "{0}".format(i)) for i in range(2015, 1920, -1)]
 
 
 class RegistrationForm(Form):

@@ -135,7 +135,7 @@
         {% endif %}
         <td>{% if m.attend_time is not none %}{{ m.attend_time }}{% endif %}</td>
         <td>{{ m.persontype }}</td>
-        {% if request.args.get('persontype') == '전일스탭' %}
+        {% if request.args.get('persontype') == '전일스탭(2박3일)' %}
         <td>{{ membership.stafftype }}</td>
         {% endif %}
         <td><a href="{{ url_for('.member', member_idx=m.idx) }}">{{ m.name|striptags|truncate(12) }}</a></td>

@@ -18,6 +18,7 @@ METRICS = {
         '지부별': 'area_idx',
         '단체별': 'group_idx',
         # '출석교회별': 'church',
+        '통역필요': 'language',
     },
     "membership": {
         "cmc": {

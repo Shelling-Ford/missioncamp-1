@@ -49,7 +49,7 @@
 {% endfor %}
 
 {# 가변필드 기준 통계 #}
-{% for name in ['캠퍼스별', '전공별', '직업/직군별', '직장별', '인터콥 훈련유형별'] %}
+{% for name in ['캠퍼스별', '전공별', '직업/직군별', '직장별', '인터콥 훈련유형별', '통역필요'] %}
 {% if name in stat.membership %}
 {% set stat_group = stat.membership[name] %}
 <p>{{ name }}</p>
@@ -67,6 +67,28 @@
 </table>
 <br/>
 {% endif %}
+{% endfor %}
+
+{# 통역필요 #}
+{% for name in ['통역필요'] %}
+{% set stat_group = stat.group_by[name] %}
+<p>{{ name }}</p>
+<table class="table1">
+  {% set i = 0 %}
+  <tr>
+  {% for row in stat_group[1] %}
+    <td>
+      <a href="{{ url_for('.member_list') }}?cancel_yn=0&amp;{{ stat_group[0] }}={{ row[0] }}">
+      {{ row[0] }}
+      </a>
+    </td>
+    {{ render_cell(row[1], row[2], row[3]) }}
+    {% set i = i + 1 %}
+    {% if i % 4 == 0 %}</tr><tr>{% endif %}
+  {% endfor %}
+  </tr>
+</table>
+<br/>
 {% endfor %}
 
 {# 연령별 통계 #}

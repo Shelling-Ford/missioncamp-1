@@ -78,7 +78,7 @@ def get_member_list_query(query, req, orderby=None):
     if name not in [None, '']:
         filtered_query = filtered_query.filter(Member.name.like("%{}%".format(name)))
 
-    for key in ['persontype', 'sex']:
+    for key in ['persontype', 'sex', 'language']:
         value = req.args.get(key, None)
         if value not in [None, '']:
             filtered_query = filtered_query.filter(getattr(Member, key) == value)

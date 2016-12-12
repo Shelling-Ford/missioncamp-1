@@ -24,6 +24,9 @@
 			지난자료<span class="caret"/>
 		</a>
 		<ul class="dropdown-menu">
+		
+			<li><a href="{{ url_for('youth.home', year=2016, term=2) }}">지난통계(2016여름)</a></li>
+			<li><a href="{{ url_for('youth.member_list', cancel_yn=0, year=2016, term=2) }}">지난신청자(2016여름)</a></li>
 			<li><a href="{{ url_for('youth.home', year=2016, term=1) }}">지난통계(2016겨울)</a></li>
 			<li><a href="{{ url_for('youth.member_list', cancel_yn=0, year=2016, term=1) }}">지난신청자(2016겨울)</a></li>
             <li><a href="{{ url_for('youth.home', year=2015, term=2) }}">지난통계(2015여름)</a></li>

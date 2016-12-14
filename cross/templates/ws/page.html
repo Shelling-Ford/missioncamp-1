@@ -21,6 +21,10 @@
 			<li><a href="{{ url_for('ws.member_list', year=2016, term=1, cancel_yn=0) }}">지난신청자(2016겨울)</a></li>
 			<li><a href="{{ url_for('ws.home', year=2015, term=2) }}">지난통계(2015여름)</a></li>
 			<li><a href="{{ url_for('ws.member_list', year=2015, term=2, cancel_yn=0) }}">지난신청자(2015여름)</a></li>
+			<li><a href="{{ url_for('ws.home', year=2015, term=1) }}">지난통계(2015겨울)</a></li>
+			<li><a href="{{ url_for('ws.member_list', year=2015, term=1, cancel_yn=0) }}">지난신청자(2015겨울)</a></li>
+			
+			
 		</ul>
 	</li>
 	<li><a href="{{ url_for('ws.member_list', cancel_yn=0, page=1, receptionmode=1) }}">등록대</a></li>

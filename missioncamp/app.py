@@ -5,6 +5,7 @@ import sys
 
 from flask import Flask, render_template, request
 from flask_babel import Babel
+from sqlalchemy.orm.exc import NoResultFound
 
 from core.database import DB as db
 from core.models import Room
@@ -63,5 +64,8 @@ def sex(value):
 
 @APP.template_filter("room_info")
 def room_info(room_idx):
-    room = db.session.query(Room).filter(Room.idx == room_idx).one()
-    return "{0} {1}".format(room.building, room.number)
+    try:
+        room = db.session.query(Room).filter(Room.idx == room_idx).one()
+        return "{0} {1}".format(room.building, room.number)
+    except NoResultFound:
+        return "아직 배치되지 않았습니다."

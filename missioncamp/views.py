@@ -391,16 +391,15 @@ def register_view(app, campcode):
                     ).one()
 
                     camp = db.session.query(Camp).filter(Camp.idx == camp_idx).one()
-                    room = db.session.query(Room).filter(Room.idx == member.room_idx).one()
 
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=member.name, camp=camp.name, room=room, msg=None, member_list=None)
+                                           name=member.name, camp=camp.name, msg=None, member_list=None)
                 except MultipleResultsFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, room=None, msg='중복신청오류입니다. 등록대에 문의해주세요.', member_list=None)
+                                           name=None, camp=None, msg='중복신청오류입니다. 등록대에 문의해주세요.', member_list=None)
                 except NoResultFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, room=None, msg='신청 또는 숙소배치 정보가 없습니다.', member_list=None)
+                                           name=None, camp=None, msg='신청자 정보가 없습니다.', member_list=None)
 
             elif logintype == '단체':
                 try:
@@ -420,7 +419,5 @@ def register_view(app, campcode):
                                            name=None, camp=None, room=None, msg='중복신청오류입니다. 등록대에 문의해주세요.')
                 except NoResultFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, room=None, msg='신청 또는 숙소배치 정보가 없습니다.')
-            return render_template('{0}/room-check-result.html'.format(campcode),
-                                   name=None, camp=None, room=None, msg='오류입니다.')
+                                           name=None, camp=None, room=None, msg='신청 단체 정보가 없습니다.')
         return render_template('{0}/room-check.html'.format(campcode), form=form)

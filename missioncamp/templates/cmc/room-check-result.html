@@ -18,7 +18,7 @@
       {% if member_list is none %}
 	  	<tr>
 	  		<td>숙소</td>
-	  		<td>{% if room is not none %}{{ room.building }} {{ room.number }}{% else %}{{ msg }}{% endif %}</td>
+	  		<td>{% if name is not none %}{{ member.room_idx|room_info }}{% else %}{{ msg }}{% endif %}</td>
 	  	</tr>
       {% else %}
         {% for member in member_list %}

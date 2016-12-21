@@ -378,7 +378,11 @@ def register_view(app, campcode):
         form = RoomCheckForm(request.form)
         camp_idx = Camp.get_idx(campcode)
         if request.method == 'POST':
-            contact = request.form.get('contact', '')
+            contact = "{0}-{1}-{2}".format(
+                request.form.get('hp', ''),
+                request.form.get('hp2', ''),
+                request.form.get('hp3', '')
+            )
             name = request.form.get('name', '')
             logintype = request.form.get('logintype', '')
 

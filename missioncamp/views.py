@@ -417,7 +417,7 @@ def register_view(app, campcode):
                     member_list = db.session.query(Member).filter(Member.group_idx == group.idx).all()
 
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=Group.name, camp=camp.name, room=None, member_list=member_list)
+                                           name=group.name, camp=camp.name, room=None, member_list=member_list)
                 except MultipleResultsFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
                                            name=None, camp=None, room=None, msg='중복신청오류입니다. 등록대에 문의해주세요.')

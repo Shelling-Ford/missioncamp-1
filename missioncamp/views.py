@@ -421,4 +421,6 @@ def register_view(app, campcode):
                 except NoResultFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
                                            name=None, camp=None, msg='신청 또는 숙소배치 정보가 없습니다.')
+            return render_template('{0}/room-check-result.html'.format(campcode),
+                                   name=None, camp=None, msg='오류입니다.')
         return render_template('{0}/room-check.html'.format(campcode), form=form)

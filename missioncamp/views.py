@@ -397,10 +397,10 @@ def register_view(app, campcode):
                                            name=member.name, camp=camp.name, room=room, msg=None, member_list=None)
                 except MultipleResultsFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, msg='중복신청오류입니다. 등록대에 문의해주세요.', member_list=None)
+                                           name=None, camp=None, room=None, msg='중복신청오류입니다. 등록대에 문의해주세요.', member_list=None)
                 except NoResultFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, msg='신청 또는 숙소배치 정보가 없습니다.', member_list=None)
+                                           name=None, camp=None, room=None, msg='신청 또는 숙소배치 정보가 없습니다.', member_list=None)
 
             elif logintype == '단체':
                 try:
@@ -414,13 +414,13 @@ def register_view(app, campcode):
                     member_list = db.session.query(Member).filter(Member.group_idx == group.idx).all()
 
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=Group.name, camp=camp.name, member_list=member_list)
+                                           name=Group.name, camp=camp.name, room=None, member_list=member_list)
                 except MultipleResultsFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, msg='중복신청오류입니다. 등록대에 문의해주세요.')
+                                           name=None, camp=None, room=None, msg='중복신청오류입니다. 등록대에 문의해주세요.')
                 except NoResultFound:
                     return render_template('{0}/room-check-result.html'.format(campcode),
-                                           name=None, camp=None, msg='신청 또는 숙소배치 정보가 없습니다.')
+                                           name=None, camp=None, room=None, msg='신청 또는 숙소배치 정보가 없습니다.')
             return render_template('{0}/room-check-result.html'.format(campcode),
-                                   name=None, camp=None, msg='오류입니다.')
+                                   name=None, camp=None, room=None, msg='오류입니다.')
         return render_template('{0}/room-check.html'.format(campcode), form=form)

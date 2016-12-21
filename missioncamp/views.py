@@ -153,7 +153,7 @@ def register_view(app, campcode):
             elif userid == '' or userid is None:
                 flash('아이디를 입력해주세요')
             elif pwd == '' or pwd is None:
-                flash(u'비밀번호를 입력해 주세요')
+                flash('비밀번호를 입력해 주세요')
             else:
                 campidx = Camp.get_idx(campcode)
                 if logintype == '개인':
@@ -194,7 +194,7 @@ def register_view(app, campcode):
             member.canceldate = datetime.datetime.today()
             db.session.commit()
 
-            flash(u'신청이 취소되었습니다')
+            flash('신청이 취소되었습니다')
             return redirect(url_for('.home'))
         return render_template('{0}/cancel.html'.format(campcode))
 

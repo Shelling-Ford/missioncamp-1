@@ -549,10 +549,10 @@ def register_view(app, campcode):
             filtered_query = get_member_list_query(filtered_query, request, orderby=['camp_idx', 'sex', 'area_idx'])
 
             page = int(request.args.get('page', 1))
-            filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
+            # filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
 
             if request.args.get('room_idx', None) is not None:
-                member_list = filtered_query.all()
+                member_list = filtered_query.limit(50).offset((page - 1) * 50).all()
                 count = filtered_query.count()
             else:
                 member_list = []

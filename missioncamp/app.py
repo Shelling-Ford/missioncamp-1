@@ -5,9 +5,12 @@ import sys
 
 from flask import Flask, render_template, request
 from flask_babel import Babel
+from sqlalchemy.orm.exc import NoResultFound
 
 from core.database import DB as db
+from core.models import Room
 from missioncamp.views import get_app
+
 
 CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(CUR_DIR)
@@ -20,9 +23,7 @@ BABEL = Babel(APP)
 
 @BABEL.localeselector
 def get_locale():
-    '''
-    언어 선택기
-    '''
+    '''언어 선택기'''
     lang = request.args.get('lang')
     if lang is None:
         lang = request.accept_languages.best_match(['ko', 'ko_KR', 'en', 'en_US', 'en_GB'])
@@ -39,29 +40,32 @@ db.base.metadata.create_all(db.engine)
 
 @APP.route('/')
 def index():
-    '''
-    선교캠프 통합 메인 페이지
-    '''
+    '''선교캠프 통합 메인 페이지'''
     return render_template('index.html')
 
 
 # template filters
 @APP.template_filter("yesno")
 def yesno(value):
-    '''
-    value가 false이거나 None이면 아니오, 나머지는 예를 출력하도록 하는 템플릿 필터
-    '''
-    return '예' if value else '아니오'
+    '''value가 false이거나 None이면 아니오, 나머지는 예를 출력하도록 하는 템플릿 필터'''
+    return '예' if value == "1" else '아니오'
 
 
 @APP.template_filter("sex")
 def sex(value):
-    '''
-    성별을 한글로 출력해주는 템플릿 필터
-    '''
+    '''성별을 한글로 출력해주는 템플릿 필터'''
     if value == 'M':
         return '남자'
     elif value == 'F':
         return '여자'
     else:
         return '오류'
+
+
+@APP.template_filter("room_info")
+def room_info(room_idx):
+    try:
+        room = db.session.query(Room).filter(Room.idx == room_idx).one()
+        return "{0} {1}".format(room.building, room.number)
+    except NoResultFound:
+        return "아직 배치되지 않았습니다."

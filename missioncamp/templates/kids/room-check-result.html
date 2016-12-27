@@ -2,39 +2,35 @@
 
 {% block content %}
 <div class="container">
-  <div class="page-header">
-    <h2>숙소조회</h2>
-  </div>
-  <div class="col-xs-12 col-sm-10 col-md-8 well">
-  	{% if member_list|length > 0 %}
-  	{% if group_name is not none %}
-  	<h1>{{ group_name }}</h1>
-  	{% endif %}
+  <div class="col-xs-12 col-sm-6 col-md-5 well">
   	<table class="table">
-  		<tr>
-  			<th>이름</th>
-  			<th>캠프</th>
-  			<th>숙소</th>
-  		</tr>
-
-	  	{% for member in member_list %}
 	  	<tr>
-	  		<td>{{ member.name }}</td>
-	  		<td>{{ member.camp.name }}</td>
-	  		<td>
-	  			{% if member.room_idx is not none %}
-	  			{{ member.room.building }} {{ member.room.number }}
-	  			{% else %}
-	  			숙소가 아직 배치되지 않았습니다^^ 로비의 숙소배치팀에 문의해주세요~
-	  			{% endif %}
-	  		</td>
+	  		<td>이름</td>
+	  		<td>{{ name }}</td>
 	  	</tr>
-	  	{% endfor %}
+	  	{% if camp is not none %}
+	  	<tr>
+	  		<td>캠프</td>
+	  		<td>{{ camp }}</td>
+	  	</tr>
+	  	{% endif %}
 
+      {% if member_list is none %}
+	  	<tr>
+	  		<td>숙소</td>
+	  		<td>{% if name is not none %}{{ member.room_idx|room_info }}{% else %}{{ msg }}{% endif %}</td>
+	  	</tr>
+      {% else %}
+        {% for member in member_list %}
+        <tr>
+          <td>이름</td>
+          <td>{{ member.name }}</td>
+          <td>숙소</td>
+          <td>{{ member.room_idx|room_info }}</td>
+        </tr>
+        {% endfor %}
+      {% endif %}
   	</table>
-  	{% else %}
-  	<p>{{ msg }}</p>
-  	{% endif %}
   </div>
 </div>
 {% endblock %}

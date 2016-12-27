@@ -64,7 +64,7 @@ def get_member_list_query(query, req, orderby=None):
 
     area_idx = req.args.get('area_idx', None)
     user_area_idx = current_user.area_idx
-    print(user_area_idx)
+    # print(user_area_idx)
     if user_area_idx is not None:
         '''
         비티제이 코리아 지부 아이디는 자기 지부 목록만 조회 가능
@@ -503,8 +503,7 @@ def register_view(app, campcode):
         filtered_query = get_member_list_query(filtered_query, request, orderby=['camp_idx', 'sex', 'area_idx'])
 
         page = int(request.args.get('page', 1))
-        filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
-        member_list = filtered_query.all()
+        member_list = filtered_query.limit(50).offset((page - 1) * 50).all()
         count = filtered_query.count()
 
         area_list = Area.get_list(campcode)

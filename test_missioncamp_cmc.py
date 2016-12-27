@@ -2,23 +2,44 @@
 청년대학생 선교캠프 단위 테스트
 '''
 import unittest
-from missioncamp import app as missioncamp
+from core.database import DB as db
+from core.models import Member, Membership, Payment, Camp
+from missioncamp.app import APP as app
+
+
+def delete_member(userid, camp_idx):
+    '''신청자 정보 삭제
+    param: userid, camp_idx
+    return: None
+    '''
+    member = db.session.query(Member).filter(Member.userid == userid, Member.camp_idx == camp_idx).one()
+    memberships = db.session.query(Membership).filter(Membership.member_idx == member.idx).all()
+    for membership in memberships:
+        db.session.delete(membership)
+
+    payment = db.session.query(Payment).filter(Payment.member_idx == member.idx).first()
+    if payment is not None:
+        db.session.delete(payment)
+
+    db.session.delete(member)
+    db.session.commit()
 
 
 class MissioncampCmcTestCase(unittest.TestCase):
     '''청대선캠 테스트 케이스'''
     def setUp(self):
-        missioncamp.APP.config['TESTING'] = True
-        self.app = missioncamp.APP.test_client()
+        '''테스트 전 실행'''
+        app.config['TESTING'] = True
+        self.app = app.test_client()
         self.reg_individual()
 
     def tearDown(self):
-        self.cancel_individual()
+        '''테스트 종료 후 실행'''
+        # self.cancel_individual()
+        delete_member("test123@test.tst", Camp.get_idx('cmc'))
 
     def reg_individual(self):
-        '''
-        개인신청
-        '''
+        '''개인신청 테스트'''
         result = self.app.post("/cmc/registration", data=dict(
             userid="test123@test.tst",
             pwd="123",

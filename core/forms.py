@@ -92,7 +92,6 @@ class GroupForm(Form):
 
     def populate_obj(self, group):
         ''' 폼의 내용을 group 모델 오브젝트에 저장함'''
-        group.groupid = self.groupid.data
         group.name = self.name.data
         group.leadername = self.leadername.data
         hp1 = request.form.get('hp')

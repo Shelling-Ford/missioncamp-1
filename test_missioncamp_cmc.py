@@ -8,7 +8,8 @@ from missioncamp.app import APP as app
 
 
 def delete_member(userid, camp_idx):
-    '''신청자 정보 삭제
+    '''
+    신청자 정보 삭제;
     param: userid, camp_idx
     return: None
     '''
@@ -23,6 +24,15 @@ def delete_member(userid, camp_idx):
 
     db.session.delete(member)
     db.session.commit()
+
+
+def delete_group(groupid, camp_idx):
+    '''
+    신청 단체 정보 삭제;
+    :param: groupid, camp_idx
+    :return: None
+    '''
+    pass
 
 
 class MissioncampCmcTestCase(unittest.TestCase):
@@ -64,6 +74,37 @@ class MissioncampCmcTestCase(unittest.TestCase):
             memo=""
         ), follow_redirects=True)
         assert '신청이 완료되었습니다.' in result.data.decode('utf-8')
+
+    def reg_group(self):
+        '''단체 신청 테스트'''
+        result = self.app.post("/cmc/group/registration", data=dict(
+            groupid="test8870",
+            pwd="1234",
+            pwd2="1234",
+            name="test",
+            leadername="test leader",
+            leadercontact="010-1111-1122",
+            leaderjob="no",
+            area_idx="1",
+            memo="test memo"
+        ), follow_redirects=True)
+
+        assert "신청이 완료되었습니다." in result.data.decode('utf-8')
+
+    def edit_group(self):
+        '''단체수정 테스트'''
+        result = self.app.post("/cmc/group/edit", data=dict(
+            pwd="345",
+            pwd2="345",
+            name="test",
+            leadername="test leader",
+            leadercontact="010-1111-1122",
+            leaderjob="no",
+            area_idx="1",
+            memo="test memo"
+        ), follow_redirects=True)
+        assert "단체 정보 수정이 완료되었습니다." in result.data.decode('utf-8')
+
 
     def cancel_individual(self):
         '''신청취소'''

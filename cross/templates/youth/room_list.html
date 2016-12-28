@@ -61,7 +61,7 @@
       </div>
       <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign') }}" class="btn btn-warning">필터 초기화</a>
       {% set passlist = ['name', 'page', 'area_idx', 'group_idx', 'cancel_yn', 'complete', 'sex'] %}
-      {% for key, value in request.args.iteritems() %}
+      {% for key, value in request.args.items() %}
       {% if key not in passlist %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
       {% endfor %}
       <input type="hidden" name="cancel_yn" value="0"/>
@@ -139,4 +139,3 @@
 
 
 {% endblock %}
-

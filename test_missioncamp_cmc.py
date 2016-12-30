@@ -1,9 +1,7 @@
-'''
-청년대학생 선교캠프 단위 테스트
-'''
+'''청년대학생 선교캠프 단위 테스트'''
 import unittest
 from core.database import DB as db
-from core.models import Member, Membership, Payment, Camp
+from core.models import Member, Membership, Payment, Camp, Group
 from missioncamp.app import APP as app
 
 
@@ -32,7 +30,13 @@ def delete_group(groupid, camp_idx):
     :param: groupid, camp_idx
     :return: None
     '''
-    pass
+    group = db.session.query(Group).filter(Group.groupid == groupid, Group.camp_idx == camp_idx).one()
+    member_list = db.session.query(Member).filter(Member.group_idx == group.idx).all()
+    for member in member_list:
+        delete_member(member.userid, member.camp_idx)
+
+    db.session.delete(group)
+    db.session.commit()
 
 
 class MissioncampCmcTestCase(unittest.TestCase):
@@ -42,11 +46,13 @@ class MissioncampCmcTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         self.reg_individual()
+        self.reg_group()
 
     def tearDown(self):
         '''테스트 종료 후 실행'''
         # self.cancel_individual()
         delete_member("test123@test.tst", Camp.get_idx('cmc'))
+        delete_group('test8870', Camp.get_idx('cmc'))
 
     def reg_individual(self):
         '''개인신청 테스트'''
@@ -105,7 +111,6 @@ class MissioncampCmcTestCase(unittest.TestCase):
         ), follow_redirects=True)
         assert "단체 정보 수정이 완료되었습니다." in result.data.decode('utf-8')
 
-
     def cancel_individual(self):
         '''신청취소'''
         result = self.app.post("/cmc/registration/cancel", data=dict(
@@ -114,7 +119,7 @@ class MissioncampCmcTestCase(unittest.TestCase):
         print(result.data.decode('utf-8'))
         assert '신청이 취소되었습니다' in result.data.decode('utf-8')
 
-    def test_check_individual(self):
+    def check_individual(self):
         '''개인신청 조회'''
         result = self.app.post("/cmc/login", data=dict(
             userid="test123@test.tst",
@@ -126,6 +131,11 @@ class MissioncampCmcTestCase(unittest.TestCase):
         assert '아이디를 입력해주세요' not in result.data.decode('utf-8')
         assert '비밀번호를 입력해 주세요' not in result.data.decode('utf-8')
         assert '개인 신청 조회' in result.data.decode('utf-8')
+
+    # 본 테스트;
+    def test_check_individual(self):
+        '''개인신청 조회 테스트'''
+        self.check_individual()
 
 
 if __name__ == "__main__":

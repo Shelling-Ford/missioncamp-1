@@ -108,6 +108,7 @@ class GroupForm(Form):
         group = Group()
         group.camp_idx = camp_idx
         group.regdate = datetime.datetime.today()
+        group.groupid = request.form.get('groupid')
         group.pwd = hashlib.sha224(self.pwd.data.encode('utf-8')).hexdigest()
         self.populate_obj(group)
         group.cancel_yn = 0

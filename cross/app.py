@@ -57,4 +57,7 @@ def intercp_training(idx):
 @APP.template_filter("membership")
 def membership(idx, membership_key):
     result = db.session.query(Membership).filter(Membership.member_idx == idx, Membership.key == membership_key).first()
-    return result.value
+    if result is not None:
+        return result.value
+    else:
+        return ""

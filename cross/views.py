@@ -124,11 +124,34 @@ def get_app(campcode):
         return None
 
 
+def get_campcode():
+    campcodes = ['cmc', 'cbtj', 'ws', 'kids', 'youth']
+
+    for code in campcodes:
+        if code in request.url:
+            return code
+
+
+# app.route('/attend-all', methods=['POST'])
+def attend_all():
+    attend_idx_list = request.form.getlist('attend')
+
+    for attend_idx in attend_idx_list:
+        member = db.session.query(Member).filter(Member.idx == attend_idx).one()
+        member.attend_yn = 1
+        member.attend_time = datetime.datetime.today()
+    db.session.commit()
+    return redirect(url_for('.member_list', receptionmode=1))
+
+
 def register_view(app, campcode):
     '''
-    블루프린트와 캠프코드를 받은 뒤에 뷰를 등록함. 캠프코드에 따라서 뷰의 내용을 수정하고
-    해당 캠프의 템플릿으로 매칭함.
+    블루프린트와 캠프코드를 받은 뒤에 뷰를 등록함.
+    캠프코드에 따라서 뷰의 내용을 수정하고 해당 캠프의 템플릿으로 매칭함.
     '''
+
+    app.route("/attend-all", methods=['POST'])(attend_all)
+
     @app.route('/')
     @login_required
     def home():

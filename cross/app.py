@@ -5,7 +5,7 @@ import sys
 
 from flask import Flask
 from core.database import DB as db
-from core.models import Area, Group
+from core.models import Area, Group, Membership
 from cross import views_main
 from cross.views import get_app
 from cross.views_master import MASTER as master
@@ -46,3 +46,15 @@ def group_name(idx):
         return group.name
     else:
         return '없음'
+
+
+@APP.template_filter("intercp_training")
+def intercp_training(idx):
+    memberships = db.session.query(Membership).filter(Membership.member_idx == idx, Membership.key == 'training').all()
+    return ",".join([m.value for m in memberships])
+
+
+@APP.template_filter("membership")
+def membership(idx, membership_key):
+    result = db.session.query(Membership).filter(Membership.member_idx == idx, Membership.key == membership_key).first()
+    return result.value

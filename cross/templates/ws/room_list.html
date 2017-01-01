@@ -87,12 +87,15 @@
             <th>지부</th>
             <th>단체</th>
             <th>성별</th>
+            <th>생년</th>
+            <th>직분</th>
             <th>재정클레임</th>
             <th>상태</th>
             {% if request.args.get('cancel_yn',0)|int == 0 %}
             <th>전체참석</th>
             <th>오는날</th>
             <th>가는날</th>
+            <th>인터콥 훈련</th>
             <th>숙소</th>
             <th>메모</th>
             {% else %}
@@ -115,12 +118,15 @@
             <td>{{ m.area.name }}</td>
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
             <td>{{ m.sex }}</td>
+            <td>{{ m.birth }}</td>
+            <td>{{ m.idx|membership('job') }}</td>
             <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
             <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
             {% if request.args.get('cancel_yn',0)|int == 0 %}
             <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
             <td>{{ m.date_of_arrival }}</td>
             <td>{{ m.date_of_leave }}</td>
+            <td>{{ m.idx|intercp_training }}</td>
             <td>{% if not m.room.building == None %}{{ m.room.building }}{% endif %} {% if not m.room.number == None %}{{ m.room.number }}{% endif %}</td>
             <td>{{ m.memo|striptags|truncate(20) }}</td>
             {% else %}

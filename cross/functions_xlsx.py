@@ -25,6 +25,34 @@ def multi_getattr(obj, attr, default=None):
     return obj if obj is not None else default
 
 
+def map_to_str(_map, param):
+    if type(_map) is dict:
+        for key, value in _map.items():
+            if param == key:
+                return value
+    if type(_map) is list:
+        for key, value in enumerate(_map):
+            if param == key:
+                return value
+    return "ERROR({})".format(param)
+
+
+def boolean_to_str(param):
+    return map_to_str(['아니오', '예'], param)
+
+
+def boolean_to_ox(param):
+    return map_to_str(['X', 'O'], param)
+
+
+def sex_to_str(param):
+    return map_to_str({'M': '남', 'F': '여'}, param)
+
+
+def complete_to_str(param):
+    return map_to_str(['미납', '부분납', '완납'], param)
+
+
 class XlsxBuilder():
     '''
     xlsx 파일을 만들어주는 빌더 클래스
@@ -40,34 +68,30 @@ class XlsxBuilder():
         '''
         column_name을 이용해 object에서 값을 받아옴. raw_value를 human_readable_value로 변환
         '''
-        boolean = [u'아니오', u'예', u'??']
-        ox_ = ['X', 'O', '??']
-        sex = {'M': u'남', 'F': u'여', '': u'오류(미입력)'}
-        complete = [u'미납', u'부분납', u'완납']
         func_map = {
-            u'이름': multi_getattr(obj, 'name', ''),
-            u'지부': multi_getattr(obj, 'area.name', ''),
-            u'참가구분': multi_getattr(obj, 'persontype', ''),
-            u'출석': ox_[multi_getattr(obj, 'attend_yn', 0)],
-            u'단체': multi_getattr(obj, 'group.name', ''),
-            u'성별': sex[multi_getattr(obj, 'sex', '')],
-            u'연락처': multi_getattr(obj, 'contact', ''),
-            u'입금상태': complete[multi_getattr(obj, 'payment.complete', 0)],
-            u'입금액': multi_getattr(obj, 'payment.amount', ''),
-            u'재정클레임': multi_getattr(obj, 'payment.claim', ''),
-            u'출석교회': multi_getattr(obj, 'church', ''),
-            u'생년월일': multi_getattr(obj, 'birth', ''),
-            u'단체버스': boolean[multi_getattr(obj, 'bus_yn', 0)],
-            u'2017FO/MIT': boolean[multi_getattr(obj, 'mit_yn', 0)],
-            u'2017MIT': boolean[multi_getattr(obj, 'mit_yn', 0)],
-            u'뉴커머': boolean[multi_getattr(obj, 'newcomer_yn', 0)],
-            u'전체참석': boolean[multi_getattr(obj, 'fullcamp_yn', 0)],
-            u'오는날': multi_getattr(obj, 'date_of_arrival', 0),
-            u'가는날': multi_getattr(obj, 'date_of_leave', 0),
-            u'통역필요': multi_getattr(obj, 'language', ''),
-            u'등록날자': multi_getattr(obj, 'regdate', 0),
-            u'숙소': ''.join([multi_getattr(obj, 'room.building', ''), multi_getattr(obj, 'room.number', '')]),
-            u'메모': multi_getattr(obj, 'memo', ''),
+            '이름': multi_getattr(obj, 'name', ''),
+            '지부': multi_getattr(obj, 'area.name', ''),
+            '참가구분': multi_getattr(obj, 'persontype', ''),
+            '출석': boolean_to_ox(multi_getattr(obj, 'attend_yn', 0)),
+            '단체': multi_getattr(obj, 'group.name', ''),
+            '성별': sex_to_str(multi_getattr(obj, 'sex', '')),
+            '연락처': multi_getattr(obj, 'contact', ''),
+            '입금상태': complete_to_str(multi_getattr(obj, 'payment.complete', 0)),
+            '입금액': multi_getattr(obj, 'payment.amount', ''),
+            '재정클레임': multi_getattr(obj, 'payment.claim', ''),
+            '출석교회': multi_getattr(obj, 'church', ''),
+            '생년월일': multi_getattr(obj, 'birth', ''),
+            '단체버스': boolean_to_str(multi_getattr(obj, 'bus_yn', 0)),
+            '2017FO/MIT': boolean_to_str(multi_getattr(obj, 'mit_yn', 0)),
+            '2017MIT': boolean_to_str(multi_getattr(obj, 'mit_yn', 0)),
+            '뉴커머': boolean_to_str(multi_getattr(obj, 'newcomer_yn', 0)),
+            '전체참석': boolean_to_str(multi_getattr(obj, 'fullcamp_yn', 0)),
+            '오는날': multi_getattr(obj, 'date_of_arrival', 0),
+            '가는날': multi_getattr(obj, 'date_of_leave', 0),
+            '통역필요': multi_getattr(obj, 'language', ''),
+            '등록날자': multi_getattr(obj, 'regdate', 0),
+            '숙소': ''.join([multi_getattr(obj, 'room.building', ''), multi_getattr(obj, 'room.number', '')]),
+            '메모': multi_getattr(obj, 'memo', ''),
         }
 
         return func_map[label]
@@ -77,15 +101,15 @@ class XlsxBuilder():
         '''
         가변필드의 값을 받아오기 위해 처리해줌
         '''
-        boolean = [u'아니오', u'예', u'??']
+        boolean = ['아니오', '예', '??']
         func_map = {
-            u'직업': obj.get('job', ''),
-            u'직분': obj.get('job', ''),
-            u'직장명': obj.get('job_name', ''),
-            u'캠퍼스': obj.get('campus', ''),
-            u'전공': obj.get('major', ''),
-            u'인터콥훈련여부': ','.join(obj.get('training', [])),
-            u'비전스쿨': boolean[int(obj.get('vision_yn', '0') if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)],
+            '직업': obj.get('job', ''),
+            '직분': obj.get('job', ''),
+            '직장명': obj.get('job_name', ''),
+            '캠퍼스': obj.get('campus', ''),
+            '전공': obj.get('major', ''),
+            '인터콥훈련여부': ','.join(obj.get('training', [])),
+            '비전스쿨': boolean_to_str(int(obj.get('vision_yn', '0') if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)),
         }
 
         return func_map[label]
@@ -94,44 +118,42 @@ class XlsxBuilder():
         '''
         멤버 리스트 객체를 받아서 엑셀 문서로 변환해줌
         '''
+        label_list = [
+            '이름', '지부', '참가구분', '출석', '단체', '성별', '연락처', '입금상태', '입금액',
+            '재정클레임', '출석교회', '생년월일', '단체버스', '2017MIT', '뉴커머',
+        ]
 
         if campcode in ['youth', 'kids']:
-            label_list = [
-                u'이름', u'지부', u'참가구분', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
-                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'2017MIT', u'뉴커머',
-                u'전체참석', u'인터콥훈련여부', u'등록날자', u'숙소', u'메모'
-            ]
+            label_list.extend([
+                '전체참석', '인터콥훈련여부', '등록날자', '숙소', '메모'
+            ])
         elif campcode == 'cmc':
-            label_list = [
-                u'이름', u'지부', u'참가구분', u'출석', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
-                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'2017FO/MIT', u'뉴커머', u'비전스쿨',
-                u'전체참석', u'오는날', u'가는날', u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'통역필요',
-                u'등록날자', u'숙소', u'메모'
-            ]
+            label_list.extend([
+                '비전스쿨',
+                '전체참석', '오는날', '가는날', '직업', '캠퍼스', '전공', '인터콥훈련여부', '통역필요',
+                '등록날자', '숙소', '메모'
+            ])
         elif campcode == 'cbtj':
-            label_list = [
-                u'이름', u'지부', u'참가구분', u'출석', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
-                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'2017FO/MIT', u'뉴커머', u'비전스쿨',
-                u'전체참석', u'오는날', u'가는날', u'직업', u'직장명', u'인터콥훈련여부', u'통역필요',
-                u'등록날자', u'숙소', u'메모'
-            ]
+            label_list.extend([
+                '비전스쿨',
+                '전체참석', '오는날', '가는날', '직업', '직장명', '인터콥훈련여부', '통역필요',
+                '등록날자', '숙소', '메모'
+            ])
         else:  # 여남시
-            label_list = [
-                u'이름', u'지부', u'참가구분', u'출석', u'단체', u'성별', u'연락처', u'입금상태', u'입금액',
-                u'재정클레임', u'출석교회', u'생년월일', u'단체버스', u'2017FO/MIT', u'뉴커머',
-                u'전체참석', u'오는날', u'가는날', u'직분', u'인터콥훈련여부', u'통역필요',
-                u'등록날자', u'숙소', u'메모'
-            ]
+            label_list.extend([
+                '전체참석', '오는날', '가는날', '직분', '인터콥훈련여부', '통역필요',
+                '등록날자', '숙소', '메모'
+            ])
 
         row = 0
         col = 0
 
         date_type_label = [
-            u'오는날', u'가는날', u'등록날자'
+            '오는날', '가는날', '등록날자'
         ]
 
         membership_type_label = [
-            u'직업', u'캠퍼스', u'전공', u'인터콥훈련여부', u'비전스쿨', u'직분', u'직장명'
+            '직업', '캠퍼스', '전공', '인터콥훈련여부', '비전스쿨', '직분', '직장명'
         ]
 
         for label in label_list:

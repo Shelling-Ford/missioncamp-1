@@ -125,7 +125,7 @@ class XlsxBuilder():
 
         if campcode in ['youth', 'kids']:
             label_list.extend([
-                '전체참석', '인터콥훈련여부', '등록날자', '숙소', '메모'
+                '전체참석', '오는날', '가는날', '인터콥훈련여부', '등록날자', '숙소', '메모'
             ])
         elif campcode == 'cmc':
             label_list.extend([

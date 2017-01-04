@@ -575,7 +575,8 @@ def register_view(app, campcode):
             # filtered_query = filtered_query.limit(50).offset((page - 1) * 50)
 
             if request.args.get('room_idx', None) is not None:
-                member_list = filtered_query.limit(50).offset((page - 1) * 50).all()
+                # member_list = filtered_query.limit(50).offset((page - 1) * 50).all()
+                member_list = filtered_query.all()
                 count = filtered_query.count()
             else:
                 member_list = []

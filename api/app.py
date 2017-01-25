@@ -3,20 +3,17 @@ from flask_restful import Resource, Api
 
 from core.database import DB
 from core.models import Area, Camp, Member, Group
-from .flask_restful_ext.generics import APIViewMixin, ListAPIViewMixin
+from .flask_restful_ext.generics import APIViewMixin, ListAPIViewMixin, APIView
 from .flask_restful_ext.auth import require_auth
+
+from .serializers import AreaSerializer
 
 APP = Flask(__name__)
 API = Api(APP)
 
 
-class AreaView(Resource, APIViewMixin):
-    queryset = DB.session.query(Area)
-    lookup_field = Area.idx
-
-    @require_auth
-    def get(self, idx):
-        return self.response(self.queryset.filter(Area.idx == idx).one().__dict__)
+class AreaView(APIView):
+    serializer_class = AreaSerializer
 
 
 class AreaListView(Resource, ListAPIViewMixin):

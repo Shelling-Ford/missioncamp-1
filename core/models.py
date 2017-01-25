@@ -21,7 +21,7 @@ class Area(db.base):
     chaptercode = Column(String(10))
 
     @classmethod
-    def get_list(cls, camp):
+    def get_list(cls, camp, use_model=False):
         '''Area.get_list
         '''
         result = []
@@ -29,6 +29,9 @@ class Area(db.base):
             area_list = db.session.query(cls).filter(cls.type != 4).order_by(cls.type, cls.name).all()
         else:
             area_list = db.session.query(cls).filter(or_(cls.camp == '*', cls.camp.like("%{}%".format(camp))), cls.type != 4).order_by(cls.type, cls.name).all()
+
+        if use_model:
+            return area_list
 
         for area in area_list:
             result.append((area.idx, area.name))

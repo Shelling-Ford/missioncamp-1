@@ -2,9 +2,11 @@ from datetime import date
 
 
 def populate_dict(fields, source):
+    del source['_sa_instance_state']
+
     result_dict = dict()
     for key, value in source.items():
-        if key in fields:
+        if fields is None or key in fields:
             if isinstance(value, date):
                 result_dict[key] = value.strftime("%Y-%m-%d")
             else:

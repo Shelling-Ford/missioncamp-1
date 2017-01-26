@@ -16,13 +16,6 @@ def populate_dict(fields, source):
     return result_dict
 
 
-class APIViewMixin:
-    fields = None
-
-    def response(self, source):
-        return populate_dict(self.fields, source)
-
-
 class APIView(Resource):
     serializer_class = None
     queryset = None
@@ -41,21 +34,30 @@ class APIView(Resource):
         return self.serializer.get_queryset()
 
     @require_auth
-    def get(self, idx):
+    def get(self, **kwargs):
         queryset = self.get_queryset()
 
         model_class = self._model_class
         lookup_field = self._lookup_field
-        filterset = tuple(getattr(model_class, lookup_field) == idx)
-        data = queryset.filter(*filterset).one().__dict__
+        data = queryset.filter(getattr(model_class, lookup_field) == kwargs[lookup_field]).one().__dict__
         return self.response(data)
 
     def response(self, source):
         return populate_dict(self._fields, source)
 
 
-class ListAPIViewMixin:
-    fields = None
+class ListAPIView(APIView):
+    def __init__(self):
+        super().__init__()
+
+    @require_auth
+    def get(self, **kwargs):
+        queryset = self.get_queryset()
+
+        # model_class = self._model_class
+        # lookup_field = self._lookup_field
+        data = queryset.limit(20).offset(0).all()
+        return self.response(data)
 
     def response(self, source):
-        return list(populate_dict(self.fields, row.__dict__) for row in source)
+        return list(populate_dict(self._fields, row.__dict__) for row in source)

@@ -1,19 +1,7 @@
-from datetime import date
-from flask_restful import Resource
+from flask_restful import Resource, marshal
+
+from core.database import DB
 from ..flask_restful_ext.auth import require_auth
-
-
-def populate_dict(fields, source):
-    del source['_sa_instance_state']
-
-    result_dict = dict()
-    for key, value in source.items():
-        if fields is None or key in fields:
-            if isinstance(value, date):
-                result_dict[key] = value.strftime("%Y-%m-%d")
-            else:
-                result_dict[key] = value
-    return result_dict
 
 
 class APIView(Resource):
@@ -24,40 +12,42 @@ class APIView(Resource):
     def __init__(self):
         super().__init__()
         self.serializer = self.serializer_class()
-        self._fields = self.serializer.get_fields()
         self._lookup_field = self.serializer.get_lookup_field()
         self._model_class = self.serializer.get_model_class()
 
     def get_queryset(self):
         if self.queryset is not None:
             return self.queryset
-        return self.serializer.get_queryset()
+        model_class = self._model_class
+        return DB.session.query(model_class)
+
+    def get_data(self, **kwargs):
+        queryset = self.get_queryset()
+        model_class = self._model_class
+        lookup_field = self._lookup_field
+        data = queryset.filter(getattr(model_class, lookup_field) == kwargs[lookup_field]).one()
+        return data
 
     @require_auth
     def get(self, **kwargs):
-        queryset = self.get_queryset()
-
-        model_class = self._model_class
-        lookup_field = self._lookup_field
-        data = queryset.filter(getattr(model_class, lookup_field) == kwargs[lookup_field]).one().__dict__
-        return self.response(data)
-
-    def response(self, source):
-        return populate_dict(self._fields, source)
+        data = self.get_data(**kwargs)
+        resource_fields = self.serializer.get_default_fields(data)
+        serialized_data = self.serializer.serialize(data)
+        return marshal(serialized_data, resource_fields)
 
 
 class ListAPIView(APIView):
     def __init__(self):
         super().__init__()
 
+    def get_data(self, **kwargs):
+        queryset = self.get_queryset()
+        return queryset.limit(20).offset(0).all()
+
     @require_auth
     def get(self, **kwargs):
-        queryset = self.get_queryset()
-
-        # model_class = self._model_class
-        # lookup_field = self._lookup_field
-        data = queryset.limit(20).offset(0).all()
-        return self.response(data)
-
-    def response(self, source):
-        return list(populate_dict(self._fields, row.__dict__) for row in source)
+        data = self.get_data(**kwargs)
+        if len(data) > 0:
+            resource_fields = self.serializer.get_default_fields(data[0])
+            return marshal(list(self.serializer.serialize(d) for d in data), resource_fields)
+        return list()

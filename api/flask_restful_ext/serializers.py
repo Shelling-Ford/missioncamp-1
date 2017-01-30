@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import date, datetime
 
 from flask_restful import fields
-from .models import DateField
+from .models import DateField, DateTimeField
 
 
 class BaseSerializer:
@@ -9,14 +9,14 @@ class BaseSerializer:
         model_class = None
         fields = None
 
-    def __init__(self, many=False):
+    def __init__(self, obj=None, many=False):
+        self.obj = obj
         self.many = many
         self.meta = self.Meta()
-        self._model_class = self.meta.model_class
 
         if not hasattr(self.meta, 'fields'):
             def attr_gen():
-                for attr in dir(self._model_class):
+                for attr in dir(self.meta.model_class):
                     if not attr.startswith("_"):
                         yield attr
 
@@ -24,57 +24,81 @@ class BaseSerializer:
         else:
             self._fields = self.meta.fields
 
-        if not hasattr(self.meta, 'lookup_field'):
-            self._lookup_field = None
-        else:
-            self._lookup_field = self.meta.lookup_field
+        self.resource_fields = dict()
+        self.data = self._get_data()
 
     def get_lookup_field(self):
-        return self._lookup_field
+        if not hasattr(self.meta, 'lookup_field'):
+            return None
+        else:
+            return self.meta.lookup_field
 
     def get_model_class(self):
-        return self._model_class
+        return self.meta.model_class
+
+    def _get_data(self):
+        if self.obj is None:
+            return {}
+        else:
+            if self.many:
+                return list(self.serialize_many(self.obj))
+            else:
+                return self.serialize(self.obj)
 
     def serialize(self):
         raise NotImplementedError
 
-    def get_default_fields(self):
-        raise NotImplementedError
+    def serialize_many(self, obj_list):
+        if type(obj_list) is not list:
+            raise ValueError("serialize_many requires list type argument")
+        for obj in obj_list:
+            yield self.serialize(obj)
 
 
 class ModelSerializer(BaseSerializer):
     def serialize(self, obj):
+        def _determine_field_type(v):
+            if type(v) is datetime:
+                return DateTimeField
+            if type(v) is date:
+                return DateField
+            if type(v) is str:
+                return fields.String
+            if type(v) is int:
+                return fields.Integer
+
+            return None
+
         attributes = dir(obj)
         data = dict()
         for k in attributes:
-            v = getattr(obj, k)
-            if k in self._fields:
-                if hasattr(self, k) and isinstance(getattr(self, k), BaseSerializer):
-                    data[k] = getattr(self, k).serialize(v)
-                else:
-                    data[k] = v
-        return data
-
-    def get_default_fields(self, obj):
-        attributes = dir(obj)
-        resource_fields = dict()
-        for k in attributes:
             if k in self._fields:
                 v = getattr(obj, k)
-                if isinstance(v, date):
-                    resource_fields[k] = DateField
-                elif isinstance(v, str):
-                    resource_fields[k] = fields.String
-                elif isinstance(v, int):
-                    resource_fields[k] = fields.Integer
+                if hasattr(self, k) and isinstance(getattr(self, k), BaseSerializer):
+                    child = getattr(self, k)
+                    if child.many:
+                        data[k] = child.serialize_many(v)
+                        self.resource_fields[k] = fields.List(fields.Nested(child.resource_fields))
+                    else:
+                        data[k] = child.serialize(v)
+                        self.resource_fields[k] = fields.Nested(child.resource_fields)
                 else:
-                    if hasattr(self, k) and isinstance(getattr(self, k), BaseSerializer):
-                        child_serializer = getattr(self, k)
-                        if child_serializer.many:
-                            resource_fields[k] = fields.List(fields.Nested(child_serializer.get_default_fields(v[0])))
-                        else:
-                            resource_fields[k] = fields.Nested(child_serializer.get_default_fields(v))
-        return resource_fields
+                    data[k] = v
+                    field_type = _determine_field_type(v)
+                    if field_type is not None:
+                        self.resource_fields[k] = field_type
+        return data
+
+    def deserialize(self, data):
+        model_object = self.meta.model_class()
+        for k, v in data.items():
+            if k in self._fields:
+                if hasattr(self, k) and isinstance(getattr(self, k), BaseSerializer):
+                    child_object = getattr(self, k).deserialize(v)
+                    setattr(model_object, k, child_object)
+                else:
+                    setattr(model_object, k, v)
+        return model_object
 
 
 class MapModelSerializer(BaseSerializer):
@@ -88,11 +112,7 @@ class MapModelSerializer(BaseSerializer):
                     data[obj.key] = [data[obj.key], obj.value]
             else:
                 data[obj.key] = obj.value
-        return data
 
-    def get_default_fields(self, obj_list):
-        resource_fields = dict()
-        for obj in obj_list:
-            if obj.key not in resource_fields:
-                resource_fields[obj.key] = fields.String
-        return resource_fields
+            if obj.key not in self.resource_fields:
+                self.resource_fields[obj.key] = fields.String
+        return data

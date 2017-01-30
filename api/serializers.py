@@ -51,7 +51,3 @@ class MemberSerializer(ModelSerializer):
     class Meta:
         model_class = Member
         lookup_field = 'idx'
-        # fields = ('userid', 'name')
-
-
-

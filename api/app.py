@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 
-from .flask_restful_ext.generics import APIView, ListAPIView
+from .flask_restful_ext.generics import APIView, ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView
 from .serializers import AreaSerializer, CampSerializer, MemberSerializer, GroupSerializer
 
 APP = Flask(__name__)
@@ -16,11 +16,11 @@ class AreaListView(ListAPIView):
     serializer_class = AreaSerializer
 
 
-class CampView(APIView):
+class CampView(RetrieveUpdateAPIView):
     serializer_class = CampSerializer
 
 
-class CampListView(ListAPIView):
+class CampListView(ListCreateAPIView):
     serializer_class = CampSerializer
 
 

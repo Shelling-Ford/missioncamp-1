@@ -1,0 +1,144 @@
+{% extends 'ga/page.html' %}
+
+{% block head %}
+{{ super() }}
+<style>
+.row { margin-bottom: 10px; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="container">
+  {% set i = 0 %}
+  {% set building = room_list[0].building %}
+  <div class="row">
+    <div class="col-sm-1">{{ building }}</div>
+    <div class="col-sm-11">
+      <table class="table1">
+        <tr>
+          {% for room in room_list %}
+            {% if room.room.building != building %}
+              </tr></table></div></div>
+              {% set i = 0 %}
+              {% set building = room.room.building %}
+              <div class="row"><div class="col-sm-1" style="margin-top:11px;">{{ building }}</div>
+              <div class="col-sm-11"><table class="table1" style="margin-top:11px;"><tr>
+            {% endif %}
+            {% if room.cap > 0 %}
+            <td style="text-align:center">
+              <a id="{{ room.room.idx }}" class="btn btn-default btn-xs roomassign" title="{{ room.memo }}">{{ room.room.number }}</a><br/>
+              {{ room_stat['cnt'][room.room.idx] }} ({{ room_stat['a_cnt'][room.room.idx]}}) / {{ room.cap }}<br/>{{ room.memo|striptags|truncate(8) }}
+            </td>
+            {% set i = i + 1 %}
+            {% endif %}
+            {% if i % 15 == 0 %}
+            </tr><tr>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      </table>
+    </div><!-- col -->
+  </div><!-- row -->
+  <br/>
+  <div class="row">
+    <form class="form-inline" action="" method="GET">
+      <input type="text" name="name" class="form-control" placeholder="이름"/>
+      <select name="area_idx" id="area_idx" class="form-control">
+        <option value="">지부</option>
+        {% for idx, name in area_list %}
+        <option value="{{ idx }}" {% if idx == request.args.get('area_idx', 0)|int %} selected {% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+      <select name="group_idx" id="group_idx" class="form-control">
+        <option value="">단체</option>
+        {% for group in group_list %}
+        <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
+        {% endfor %}
+      </select>
+      <div class="form-group">
+        <div class="checkbox">
+          <label><input type="checkbox" name="complete" value="1" {% if 'complete=1' in request.url %} checked {% endif %}/>&nbsp;부분납&nbsp;</label>
+          <label><input type="checkbox" name="complete" value="2" {% if 'complete=2' in request.url %} checked {% endif %}/>&nbsp;완납&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="M"  {% if 'sex=M' in request.url %} checked {% endif %}/>&nbsp;남자&nbsp;</label>
+          <label><input type="checkbox" name="sex" value="F"  {% if 'sex=F' in request.url %} checked {% endif %}/>&nbsp;여자&nbsp;</label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-default">검색</button>&nbsp;<a href="{{ url_for('.roomassign') }}" class="btn btn-warning">필터 초기화</a>
+      {% set passlist = ['name', 'page', 'area_idx', 'group_idx', 'cancel_yn', 'complete', 'sex'] %}
+      {% for key, value in request.args.items() %}
+      {% if key not in passlist %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+      {% endfor %}
+      <input type="hidden" name="cancel_yn" value="0"/>
+    </form>
+    <br/>
+    <br/>
+  </div><!-- row -->
+  <div class="row">
+    <form id='form1' action="" method="post">
+      <table class="table" style="width:100%">
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th><input type="checkbox" class="check_all" id="check_all"/></th>
+            <th>캠프</th>
+            <th>신청날자</th>
+            <th>출석</th>
+            <th>구분</th>
+            <th>이름</th>
+            <th>지부</th>
+            <th>단체</th>
+            <th>성별</th>
+            <th>재정클레임</th>
+            <th>상태</th>
+            {% if request.args.get('cancel_yn',0)|int == 0 %}
+            <th>전체참석</th>
+            <th>오는날</th>
+            <th>가는날</th>
+            <th>숙소</th>
+            <th>메모</th>
+            {% else %}
+            <th>취소 날자</th>
+            <th>취소 사유</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% set i = count %}
+          {% for m in members %}
+          <tr>
+            <td>{{ i }}</td>
+            <td><input type="checkbox" name="member_idx" value="{{ m.idx }}"/></td>
+            <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
+            <td>{{ m.regdate }}</td>
+            <td>{% if m.attend_yn %}<span style="color:blue">O</span>{% else %}<span style="color:gray">X</span>{% endif %}</td>
+            <td>{{ m.persontype }}</td>
+            <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+            <td>{{ m.area.name }}</td>
+            <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+            <td>{{ m.sex }}</td>
+            <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
+            <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
+            {% if request.args.get('cancel_yn',0)|int == 0 %}
+            <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
+            <td>{{ m.date_of_arrival }}</td>
+            <td>{{ m.date_of_leave }}</td>
+            <td>{% if not m.room.building == None %}{{ m.room.building }}{% endif %} {% if not m.room.number == None %}{{ m.room.number }}{% endif %}</td>
+            <td>{{ m.memo|striptags|truncate(20) }}</td>
+            {% else %}
+            <td>{{ m.canceldate }}</td>
+            <td>{{ m.cancel_reason }}</td>
+            {% endif %}
+          </tr>
+          {% set i = i - 1 %}
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="hidden" name="room_idx" id="room_idx" value=""/>
+    </form>
+  </div><!-- row -->
+  <br/>
+  {% block page_nav %}
+  {% endblock %}
+</div><!-- container -->
+
+
+{% endblock %}

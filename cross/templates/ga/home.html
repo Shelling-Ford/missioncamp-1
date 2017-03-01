@@ -1,0 +1,8 @@
+{% extends 'ga/page.html' %}
+{% import 'macros.html' as macros %}
+
+{% block content %}
+<div class="container">
+    {{ macros.render_stat(stat=stat, metrics=metrics)}}
+</div>
+{% endblock %}

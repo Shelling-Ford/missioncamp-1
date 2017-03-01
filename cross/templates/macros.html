@@ -12,9 +12,11 @@
   <tr>
   {# 기본 통계 #}
   {% for name in ['전체', '개인', '단체', '남', '여', '개인 남', '개인 여', '단체 남', '단체 여'] %}
+    {% if name in metrics.basic %}
     <td><a href="{{ url_for('.member_list') }}?cancel_yn=0{% for key, value in metrics.basic[name] %}&amp;{{ key }}={{ value }}{% endfor %}">{{ name }}</a></td>
     {{ render_cell(*stat.basic[name]) }}
     {% if name in ['전체', '단체', '여', '개인 여'] %}</tr><tr>{% endif %}
+    {% endif %}
   {% endfor %}
   </tr>
 </table>
@@ -22,6 +24,7 @@
 
 {# GROUP BY 통계 #}
 {% for name in ['참가유형별', '지부별', '단체별'] %}
+{% if name in metrics.group_by %}
 {% set stat_group = stat.group_by[name] %}
 <p>{{ name }}</p>
 <table class="table1">
@@ -46,10 +49,11 @@
   </tr>
 </table>
 <br/>
+{% endif %}
 {% endfor %}
 
 {# 가변필드 기준 통계 #}
-{% for name in ['캠퍼스별', '전공별', '직업/직군별', '직장별', '인터콥 훈련유형별', '통역필요'] %}
+{% for name in ['캠퍼스별', '전공별', '직업/직군별', '직장별', '인터콥 훈련유형별', '통역필요', '비목회자구분', '기타통역언어', '도시별'] %}
 {% if name in stat.membership %}
 {% set stat_group = stat.membership[name] %}
 <p>{{ name }}</p>

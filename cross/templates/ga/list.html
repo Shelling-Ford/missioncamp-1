@@ -1,0 +1,167 @@
+{% extends 'ga/page.html' %}
+
+{% block content %}
+<div class="container">
+  {% if group is not none %}
+  <section class="page-header">
+    <h2>단체</h2>
+  </section>
+  <table class="table1">
+    <tr>
+      <th>아이디</th>
+      <th>단체이름</th>
+      <th>담당자</th>
+      <th>담당자 직업</th>
+      <th>담당자 연락처</th>
+      <th>메모</th>
+    </tr>
+    <tr>
+      <td>{{ group.groupid }}</td>
+      <td>{{ group.name }}</td>
+      <td>{{ group.leadername }}</td>
+      <td>{{ group.leaderjob }}</td>
+      <td>{{ group.leadercontact }}</td>
+      <td>{{ group.memo }}</td>
+    </tr>
+  </table>
+  <br/>
+  <a href="{{ url_for('.group_edit', group_idx=group.idx) }}" class="btn btn-primary">단체 수정</a>
+  <br/>
+  <br/>
+  {% endif %}
+
+  <section class="page-header">
+    {% if request.args.get('cancel_yn', 0)|int == 1 %}
+    <h2>취소자 목록</h2>
+    {% else %}
+    <h2>신청자 목록</h2>
+    {% endif %}
+  </section>
+  <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
+    <input type="text" name="name" class="form-control" placeholder="이름"/>
+    <select name="area_idx" id="area_idx" class="form-control">
+      <option value="">지부</option>
+      {% for idx, name in area_list %}
+      <option value="{{ idx }}" {% if idx == request.args.get('area_idx', 0)|int %} selected {% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <select name="group_idx" id="group_idx" class="form-control">
+      <option value="">단체</option>
+      {% for group in group_list %}
+      <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-default">검색</button>
+    <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
+    {% for key, value in request.args.items() %}
+    {% if key != 'name' and key != 'page' and key != 'area_idx' and key != 'group_idx' %}<input type="hidden" name="{{ key }}" value="{{ value }}"/>{% endif %}
+    {% endfor %}
+
+  </form>
+  <br/>
+  <br/>
+  <span>
+    ** 지부 및 단체별 명단을 다운받으실 경우 필터를 선택하시고 검색을 눌러주세요.
+    검색을 안누르고 필터 선택만 하면 전체명단이 다운로드 됩니다.
+  </span><br/>
+  <span>
+    ** <button class="btn btn-success btn-xs">체크</button>를 누르면 출석체크가 되면서
+    <button class="btn btn-danger btn-xs">취소</button>로 바뀝니다.
+    <button class="btn btn-danger btn-xs">취소</button>를 다시 누르면 출첵이 취소됩니다.
+  </span>
+  <br/>
+  <br/>
+</div>
+<br/>
+<br/>
+<div class="container-fluid" style="padding-left: 40px; padding-right: 40px;">
+  <table class="table" style="width:100%">
+    <thead>
+      <tr>
+        <th>No.</th>
+        {% if request.args.get('receptionmode', 0) %}
+        <th>캠프</th>
+        {% endif %}
+        <th>신청날자</th>
+        <th>출석</th>
+        <th>구분</th>
+        <th>이름</th>
+        <th>지부</th>
+        <th>단체</th>
+        <th>성별</th>
+        <th>연락처</th>
+        <th>재정클레임</th>
+        <th>입금액</th>
+        <th>상태</th>
+        {% if request.args.get('cancel_yn',0)|int == 0 %}
+        <th>단체버스</th>
+        <th>전체참석</th>
+        <th>오는날</th>
+        <th>가는날</th>
+        <th>숙소</th>
+        <th>메모</th>
+        {% else %}
+        <th>취소 날자</th>
+        <th>취소 사유</th>
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% set i = count %}
+      {% for m in members %}
+      <tr>
+        <td>{{ i }}</td>
+        {% if request.args.get('receptionmode', 0) %}
+        <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
+        {% endif %}
+        <td>{{ m.regdate }}</td>
+        {% if (current_user.role == 'hq' and 'cmc' in current_user.camp) or current_user.role == 'master' %}
+        <td>
+          {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
+          {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
+        </td>
+        {% else %}
+        <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
+        {% endif %}
+        <td>{{ m.persontype }}</td>
+        <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
+        <td>{{ m.area.name }}</td>
+        <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+        <td>{{ m.sex }}</td>
+        <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
+        <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>
+        <td>{% if m.payment.amount == None %} 0 {% else %} {{ m.payment.amount }} {% endif %}</td>
+        <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
+        {% if request.args.get('cancel_yn',0)|int == 0 %}
+        <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
+        <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
+        <td>{{ m.date_of_arrival }}</td>
+        <td>{{ m.date_of_leave }}</td>
+        <td>{% if m.room is not none %}{{ m.room.building }} {{ m.room.number}}{% endif %}</td>
+        <td>{{ m.memo|striptags|truncate(20) }}</td>
+        {% else %}
+        <td>{{ m.canceldate }}</td>
+        <td>{{ m.cancel_reason }}</td>
+        {% endif %}
+      </tr>
+      {% set i = i - 1 %}
+      {% endfor %}
+    </tbody>
+  </table>
+  <br/>
+  <table class="table1">
+    <tr>
+      {% set params = request.args.to_dict() %}
+      <!--{% set page = params.pop('page', none) %}-->
+      {% for i in nav %}
+      {% if i == page|int %}
+      <td>{{ i }}</td>
+      {% else %}
+      <td><a href="{{ url_for('.member_list', page=i, **params) }}">{{ i }}</a></td>
+      {% endif %}
+      {% if i % 30 == 0 %}</tr><tr>{% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>
+{% endblock %}

@@ -16,7 +16,6 @@ from core.database import DB as db
 from core.models import Area, Camp, Member, Group, Room, Roomsetting, Payment, Promotion
 from cross.functions_xlsx import XlsxBuilder
 from cross import statistics
-from cross.stat_metrics import METRICS as metrics
 
 
 def role_required(role, camp='*'):
@@ -116,7 +115,7 @@ def get_app(campcode):
     '''
     캠프 코드를 받아서 세대별 뷰를 등록하기 위한 블루프린트를 반환함.
     '''
-    if campcode in ['cmc', 'cbtj', 'ws', 'kids', 'youth']:
+    if campcode in ['cmc', 'cbtj', 'ws', 'kids', 'youth', 'ga']:
         app = Blueprint(campcode, __name__, template_folder='templates', url_prefix='/{0}'.format(campcode))
         register_view(app, campcode)
         return app
@@ -125,7 +124,7 @@ def get_app(campcode):
 
 
 def get_campcode():
-    campcodes = ['cmc', 'cbtj', 'ws', 'kids', 'youth']
+    campcodes = ['cmc', 'cbtj', 'ws', 'kids', 'youth', 'ga']
 
     for code in campcodes:
         if code in request.url:
@@ -149,6 +148,10 @@ def register_view(app, campcode):
     블루프린트와 캠프코드를 받은 뒤에 뷰를 등록함.
     캠프코드에 따라서 뷰의 내용을 수정하고 해당 캠프의 템플릿으로 매칭함.
     '''
+    if campcode == 'ga':
+        from cross.stat_metrics import GA_METRICS as metrics
+    else:
+        from cross.stat_metrics import METRICS as metrics
 
     app.route("/attend-all", methods=['POST'])(attend_all)
 
@@ -163,7 +166,8 @@ def register_view(app, campcode):
         camp_idx = Camp.get_idx(campcode, year, term)
 
         area_idx = request.args.get('area_idx', None)
-        if area_idx is not None and area_idx != current_user.area_idx:
+
+        if area_idx is not None and area_idx != current_user.area_idx and campcode != 'ag':
             area_idx = current_user.area_idx
 
         stat = statistics.get_stat(camp_idx, area_idx=area_idx)

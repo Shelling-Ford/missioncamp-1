@@ -23,6 +23,7 @@ APP.register_blueprint(get_app('cmc'))
 APP.register_blueprint(get_app('kids'))
 APP.register_blueprint(get_app('ws'))
 APP.register_blueprint(get_app('youth'))
+APP.register_blueprint(get_app('ga'))
 APP.register_blueprint(master)
 
 

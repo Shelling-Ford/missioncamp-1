@@ -38,5 +38,26 @@ METRICS = {
         },
         "kids": {},
         "youth": {},
+        "ga": {},
     },
+}
+
+GA_METRICS = {
+    "basic": {
+        '전체': [],
+        '남': [('sex', 'M')],
+        '여': [('sex', 'F')],
+    },
+    "group_by": {
+        '참가유형별': 'persontype',
+        '출석교회별': 'church',
+        '통역필요': 'language',
+    },
+    "membership": {
+        'ga': {
+            '비목회자구분': 'etcperson',
+            '기타통역언어': 'etclanguage',
+            '도시별': 'city',
+        }
+    }
 }

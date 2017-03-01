@@ -1,0 +1,35 @@
+{% extends 'page.html' %}
+{% block navs %}
+<ul class="nav navbar-nav">
+	<li><a href="{{ url_for('ga.home') }}">통계</a></li>
+	{% if current_user.role == 'branch' %}
+	<li><a href="{{ url_for('.home', area_idx=current_user.area_idx) }}">지부통계</a></li>
+	{% endif %}
+	<li><a href="{{ url_for('ga.member_list', cancel_yn=0, page=1) }}">신청자목록</a></li>
+	<li><a href="{{ url_for('ga.member_list', cancel_yn=1) }}">취소자목록</a></li>
+
+	{% if (current_user.role == 'hq' and current_user.camp == 'cmc') or current_user.role == 'master' %}
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			지난자료&nbsp;<span class="caret" />
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('.home', year=2015, term=1) }}">2015 여름통계</a></li>
+			<li><a href="{{ url_for('.member_list', camp='ga', year=2015, term=1) }}">2015 여름신청자목록</a></li>
+		</ul>
+	</li>
+	<li><a href="{{ url_for('ga.member_list', cancel_yn=0, page=1, receptionmode=1) }}">등록대</a></li>
+
+	<li class="dropdown">
+		<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+			숙소&nbsp;<span class="caret" />
+		</a>
+		<ul class="dropdown-menu">
+			<li><a href="{{ url_for('ga.roomassign', cancel_yn=0, room_idx='none') }}">숙소배치</a></li>
+			<li><a href="{{ url_for('ga.room') }}">숙소현황</a></li>
+			<li><a href="{{ url_for('ga.roomsetting') }}">숙소셋팅</a></li>
+		</ul>
+	</li>
+	{% endif %}
+</ul>
+{% endblock %}

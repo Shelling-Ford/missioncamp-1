@@ -186,7 +186,7 @@ def register_view(app, campcode):
         chart = None
 
         import sys
-        sys.stderr.write(stat)
+        sys.stderr.write(str(stat))
 
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
                                attend_stat=attend_stat, partial_stat=partial_stat, chart=chart, daily_apply=daily_apply)

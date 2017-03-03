@@ -39,18 +39,6 @@
   </section>
   <form class="form-inline" action="{{ url_for('.member_list') }}" method="GET">
     <input type="text" name="name" class="form-control" placeholder="이름"/>
-    <select name="area_idx" id="area_idx" class="form-control">
-      <option value="">지부</option>
-      {% for idx, name in area_list %}
-      <option value="{{ idx }}" {% if idx == request.args.get('area_idx', 0)|int %} selected {% endif %}>{{ name }}</option>
-      {% endfor %}
-    </select>
-    <select name="group_idx" id="group_idx" class="form-control">
-      <option value="">단체</option>
-      {% for group in group_list %}
-      <option value="{{ group.idx }}" {% if group.idx == request.args.get('group_idx', 0)|int %} selected {% endif %}>{{ group.name }}</option>
-      {% endfor %}
-    </select>
     <button type="submit" class="btn btn-default">검색</button>
     <a class="btn btn-primary" href="{{ url_for('.excel_down', **request.args) }}">엑셀 다운</a>
     {% for key, value in request.args.items() %}
@@ -60,10 +48,6 @@
   </form>
   <br/>
   <br/>
-  <span>
-    ** 지부 및 단체별 명단을 다운받으실 경우 필터를 선택하시고 검색을 눌러주세요.
-    검색을 안누르고 필터 선택만 하면 전체명단이 다운로드 됩니다.
-  </span><br/>
   <span>
     ** <button class="btn btn-success btn-xs">체크</button>를 누르면 출석체크가 되면서
     <button class="btn btn-danger btn-xs">취소</button>로 바뀝니다.
@@ -79,22 +63,21 @@
     <thead>
       <tr>
         <th>No.</th>
-        {% if request.args.get('receptionmode', 0) %}
-        <th>캠프</th>
-        {% endif %}
         <th>신청날자</th>
         <th>출석</th>
         <th>구분</th>
+        <th>세부구분</th>
         <th>이름</th>
-        <th>지부</th>
-        <th>단체</th>
+        <th>보호자</th>
+        <th>지역</th>
+        <th>도시</th>
         <th>성별</th>
         <th>연락처</th>
         <th>재정클레임</th>
         <th>입금액</th>
         <th>상태</th>
         {% if request.args.get('cancel_yn',0)|int == 0 %}
-        <th>단체버스</th>
+        <th>비캠참석여부</th>
         <th>전체참석</th>
         <th>오는날</th>
         <th>가는날</th>
@@ -111,11 +94,8 @@
       {% for m in members %}
       <tr>
         <td>{{ i }}</td>
-        {% if request.args.get('receptionmode', 0) %}
-        <td>{% if m.camp.code == 'cbtj' %}<span style="color:green">청직</span>{% elif m.camp.code == 'cmc' %}<span style="color:blue">청대</span>{% endif %}</td>
-        {% endif %}
         <td>{{ m.regdate }}</td>
-        {% if (current_user.role == 'hq' and 'cmc' in current_user.camp) or current_user.role == 'master' %}
+        {% if (current_user.role == 'hq') or current_user.role == 'master' %}
         <td>
           {% if not m.attend_yn %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=1, next=request.url) }}" class="btn btn-success btn-xs">체크</a>
           {% else %}<a href="{{ url_for('.toggle_attend', member_idx=m.idx, attend=0, next=request.url) }}" class="btn btn-danger btn-xs">취소</a>{% endif %}
@@ -124,16 +104,18 @@
         <td>{% if m.attend_yn %}O{% else %}X{% endif %}</td>
         {% endif %}
         <td>{{ m.persontype }}</td>
+        <td>{{ m.idx|membership('etcperson') }}</td>
         <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
-        <td>{{ m.area.name }}</td>
-        <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+        <td>{{ m.idx|membership('pname') }}</td>
+        <td>{{ m.idx|membership('location') }}</td>
+        <td>{{ m.idx|membership('city') }}</td>
         <td>{{ m.sex }}</td>
         <td>{% if m.contact != None %}{{ m.contact }}{% endif %}</td>
         <td>{% if not m.payment.claim == None %}{{ m.payment.claim|striptags|truncate(20) }}{% endif %}</td>
         <td>{% if m.payment.amount == None %} 0 {% else %} {{ m.payment.amount }} {% endif %}</td>
         <td>{% if m.payment.complete == 2 %} <span style="color:red; font-weight:bold">완납</span> {% elif m.payment.complete == 1  %} <span style="color:blue">부분납</span> {% else %} <span style="color:gray">미납</span> {% endif %}</td>
         {% if request.args.get('cancel_yn',0)|int == 0 %}
-        <td>{% if m.bus_yn  %}예{% else %}아니오{% endif %}</td>
+        <td>{% if m.mit_yn  %}예{% else %}아니오{% endif %}</td>
         <td>{% if m.fullcamp_yn %}예{% else %}아니오{% endif %}</td>
         <td>{{ m.date_of_arrival }}</td>
         <td>{{ m.date_of_leave }}</td>

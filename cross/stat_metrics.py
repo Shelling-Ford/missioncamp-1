@@ -58,6 +58,7 @@ GA_METRICS = {
             '비목회자구분': 'etcperson',
             '기타통역언어': 'etclanguage',
             '도시별': 'city',
+            '교단별': 'denomination',
         }
     }
 }

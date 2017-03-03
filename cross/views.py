@@ -185,6 +185,9 @@ def register_view(app, campcode):
         daily_apply = db.session.execute(query)
         chart = None
 
+        import sys
+        sys.stderr(stat)
+
         return render_template('{0}/home.html'.format(campcode), stat=stat, metrics=metrics,
                                attend_stat=attend_stat, partial_stat=partial_stat, chart=chart, daily_apply=daily_apply)
 

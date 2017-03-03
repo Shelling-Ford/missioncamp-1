@@ -167,7 +167,7 @@ def register_view(app, campcode):
 
         area_idx = request.args.get('area_idx', None)
 
-        if area_idx is not None and area_idx != current_user.area_idx and campcode != 'ag':
+        if area_idx is not None and area_idx != current_user.area_idx and campcode != 'ga':
             area_idx = current_user.area_idx
 
         stat = statistics.get_stat(camp_idx, area_idx=area_idx)

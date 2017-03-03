@@ -74,48 +74,6 @@
       </table>
     </form>
     <br/>
-    <h4>지부</h4>
-    <form action = "{{ url_for('.area_setting') }}" method="POST">
-      <input type="hidden" name="member_idx" value="{{ member.idx }}">
-      <table>
-        <tr>
-          <td>
-            <select name="area_idx" id="area_idx" class="form-control">
-              <option value="">지부 변경</option>
-              {% for idx, name in area_list %}
-              <option value="{{ idx }}" {% if idx == member.area_idx %} selected {% endif %}>{{ name }}</option>
-              {% endfor %}
-            </select>
-          </td>
-          <td>&nbsp;</td>
-          <td>
-            <input type="submit" value="변경" class="btn btn-primary">
-          </td>
-        </tr>
-      </table>
-    </form>
-    <br/>
-    <h4>단체</h4>
-    <form action = "{{ url_for('.group_setting') }}" method="POST">
-      <input type="hidden" name="member_idx" value="{{ member.idx }}">
-      <table>
-        <tr>
-          <td>
-            <select name="group_idx" id="group_idx" class="form-control">
-              <option value="">단체 변경</option>
-              {% for group in group_list %}
-              <option value="{{ group.idx }}" {% if group.idx == member.group_idx %} selected {% endif %}>{{ group.name }}</option>
-              {% endfor %}
-            </select>
-          </td>
-          <td>&nbsp;</td>
-          <td>
-            <input type="submit" value="변경" class="btn btn-primary">
-          </td>
-        </tr>
-      </table>
-    </form>
-    <br/>
   </section>
 
   {% endif %}
@@ -127,108 +85,81 @@
         <td>{{ member.name }}</td>
       </tr>
       <tr>
-        <td>지부</td>
-        <td>{{ member.area.name }}</td>
+        <td>영문이름</td>
+        <td>{{ member.idx|membership('enname') }}</td>
       </tr>
       <tr>
-        <td>연락처</td>
-        <td>{{ member.contact }}</td>
-      </tr>
-      <tr>
-        <td>출석교회</td>
-        <td>{{ member.church }}</td>
-      </tr>
-      <tr>
-        <td>생년월일</td>
-        <td>{{ member.birth }}</td>
+        <td>보호자 성함(어린이, 청소년)</td>
+        <td>{{ member.idx|membership('pname') }}</td>
       </tr>
       <tr>
         <td>성별</td>
         <td>{% if member.sex == 'M' %} 남 {% else %} 여 {% endif %}</td>
       </tr>
       <tr>
-        <td>단체버스 이용 여부</td>
-        <td>{% if member.bus_yn %} 예 {% else %} 아니오 {% endif %}</td>
+        <td>연락처</td>
+        <td>{{ member.contact }}</td>
       </tr>
       <tr>
-        <td>MIT 참여 여부</td>
-        <td>{% if member.mit_yn %} 예 {% else %} 아니오 {% endif %}</td>
+        <td>지역</td>
+        <td>{{ member.idx|membership('location') }}</td>
       </tr>
       <tr>
-        <td>선교캠프 참여 경험</td>
-        <td>{% if member.newcomer_yn %} 없음 {% else %} 있음 {% endif %}</td>
+        <td>도시</td>
+        <td>{{ member.idx|membership('city') }}</td>
+      </tr>
+
+      <tr>
+        <td>출석교회</td>
+        <td>{{ member.church }}</td>
+      </tr>
+      <tr>
+        <td>교회주소</td>
+        <td>{{ member.idx|membership('address') }}</td>
+      </tr>
+      <tr>
+        <td>참가구분</td>
+        <td>{{ member.persontype }}</td>
+      </tr>
+      <tr>
+        <td>세부구분(비목회자)</td>
+        <td>{{ member.idx|membership('etcperson') }}</td>
+      </tr>
+      <tr>
+        <td>교단</td>
+        <td>{{ member.idx|membership('denomination') }}</td>
       </tr>
       <tr>
         <td>전체참석 여부</td>
         <td>{% if member.fullcamp_yn %} 전체참석 {% else %} 부분참석 {% endif %}</td>
       </tr>
       <tr>
+        <td>비전캠프 참여 여부</td>
+        <td>{% if member.mit_yn %} 예 {% else %} 아니오 {% endif %}</td>
+      </tr>
+
+      <tr>
         <td>캠프 참석 기간</td>
         <td>{{ member.date_of_arrival }} ~ {{ member.date_of_leave }}</td>
       </tr>
-      {% if member.persontype == '청년' %}
       <tr>
-        <td>직업</td>
+        <td>GA를 알게된 경로</td>
         <td>
           {% for t in member.membership %}
-            {% if t.key == 'job' %}{{ t.value }}{% endif %}
-          {% endfor %}
-        </td>
-      </tr>
-      {% elif member.persontype == '대학생' %}
-      <tr>
-        <td>캠퍼스</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'campus' %}{{ t.value }}{% endif %}
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <td>전공</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'major' %}{{ t.value }}{% endif %}
-          {% endfor %}
-        </td>
-      </tr>
-      {% endif %}
-      <tr>
-        <td>비전스쿨 수료 여부</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'vision_yn' %}
-              {% if t.value == "1" %}예{% else %}아니오{% endif %}
-            {% endif %}
-          {% endfor %}
-        </td>
-      </tr>
-      <tr>
-        <td>인터콥 훈련 여부</td>
-        <td>
-          {% for t in member.membership %}
-            {% if t.key == 'training' %}{{ t.value }},{% endif %}
+            {% if t.key == 'route' %}{{ t.value }},{% endif %}
           {% endfor %}
         </td>
       </tr>
       <tr>
         <td>통역 필요</td>
-        <td>{{ member.language }}</td>
+        <td>{{ member.language }} {{ member.idx|membership('etclanguage') }}</td>
       </tr>
-      {% for membership in member.membership %}
-        {% if membership.key == 'foreigner' %}
-        <tr>
-          <td>국적</td>
-          <td>{% for t in member.membership %} {% if t.key == 'nationality' %} {{t.value}} {% endif %}{% endfor %}</td>
-        </tr>
-        {% endif %}
-      {% endfor %}
       <tr>
         <td>등록 날자</td>
         <td>{{ member.regdate }}</td>
       </tr>
       <tr>
-        <td>메모</td>
+        <td>요청사항</td>
         <td>{{ member.memo }}</td>
       </tr>
 
@@ -241,7 +172,8 @@
       <tr>
         <td colspan="2">
           <p style="text-align:center">
-          <a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>&nbsp;&nbsp;
+          {#
+          <a class="btn btn-primary" href="{{ url_for('.member_edit', member_idx=member.idx) }}">수정</a>#}
           {% if member.cancel_yn == 0 %}
               <a class="btn btn-default" href="{{ url_for('.member_cancel', member_idx=member.idx) }}">신청취소</a>
           {% elif member.cancel_yn == 1 %}

@@ -226,6 +226,38 @@ class RegistrationForm(Form):
         else:
             self.route.widget = HiddenInput()
 
+        if camp == 'ga':
+            self.userid = HiddenInput()
+            self.area_idx = HiddenInput()
+            self.pwd = HiddenInput()
+            self.pwd2 = HiddenInput()
+            self.birth = HiddenInput()
+            self.stafftype = HiddenInput()
+            self.job = HiddenInput()
+            self.job_name = HiddenInput()
+            self.sch1 = HiddenInput()
+            self.sch2 = HiddenInput()
+            self.bus_yn = HiddenInput()
+            self.newcomer_yn = HiddenInput()
+            self.vision_yn = HiddenInput()
+            self.pname = StringField('보호자 성함')
+            self.route = MultiCheckboxField('GA를<br/>알게된 경로')
+            self.route.choices = [
+                ('route1', "주변사람들의 추"), ('route2', "언론매체 및 홍보물"),
+                ('route3', "인터콥소속 선교사 파송교회"), ('route4', "인터콥 협력교회"),
+                ('route5', "목선협"), ('route6', "목회자 비전스쿨"),
+                ('route6', "가타"),
+            ]
+            self.mit_yn.label = "비전캠프 참석 여부"
+
+            setattr(self, 'enname', StringField('영문이름'))
+            self.persontype.choices = ['목회자', '비목회자']
+            setattr(self, 'etcperson', SelectField('세부구분', choices= ['', '여성시니어', '스텝', '청년', '청소년', '어린이', '키즈']))
+            setattr(self, 'address', StringField('교회주소'))
+            setattr(self, 'location', SelectField('지역', choices=['국내', '해외']))
+            setattr(self, 'city', StringField('도시'))
+            setattr(self, 'etclanguage', StringField('기타통역언어'))
+
     def set_group_mode(self, group_idx, group_area_idx):
         ''' 개인 신청인지 단체의 멤버신청인지 정해줌'''
         self.group_yn = True

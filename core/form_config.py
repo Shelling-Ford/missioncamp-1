@@ -67,7 +67,8 @@ MEMBERSHIP_FIELDS = {
     'cmc': ['job', 'campus', 'major', 'vision_yn'],
     'kids': ['pname', 'sch1', 'sch2'],
     'ws': ['job', 'pname', 'stafftype'],
-    'youth': ['sch1', 'sch2']
+    'youth': ['sch1', 'sch2'],
+    'ga': ['enname', 'etcperson', 'pname', 'address', 'location', 'city', 'etclanguage'],
 }
 GROUP_TYPES = {
     'youth': [

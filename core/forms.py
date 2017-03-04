@@ -280,17 +280,20 @@ class RegistrationForm(Form):
         self.area_idx.data = member.area_idx
         self.name.data = member.name
         self.sex.data = member.sex
-        self.birth.data = member.birth[:4]
+        if self.camp != 'ga':
+            self.birth.data = member.birth[:4]
         self.contact.data = member.contact
         self.church.data = member.church
         self.persontype.data = member.persontype
-        self.bus_yn.data = member.bus_yn
+        if self.camp != 'ga':
+            self.bus_yn.data = member.bus_yn
         self.mit_yn.data = member.mit_yn
         self.fullcamp_yn.data = member.fullcamp_yn
         self.date_of_arrival.data = member.date_of_arrival
         self.date_of_leave.data = member.date_of_leave
-        self.newcomer_yn.data = member.newcomer_yn
-        self.training.data = membership_data.get('training')
+        if self.camp != 'ga':
+            self.newcomer_yn.data = member.newcomer_yn
+            self.training.data = membership_data.get('training')
         self.language.data = member.language
         self.memo.data = member.memo
 

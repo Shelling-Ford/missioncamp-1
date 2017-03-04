@@ -357,7 +357,7 @@ def register_view(app, campcode):
         db.session.commit()
 
         next_url = request.form.get('next', None)
-        if next_url is not None:
+        if next_url is not None or next_url != 'None':
             return redirect(next_url)
 
         return redirect(url_for('.member', member_idx=member_idx))

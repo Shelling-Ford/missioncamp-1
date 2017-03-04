@@ -172,6 +172,7 @@ class RegistrationForm(Form):
 
     enname = StringField('영문이름')
     address = StringField('교회주소')
+    denomination = StringField('교단')
     location = SelectField('지역', choices=[('국내', '국내'), ('해외', '해외')])
     city = StringField('도시')
     etclanguage = StringField('기타통역언어')
@@ -201,6 +202,7 @@ class RegistrationForm(Form):
             self.etclanguage.widget = HiddenInput()
             self.enname.widget = HiddenInput()
             self.etcperson.widget = HiddenInput()
+            self.denomination.widget = HiddenInput()
 
             self.area_idx.choices = Area.get_list(camp)
             self.persontype.choices = [(i, i) for i in form_config.PERSONTYPES[camp]]

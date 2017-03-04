@@ -174,59 +174,59 @@ class RegistrationForm(Form):
         ''' 어떤 캠프의 신청폼인지 지정해줌.
         '''
         self.camp = camp
-        self.area_idx.choices = Area.get_list(camp)
-        self.persontype.choices = [(i, i) for i in form_config.PERSONTYPES[camp]]
         self.date_of_arrival.choices = Camp.get_date_list(Camp.get_idx(camp))
         self.date_of_leave.choices = Camp.get_date_list(Camp.get_idx(camp))
-        self.training.choices = form_config.TRAININGS[camp]
 
-        if camp != 'cbtj':
-            self.job_name.widget = HiddenInput()
+        if camp != 'ga':
+            self.area_idx.choices = Area.get_list(camp)
+            self.persontype.choices = [(i, i) for i in form_config.PERSONTYPES[camp]]
+            self.training.choices = form_config.TRAININGS[camp]
+            if camp != 'cbtj':
+                self.job_name.widget = HiddenInput()
 
-        if camp != 'cmc':
-            self.campus.widget = HiddenInput()
-            self.major.widget = HiddenInput()
+            if camp != 'cmc':
+                self.campus.widget = HiddenInput()
+                self.major.widget = HiddenInput()
 
-        if camp in ['cmc', 'cbtj']:
-            self.job.choices = [(i, i) for i in form_config.JOBS]
-        else:
-            self.vision_yn.widget = HiddenInput()
-            self.mit_yn.widget = HiddenInput()
+            if camp in ['cmc', 'cbtj']:
+                self.job.choices = [(i, i) for i in form_config.JOBS]
+            else:
+                self.vision_yn.widget = HiddenInput()
+                self.mit_yn.widget = HiddenInput()
 
-        if camp not in ['ws', 'kids']:
-            self.pname.widget = HiddenInput()
-        else:
-            self.userid.label = '아이디'
+            if camp not in ['ws', 'kids']:
+                self.pname.widget = HiddenInput()
+            else:
+                self.userid.label = '아이디'
 
-        if camp != 'ws':
-            self.stafftype.widget = HiddenInput()
-        else:
-            self.job.label = '교회 직분'
-            self.job.choices = [(i, i) for i in form_config.CHURCH_JOBS]
-            self.stafftype.choices = form_config.STAFF_TYPES[camp]
+            if camp != 'ws':
+                self.stafftype.widget = HiddenInput()
+            else:
+                self.job.label = '교회 직분'
+                self.job.choices = [(i, i) for i in form_config.CHURCH_JOBS]
+                self.stafftype.choices = form_config.STAFF_TYPES[camp]
 
-        if camp not in ['cbtj', 'cmc', 'ws']:
-            self.job.widget = HiddenInput()
+            if camp not in ['cbtj', 'cmc', 'ws']:
+                self.job.widget = HiddenInput()
 
-        if camp not in ['kids', 'youth']:
-            self.sch1.widget = HiddenInput()
-            self.sch2.widget = HiddenInput()
-        else:
-            self.sch2.choices = form_config.SCH2_CHOICES[camp]
+            if camp not in ['kids', 'youth']:
+                self.sch1.widget = HiddenInput()
+                self.sch2.widget = HiddenInput()
+            else:
+                self.sch2.choices = form_config.SCH2_CHOICES[camp]
 
-        if camp == 'kids':
-            self.bus_yn.widget = HiddenInput()
-            self.language.widget = HiddenInput()
-            self.fullcamp_yn.widget = HiddenInput()
-            self.date_of_arrival.widget = HiddenInput()
-            self.date_of_leave.widget = HiddenInput()
+            if camp == 'kids':
+                self.bus_yn.widget = HiddenInput()
+                self.language.widget = HiddenInput()
+                self.fullcamp_yn.widget = HiddenInput()
+                self.date_of_arrival.widget = HiddenInput()
+                self.date_of_leave.widget = HiddenInput()
 
-        if camp == 'youth':
-            self.route.choices = form_config.ROUTES[camp]
-        else:
-            self.route.widget = HiddenInput()
-
-        if camp == 'ga':
+            if camp == 'youth':
+                self.route.choices = form_config.ROUTES[camp]
+            else:
+                self.route.widget = HiddenInput()
+        else:  # camp == 'ga'
             self.userid = HiddenInput()
             self.area_idx = HiddenInput()
             self.pwd = HiddenInput()

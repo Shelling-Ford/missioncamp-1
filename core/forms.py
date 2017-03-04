@@ -170,6 +170,23 @@ class RegistrationForm(Form):
     language = SelectField('통역필요', choices=[(i, i) for i in form_config.LANGUAGES])
     memo = StringField('남기고싶은 말', widget=TextArea())
 
+    enname = StringField('영문이름')
+    address = StringField('교회주소')
+    location = SelectField('지역', choices=[('국내', '국내'), ('해외', '해외')])
+    city = StringField('도시')
+    etclanguage = StringField('기타통역언어')
+    etcperson = SelectField('세부구분', choices=[
+        ('', '선택하세요'),
+        ('여성시니어', '여성시니어'),
+        ('스텝', '스텝'),
+        ('청년', '청년'),
+        ('청소년', '청소년'),
+        ('어린이', '어린이'),
+        ('키즈', '키즈')
+    ])
+
+
+
     def set_camp(self, camp):
         ''' 어떤 캠프의 신청폼인지 지정해줌.
         '''
@@ -178,6 +195,13 @@ class RegistrationForm(Form):
         self.date_of_leave.choices = Camp.get_date_list(Camp.get_idx(camp))
 
         if camp != 'ga':
+            self.address.widget = HiddenInput()
+            self.location.widget = HiddenInput()
+            self.city.widget = HiddenInput()
+            self.etclanguage.widget = HiddenInput()
+            self.enname.widget = HiddenInput()
+            self.etcperson.widget = HiddenInput()
+
             self.area_idx.choices = Area.get_list(camp)
             self.persontype.choices = [(i, i) for i in form_config.PERSONTYPES[camp]]
             self.training.choices = form_config.TRAININGS[camp]
@@ -227,36 +251,33 @@ class RegistrationForm(Form):
             else:
                 self.route.widget = HiddenInput()
         else:  # camp == 'ga'
-            self.userid = HiddenInput()
-            self.area_idx = HiddenInput()
-            self.pwd = HiddenInput()
-            self.pwd2 = HiddenInput()
-            self.birth = HiddenInput()
-            self.stafftype = HiddenInput()
-            self.job = HiddenInput()
-            self.job_name = HiddenInput()
-            self.sch1 = HiddenInput()
-            self.sch2 = HiddenInput()
-            self.bus_yn = HiddenInput()
-            self.newcomer_yn = HiddenInput()
-            self.vision_yn = HiddenInput()
-            self.pname = StringField('보호자 성함')
-            self.route = MultiCheckboxField('GA를<br/>알게된 경로')
+            self.userid.widget = HiddenInput()
+            self.area_idx.widget = HiddenInput()
+            self.pwd.widget = HiddenInput()
+            self.pwd2.widget = HiddenInput()
+            self.birth.widget = HiddenInput()
+            self.stafftype.widget = HiddenInput()
+            self.job.widget = HiddenInput()
+            self.job_name.widget = HiddenInput()
+            self.campus.widget = HiddenInput()
+            self.major.widget = HiddenInput()
+            self.sch1.widget = HiddenInput()
+            self.sch2.widget = HiddenInput()
+            self.bus_yn.widget = HiddenInput()
+            self.newcomer_yn.widget = HiddenInput()
+            self.vision_yn.widget = HiddenInput()
+            self.training.widget = HiddenInput()
+            self.route.label = 'GA를 알게된 경로'
             self.route.choices = [
-                ('route1', "주변사람들의 추"), ('route2', "언론매체 및 홍보물"),
-                ('route3', "인터콥소속 선교사 파송교회"), ('route4', "인터콥 협력교회"),
-                ('route5', "목선협"), ('route6', "목회자 비전스쿨"),
-                ('route6', "가타"),
+                ('주변사람들의 추천', "주변사람들의 추천"), ('언론매체 및 홍보물', "언론매체 및 홍보물"),
+                ('인터콥소속 선교사 파송교회', "인터콥소속 선교사 파송교회"), ('인터콥 협력교회', "인터콥 협력교회"),
+                ('목선협', "목선협"), ('목회자 비전스쿨', "목회자 비전스쿨"),
+                ('기타', "기타"),
             ]
             self.mit_yn.label = "비전캠프 참석 여부"
+            self.persontype.choices = [('목회자', '목회자'), ('비목회자', '비목회자')]
+            self.language.choices = [('필요 없음', '필요 없음'), ('영어', '영어'), ('중국어', '중국어'), ('그 외 언어', '그 외 언어')]
 
-            setattr(self, 'enname', StringField('영문이름'))
-            self.persontype.choices = ['목회자', '비목회자']
-            setattr(self, 'etcperson', SelectField('세부구분', choices= ['', '여성시니어', '스텝', '청년', '청소년', '어린이', '키즈']))
-            setattr(self, 'address', StringField('교회주소'))
-            setattr(self, 'location', SelectField('지역', choices=['국내', '해외']))
-            setattr(self, 'city', StringField('도시'))
-            setattr(self, 'etclanguage', StringField('기타통역언어'))
 
     def set_group_mode(self, group_idx, group_area_idx):
         ''' 개인 신청인지 단체의 멤버신청인지 정해줌'''
@@ -265,7 +286,6 @@ class RegistrationForm(Form):
         self.pwd.widget = HiddenInput()
         self.pwd2.widget = HiddenInput()
         self.area_idx.widget = HiddenInput()
-        # print(self.area_idx.widget.__class__.__name__)
         self.group_idx = group_idx
         self.group_area_idx = group_area_idx
         self.sch1.widget = HiddenInput()
@@ -304,18 +324,22 @@ class RegistrationForm(Form):
     def populate_obj(self, member):
         ''' 폼의 내용으로 member 모델 객체의 내용을 채움'''
         member.name = self.name.data
-        if self.group_yn is False:
-            member.area_idx = self.area_idx.data
-        else:
-            member.area_idx = self.group_area_idx
+        if self.camp != 'ga':
+            if self.group_yn is False:
+                member.area_idx = self.area_idx.data
+            else:
+                member.area_idx = self.group_area_idx
         member.contact = request.form.get('hp') + '-' + request.form.get('hp2') + '-' + request.form.get('hp3')
         member.church = self.church.data
-        member.birth = self.birth.data
+        if self.camp != 'ga':
+            member.birth = self.birth.data
         member.sex = self.sex.data
-        member.bus_yn = self.bus_yn.data if self.bus_yn not in [None, 'None', '', 'none', 'null'] else 0
+        if self.camp != 'ga':
+            member.bus_yn = self.bus_yn.data if self.bus_yn not in [None, 'None', '', 'none', 'null'] else 0
         member.mit_yn = self.mit_yn.data if self.mit_yn not in [None, 'None', '', 'none', 'null'] else 0
         member.attend_yn = 0
-        member.newcomer_yn = self.newcomer_yn.data
+        if self.camp != 'ga':
+            member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
         member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
         if self.camp == 'kids' or self.fullcamp_yn.data == "1":
@@ -335,22 +359,32 @@ class RegistrationForm(Form):
         membership_fields = form_config.MEMBERSHIP_FIELDS[self.camp]
 
         for membership_field in membership_fields:
-            if getattr(self, membership_field).data not in [None, '', 'none']:
-                membership = Membership()
-                membership.camp_idx = camp_idx
-                membership.member_idx = member_idx
-                membership.key = membership_field
-                membership.value = getattr(self, membership_field).data
-                db.session.add(membership)
+            if membership_field == 'route':
+                for route in getattr(self, membership_field).data:
+                    r_membership = Membership()
+                    r_membership.camp_idx = camp_idx
+                    r_membership.member_idx = member_idx
+                    r_membership.key = 'route'
+                    r_membership.value = route
+                    db.session.add(r_membership)
+            else:
+                if getattr(self, membership_field).data not in [None, '', 'none']:
+                    membership = Membership()
+                    membership.camp_idx = camp_idx
+                    membership.member_idx = member_idx
+                    membership.key = membership_field
+                    membership.value = getattr(self, membership_field).data
+                    db.session.add(membership)
 
-        if self.training.data not in [None, '', 'None']:
-            for training in self.training.data:
-                t_membership = Membership()
-                t_membership.camp_idx = camp_idx
-                t_membership.member_idx = member_idx
-                t_membership.key = 'training'
-                t_membership.value = training
-                db.session.add(t_membership)
+        if self.camp != 'ga':
+            if self.training.data not in [None, '', 'None']:
+                for training in self.training.data:
+                    t_membership = Membership()
+                    t_membership.camp_idx = camp_idx
+                    t_membership.member_idx = member_idx
+                    t_membership.key = 'training'
+                    t_membership.value = training
+                    db.session.add(t_membership)
         db.session.commit()
 
     def insert(self):

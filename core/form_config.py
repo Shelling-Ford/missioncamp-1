@@ -68,7 +68,7 @@ MEMBERSHIP_FIELDS = {
     'kids': ['pname', 'sch1', 'sch2'],
     'ws': ['job', 'pname', 'stafftype'],
     'youth': ['sch1', 'sch2'],
-    'ga': ['enname', 'etcperson', 'pname', 'address', 'location', 'city', 'etclanguage'],
+    'ga': ['enname', 'etcperson', 'pname', 'address', 'location', 'city', 'etclanguage', 'route'],
 }
 GROUP_TYPES = {
     'youth': [

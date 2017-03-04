@@ -287,6 +287,7 @@ def register_view(app, campcode):
             return redirect(url_for('.member', member_idx=member_idx))
 
         member = db.session.query(Member).filter(Member.idx == member_idx).one()
+
         form.set_member_data(member)
 
         params = {

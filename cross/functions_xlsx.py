@@ -84,6 +84,7 @@ class XlsxBuilder():
             '단체버스': boolean_to_str(multi_getattr(obj, 'bus_yn', 0)),
             '2017FO/MIT': boolean_to_str(multi_getattr(obj, 'mit_yn', 0)),
             '2017MIT': boolean_to_str(multi_getattr(obj, 'mit_yn', 0)),
+            '비캠참석': boolean_to_str(multi_getattr(obj, 'mit_yn', 0)),
             '뉴커머': boolean_to_str(multi_getattr(obj, 'newcomer_yn', 0)),
             '전체참석': boolean_to_str(multi_getattr(obj, 'fullcamp_yn', 0)),
             '오는날': multi_getattr(obj, 'date_of_arrival', 0),
@@ -107,8 +108,11 @@ class XlsxBuilder():
             '직분': obj.get('job', ''),
             '직장명': obj.get('job_name', ''),
             '캠퍼스': obj.get('campus', ''),
+            '도시': obj.get('city', ''),
+            '교단': obj.get('denomination', ''),
             '전공': obj.get('major', ''),
             '인터콥훈련여부': ','.join(obj.get('training', [])),
+            '참여경로': ','.join(obj.get('route', [])),
             '비전스쿨': boolean_to_str(int(obj.get('vision_yn', '0') if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)),
         }
 
@@ -145,6 +149,12 @@ class XlsxBuilder():
                 '등록날자', '숙소', '메모'
             ])
 
+        if campcode == 'ga':
+            label_list = [
+                '이름', '도시', '참가구분', '출석', '성별', '연락처', '교단', '입금상태', '입금액',
+                '재정클레임', '출석교회', '비캠참석', '참여경로', '등록날자', '오는날', '가는날'
+            ]
+
         row = 0
         col = 0
 
@@ -153,7 +163,7 @@ class XlsxBuilder():
         ]
 
         membership_type_label = [
-            '직업', '캠퍼스', '전공', '인터콥훈련여부', '비전스쿨', '직분', '직장명'
+            '직업', '캠퍼스', '전공', '인터콥훈련여부', '비전스쿨', '직분', '직장명', '참여경로'
         ]
 
         for label in label_list:

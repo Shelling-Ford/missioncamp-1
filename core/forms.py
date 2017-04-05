@@ -150,6 +150,9 @@ class RegistrationForm(Form):
     contact = ContactField('연락처')
     church = StringField('소속교회')
     persontype = RadioField('참가구분')
+    # added by Moon 2017.4.5
+    military = StringField('계급/소속부대')
+    
     stafftype = RadioField('스탭구분')  # membership for ws
     job = SelectField('직업/직종')  # membership for ['cmc', 'cbtj']
     job_name = StringField('직장명')  # membership for cbtj
@@ -307,6 +310,10 @@ class RegistrationForm(Form):
         self.contact.data = member.contact
         self.church.data = member.church
         self.persontype.data = member.persontype
+        # added by Moon 2017.4.5
+        if self.camp == 'cmc' or self.camp == 'cbtj':
+            self.military.data = member.military
+
         if self.camp != 'ga':
             self.bus_yn.data = member.bus_yn
         self.mit_yn.data = member.mit_yn
@@ -343,6 +350,10 @@ class RegistrationForm(Form):
         if self.camp != 'ga':
             member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
+        # added by Moon 2017.4.5
+        if self.camp == 'cmc' or self.camp == 'cbtj':
+            member.military = self.military.data
+
         member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
         if self.camp == 'kids' or self.fullcamp_yn.data == "1":
             date_list = Camp.get_date_list(member.camp_idx)

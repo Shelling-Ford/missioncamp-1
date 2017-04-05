@@ -217,16 +217,17 @@ class RegistrationForm(Form):
             if camp != 'cmc':
                 self.campus.widget = HiddenInput()
                 self.major.widget = HiddenInput()
+            
+            # added by Moon 2017.4.5
+            if camp not in ['cmc', 'cbtj'] or self.job_name != '군인':    
+                self.military.widget =HiddenInput()
+            #
 
             if camp in ['cmc', 'cbtj']:
-                # added by Moon 2017.4.5
-                self.military.widget =HiddenInput()
-                #
                 self.job.choices = [(i, i) for i in form_config.JOBS]
             else:
                 self.vision_yn.widget = HiddenInput()
                 self.mit_yn.widget = HiddenInput()
-
             if camp not in ['ws', 'kids']:
                 self.pname.widget = HiddenInput()
             else:

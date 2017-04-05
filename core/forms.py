@@ -150,9 +150,10 @@ class RegistrationForm(Form):
     contact = ContactField('연락처')
     church = StringField('소속교회')
     persontype = RadioField('참가구분')
+
     # added by Moon 2017.4.5
     military = StringField('계급/소속부대')
-    
+
     stafftype = RadioField('스탭구분')  # membership for ws
     job = SelectField('직업/직종')  # membership for ['cmc', 'cbtj']
     job_name = StringField('직장명')  # membership for cbtj
@@ -218,6 +219,9 @@ class RegistrationForm(Form):
                 self.major.widget = HiddenInput()
 
             if camp in ['cmc', 'cbtj']:
+                # added by Moon 2017.4.5
+                self.military.widget =HiddenInput()
+                #
                 self.job.choices = [(i, i) for i in form_config.JOBS]
             else:
                 self.vision_yn.widget = HiddenInput()

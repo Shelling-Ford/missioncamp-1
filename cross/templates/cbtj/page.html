@@ -14,6 +14,9 @@
 			지난자료&nbsp;<span class="caret"/>
 		</a>
 		<ul class="dropdown-menu">
+		  <li><a href="{{ url_for('.home', year=2017, term=1) }}">2017 겨울 통계</a></li>
+			<li><a href="{{ url_for('.member_list', camp='cbtj', year=2017, term=1) }}">2017 겨울 신청자목록</a></li>
+
 		  <li><a href="{{ url_for('.home', year=2016, term=2) }}">2016 여름 통계</a></li>
 			<li><a href="{{ url_for('.member_list', camp='cbtj', year=2016, term=2) }}">2016 여름 신청자목록</a></li>
 			<li><a href="{{ url_for('.home', year=2016, term=1) }}">2016 겨울 통계</a></li>

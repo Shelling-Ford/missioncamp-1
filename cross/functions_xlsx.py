@@ -72,6 +72,7 @@ class XlsxBuilder():
             '이름': multi_getattr(obj, 'name', ''),
             '지부': multi_getattr(obj, 'area.name', ''),
             '참가구분': multi_getattr(obj, 'persontype', ''),
+            '세부구분': multi_getattr(obj, 'etcperson', ''),
             '출석': boolean_to_ox(multi_getattr(obj, 'attend_yn', 0)),
             '단체': multi_getattr(obj, 'group.name', ''),
             '성별': sex_to_str(multi_getattr(obj, 'sex', '')),
@@ -151,7 +152,7 @@ class XlsxBuilder():
 
         if campcode == 'ga':
             label_list = [
-                '이름', '도시', '참가구분', '출석', '성별', '연락처', '교단', '입금상태', '입금액',
+                '이름', '도시', '참가구분', '세부구분', '출석', '성별', '연락처', '교단', '입금상태', '입금액',
                 '재정클레임', '출석교회', '비캠참석', '참여경로', '등록날자', '오는날', '가는날', '메모'
             ]
 

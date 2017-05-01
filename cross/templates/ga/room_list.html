@@ -121,10 +121,11 @@
             <td>{% if m.attend_yn %}<span style="color:blue">O</span>{% else %}<span style="color:gray">X</span>{% endif %}</td>
             <td>{{ m.persontype }}</td>
             <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
-            <td>{{ m.area.name }}</td>
+            
             <!-- 지부 & 단체 를 도시로 변경 - 2017.5.1 by Moon -->
             <td>{{ m.idx|membership('city') }}</td>
             <!--
+            <td>{{ m.area.name }}</td>
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
             -->
             <td>{{ m.sex }}</td>

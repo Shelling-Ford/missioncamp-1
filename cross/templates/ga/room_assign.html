@@ -16,7 +16,7 @@
         <td><a href="{{ url_for('.roomassign', page=i, **params) }}">{{ i }}</a></td>
       {% endif %}
     {% endif %}
-    {% if i % 30 == 0 %}</tr><tr>{% endif %}
+    {% if i % 100 == 0 %}</tr><tr>{% endif %}
     {% endfor %}
   </tr>
 </table>

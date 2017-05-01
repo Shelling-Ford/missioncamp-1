@@ -115,8 +115,11 @@ class XlsxBuilder():
             '인터콥훈련여부': ','.join(obj.get('training', [])),
             '참여경로': ','.join(obj.get('route', [])),
             '비전스쿨': boolean_to_str(int(obj.get('vision_yn', '0') if obj.get('vision_yn', '0') not in [None, 'none', 'None'] else 0)),
+            '세부구분': obj.get('etcperson', ''),
         }
-
+        '''
+        위에 get_membership_value에서 '세부구분' (etcperson) 정의 추가 - 2017.5.1 by Moon
+        '''
         return func_map[label]
 
     def get_document(self, campcode, member_list):
@@ -164,7 +167,7 @@ class XlsxBuilder():
         ]
 
         membership_type_label = [
-            '직업', '캠퍼스', '전공', '인터콥훈련여부', '비전스쿨', '직분', '직장명', '참여경로', '도시', '교단'
+            '직업', '캠퍼스', '전공', '인터콥훈련여부', '비전스쿨', '직분', '직장명', '참여경로', '도시', '교단', '세부구분'
         ]
 
         for label in label_list:

@@ -88,8 +88,12 @@
             <th>출석</th>
             <th>구분</th>
             <th>이름</th>
+            <!-- 지부 & 단체 를 도시로 변경 - 2017.5.1 by Moon -->
+            <th>도시</th>
+            <!--
             <th>지부</th>
             <th>단체</th>
+            -->
             <th>성별</th>
             <th>재정클레임</th>
             <th>입금액</th>  
@@ -118,7 +122,11 @@
             <td>{{ m.persontype }}</td>
             <td><a href="{{ url_for('%s.member' % m.camp.code, member_idx=m.idx, next=request.url) }}">{{ m.name|striptags|truncate(12) }}</a></td>
             <td>{{ m.area.name }}</td>
+            <!-- 지부 & 단체 를 도시로 변경 - 2017.5.1 by Moon -->
+            <td>{{ m.city }}</td>
+            <!--
             <td>{% if not m.group.name == None %} <a href="{{ url_for('%s.member_list' % m.camp.code, group_idx=m.group_idx) }}">{{ m.group.name }}</a> {% endif %}</td>
+            -->
             <td>{{ m.sex }}</td>
             <td>{% if m.payment is not none and m.payment.claim is not none %}{{ m.payment.claim }}{% endif %}</td>
             <!-- 입금액 표시 추가 - 2017.5.1 by Moon -->

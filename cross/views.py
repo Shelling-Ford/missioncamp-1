@@ -92,7 +92,8 @@ def get_member_list_query(query, req, orderby=None):
             else:
                 filtered_query = filtered_query.filter(getattr(Member, key) == value)
 
-    for key in ['training', 'job', 'campus', 'major', 'job_name']:
+    ''' 도시와 세부구분 추가 - 2017.5.1 by Moon '''
+    for key in ['training', 'job', 'campus', 'major', 'job_name', 'city', 'etcperson']:
         value = req.args.get(key, None)
         if value not in [None, '']:
             filtered_query = filtered_query.filter(Member.membership.any(value=value))

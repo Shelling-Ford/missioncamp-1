@@ -155,7 +155,7 @@ class RegistrationForm(Form):
     military = StringField('계급/소속부대')
 
     stafftype = RadioField('스탭구분')  # membership for ws
-    job = SelectField('직업/직종')  # membership for ['cmc', 'cbtj']
+    job = SelectField('직종/직업')  # membership for ['cmc', 'cbtj']
     job_name = StringField('직장명')  # membership for cbtj
     campus = StringField('캠퍼스')  # membership for cmc
     major = StringField('전공')  # membership for cmc

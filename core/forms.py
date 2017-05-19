@@ -152,7 +152,7 @@ class RegistrationForm(Form):
     persontype = RadioField('참가구분')
 
     # added by Moon 2017.4.5
-    military = StringField('계급/소속부대')
+    #military = StringField('계급/소속부대')
 
     stafftype = RadioField('스탭구분')  # membership for ws
     job = SelectField('직종/직업')  # membership for ['cmc', 'cbtj']
@@ -219,8 +219,8 @@ class RegistrationForm(Form):
                 self.major.widget = HiddenInput()
             
             # added by Moon 2017.4.5
-            if camp not in ['cmc', 'cbtj'] or self.job_name != '군인':    
-                self.military.widget =HiddenInput()
+            #if camp not in ['cmc', 'cbtj'] or self.job_name != '군인':    
+            #    self.military.widget =HiddenInput()
             #
 
             if camp in ['cmc', 'cbtj']:
@@ -316,8 +316,8 @@ class RegistrationForm(Form):
         self.church.data = member.church
         self.persontype.data = member.persontype
         # added by Moon 2017.4.5
-        if self.camp == 'cmc' or self.camp == 'cbtj':
-            self.military.data = member.military
+        #if self.camp == 'cmc' or self.camp == 'cbtj':
+        #    self.military.data = member.military
 
         if self.camp != 'ga':
             self.bus_yn.data = member.bus_yn
@@ -356,8 +356,8 @@ class RegistrationForm(Form):
             member.newcomer_yn = self.newcomer_yn.data
         member.persontype = self.persontype.data
         # added by Moon 2017.4.5
-        if self.camp == 'cmc' or self.camp == 'cbtj':
-            member.military = self.military.data
+        #if self.camp == 'cmc' or self.camp == 'cbtj':
+        #    member.military = self.military.data
 
         member.fullcamp_yn = self.fullcamp_yn.data if self.fullcamp_yn not in [None, 'None', '', 'none', 'null'] else 1
         if self.camp == 'kids' or self.fullcamp_yn.data == "1":

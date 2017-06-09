@@ -23,6 +23,10 @@
 			지난통계<span class="caret">
 		</a>
 		<ul class="dropdown-menu">
+		
+		  <li><a href="{{ url_for('kids.home', year=2017, term=1) }}">2017 겨울</a></li>
+			<li><a href="{{ url_for('kids.member_list', cancel_yn=0, year=2017, term=1) }}">2017 겨울 신청자</a></li>
+
 		  <li><a href="{{ url_for('kids.home', year=2016, term=2) }}">2016 여름</a></li>
 			<li><a href="{{ url_for('kids.member_list', cancel_yn=0, year=2016, term=2) }}">2016 여름 신청자</a></li>
 			<li><a href="{{ url_for('kids.home', year=2016, term=1) }}">2016 겨울</a></li>

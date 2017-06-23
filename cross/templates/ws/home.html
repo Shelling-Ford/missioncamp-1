@@ -5,15 +5,15 @@
 <div class="container">
   {{ macros.render_stat(stat=stat, metrics=metrics)}}
   {% if current_user.role in ['hq', 'master'] %}
-  <p>날자별 신청 현황</p>
+  <p>날짜별 신청 현황</p>
   {{ macros.render_bar_chart(daily_apply) }}
   <br/>
   <p>일자별 통계</p>
   <table class="table1">
     <tr>
-      <th>1월 5일</th>
-      <th>1월 6일</th>
-      <th>1월 7일</th>
+      <th>7월13일</th>
+      <th>7월 14일</th>
+      <th>7월 15일</th>
     </tr>
     <tr>
     {% for s in attend_stat %}
@@ -41,7 +41,7 @@
   <br/>
   {% endif %}
   {% if current_user.role == 'master' %}
-  <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날자 선택 오류 수정</a>
+  <a href="{{ url_for('.fix_attend_error') }}">전체참석 참가자 날짜 선택 오류 수정</a>
   {% endif %}
 </div>
 {% endblock %}

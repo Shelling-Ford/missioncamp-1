@@ -93,9 +93,11 @@ STAFF_TYPES = {
     ]
 }
 SCH2_CHOICES = {
-    'kids': [
+    'kids' : [("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 6)],
+    'youth': [("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 4)]
+}
+''''kids': [
         ('예비1학년', '예비1학년'),
         *[("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 7)]
     ],
-    'youth': [("{0}학년".format(i), "{0}학년".format(i)) for i in range(1, 4)]
-}
+'''

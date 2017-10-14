@@ -15,10 +15,11 @@
 			지난자료&nbsp;<span class="caret" />
 		</a>
 		<ul class="dropdown-menu">
+		 <li><a href="{{ url_for('ws.home', year=2017, term=2) }}">지난통계(2017여름)</a></li>
+		<li><a href="{{ url_for('ws.member_list', year=2017, term=2, cancel_yn=0) }}">지난신청자(2017여름)</a></li>
 		
 		  <li><a href="{{ url_for('ws.home', year=2017, term=1) }}">지난통계(2017겨울)</a></li>
 			<li><a href="{{ url_for('ws.member_list', year=2017, term=1, cancel_yn=0) }}">지난신청자(2017겨울)</a></li>
-
 		  <li><a href="{{ url_for('ws.home', year=2016, term=2) }}">지난통계(2016여름)</a></li>
 			<li><a href="{{ url_for('ws.member_list', year=2016, term=2, cancel_yn=0) }}">지난신청자(2016여름)</a></li>
 			<li><a href="{{ url_for('ws.home', year=2016, term=1) }}">지난통계(2016겨울)</a></li>

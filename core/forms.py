@@ -162,7 +162,7 @@ class RegistrationForm(Form):
     sch1 = StringField('학교')  # membership for kids
     sch2 = SelectField('학년')  # membership for kids
     bus_yn = RadioField('단체버스 이용', choices=[(1, '예'), (0, '아니오')])
-    mit_yn = RadioField('2017 여름 FO/MIT 참가', choices=[(1, '예'), (0, '아니오')])
+    mit_yn = RadioField('2018 겨울 FO/MIT 참가', choices=[(1, '예'), (0, '아니오')])
     fullcamp_yn = RadioField('참가형태', choices=[(1, '전체참가'), (0, '부분참가')])
     date_of_arrival = SelectField('캠프오는날')
     date_of_leave = SelectField('집에가는날')

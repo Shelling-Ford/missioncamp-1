@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-2017청년대학생선교캠프
+2018청년대학생선교캠프
 {% endblock %}
 
 {% block head %}
@@ -76,9 +76,9 @@ footer {
 <section>
   <header>
     <a href="{{ url_for('.home') }}">
-      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='cmc/img/2017/header.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
+      <section class="hidden-xs" id="intro" data-speed="6" data-type="background" style="background: url({{ url_for('static', filename='cmc/img/2018/header.jpg') }}) 50% 0 fixed; background-size: 100% auto;"></section>
     </a>
-    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='cmc/img/2017/header.jpg') }}" style="width: 100%" class="visible-xs" alt="{% trans %}청년대학생선교캠프{% endtrans %}"/></a>
+    <a href="{{ url_for('.home') }}"><img src="{{ url_for('static', filename='cmc/img/2018/header.jpg') }}" style="width: 100%" class="visible-xs" alt="{% trans %}청년대학생선교캠프{% endtrans %}"/></a>
     <nav class="navbar navbar-default" name="primary">
       <div class="container ">
         <div class="navbar-header">
@@ -106,7 +106,8 @@ footer {
             <!-- 맞음 -->
 
             <!-- Commented by Moon 2017.4.5 추후 업데이트 이후 수정필요-->
-            <li><a href="{{ url_for('.page', page_id='charyang') }}">차량안내</a></li>
+            <!--          
+            <li><a href="{{ url_for('.page', page_id='charyang') }}">차량안내</a></li> -->
             <!--<li><a href="{{ url_for('.room_check') }}">숙소확인</a></li> -->
 
 
@@ -141,7 +142,7 @@ footer {
 
   <footer>
     <div class="container">
-      <p>COPYRIGHT 2014, www.missioncamp.net ALL RIGHTS RESERVED<br/>
+      <p>COPYRIGHT 2017, www.missioncamp.net ALL RIGHTS RESERVED<br/>
   		EMAIL : historymakers_b@hanmail.net / TEL : 070-8787-6598~99</p>
       {% block footer %}
       {% endblock footer %}

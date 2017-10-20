@@ -16,7 +16,7 @@
         <tr><td>성별</td><td>{{ member.sex|sex }}</td></tr>
         <tr><td>참가구분</td><td>{{ member.persontype }}</td></tr>
         <tr><td>단체버스 이용 여부</td><td>{% if member.bus_yn %} 예 {% else %} 아니요 {% endif %}</td></tr>
-        <tr><td>2017년 겨울 FO/MIT 참여 여부</td><td>{% if member.mit_yn %} 예 {% else %} 아니요 {% endif %}</td></tr>
+        <tr><td>2018년 겨울 FO/MIT 참여 여부</td><td>{% if member.mit_yn %} 예 {% else %} 아니요 {% endif %}</td></tr>
         <tr><td>선교캠프 참여 경험</td><td>{% if member.newcomer_yn %}없음{% else %}있음{% endif %}</td></tr>
         <tr><td>비전스쿨 수료여부</td><td>{{ membership_data.vision_yn|yesno }}</td></tr>
         <tr><td>전체참석 여부</td><td>{% if member.fullcamp_yn %} 전체참석 {% else %} 부분참석 {% endif %}</td></tr>
@@ -29,7 +29,7 @@
         {% endif %}
         <tr><td>인터콥 훈련 여부</td><td>{{ ", ".join(membership_data.training) }}</td></tr>
         <tr><td>통역 필요</td><td>{{ member.language }}</td></tr>
-        <tr><td>등록 날자</td><td>{{ member.regdate }}</td></tr>
+        <tr><td>등록 날짜</td><td>{{ member.regdate }}</td></tr>
         <tr><td>메모</td><td>{{ member.memo }}</td></tr>
         <tr>
           <td colspan="2">

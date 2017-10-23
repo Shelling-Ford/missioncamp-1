@@ -116,6 +116,7 @@ class Member(db.base, UserMixin):
     attend3 = Column(Integer)
     attend4 = Column(Integer)
     attend_time = Column(DateTime)
+    funnel = Column(Integer)
 
     membership = relationship("Membership", order_by="Membership.key", backref=backref("membership_member"))
     payment = relationship("Payment", uselist=False, backref=backref("payment_member"))

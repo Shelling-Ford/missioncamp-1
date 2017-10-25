@@ -42,10 +42,10 @@ TRAININGS = {
     'ws': [
         ('training1', '시니어비전스쿨'), ('training2', '여성비전스쿨'),
         ('training3', '목회자비전스쿨'), ('training4', '비전스쿨'),
-      #('training5', '월드미션'),
-      #('training6', 'FO'), ('training7', '선교캠프'),
-        ('training6', 'FO'), ('training7'),
+        ('training5', '월드미션'),
+        ('training6', 'FO'), ('training7', '선교캠프'),
         ('training8', '어린이/키즈 선교캠프'), ('none', '없음')
+
     ],
     'youth': [
         ('training1', '청소년비전스쿨'), ('training2', 'Mission Academy'),

@@ -256,7 +256,7 @@ class RegistrationForm(Form):
                 self.date_of_arrival.widget = HiddenInput()
                 self.date_of_leave.widget = HiddenInput()
 
-            if camp == 'youth':
+            if camp == 'youth' or camp == 'cbtj' or camp == 'cmc':
                 self.route.choices = form_config.ROUTES[camp]
             else:
                 self.route.widget = HiddenInput()

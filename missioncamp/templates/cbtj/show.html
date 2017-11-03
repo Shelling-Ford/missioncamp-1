@@ -26,6 +26,7 @@
         <tr><td>직장명</td><td>{{ membership_data.job_name }}</td></tr>
         {% endif %}
         <tr><td>인터콥 훈련 여부</td><td>{{ ", ".join(membership_data.training) }}</td></tr>
+        <tr><td>선교캠프를 알게 된 경로</td><td>{{ ", ".join(membership_data.route) }}</td></tr>
         <tr><td>통역 필요</td><td>{{ member.language }}</td></tr>
         <tr><td>등록 날자</td><td>{{ member.regdate }}</td></tr>
         <tr><td>메모</td><td>{{ member.memo }}</td></tr>

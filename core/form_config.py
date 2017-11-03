@@ -74,11 +74,11 @@ ROUTES = {
     ],
 }
 MEMBERSHIP_FIELDS = {
-    'cbtj': ['job', 'job_name', 'vision_yn'],
-    'cmc': ['job', 'campus', 'major', 'vision_yn'],
+    'cbtj': ['job', 'job_name', 'vision_yn', 'route'],
+    'cmc': ['job', 'campus', 'major', 'vision_yn', 'route'],
     'kids': ['pname', 'sch1', 'sch2'],
     'ws': ['job', 'pname', 'stafftype'],
-    'youth': ['sch1', 'sch2'],
+    'youth': ['sch1', 'sch2', 'route'],
     'ga': ['enname', 'etcperson', 'pname', 'address', 'location', 'city', 'etclanguage', 'route', 'denomination'],
 }
 GROUP_TYPES = {

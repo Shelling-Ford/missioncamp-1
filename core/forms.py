@@ -423,6 +423,9 @@ class RegistrationForm(Form):
         member.room_idx = None
         member.smallgroup_num = None
 
+        if member.mit_yn is None or member.mit_yn == 'None':
+            member.mit_yn = 0
+
         attend = member.get_attend_array()
         member.attend1, member.attend2, member.attend3, member.attend4 = attend
         db.session.add(member)

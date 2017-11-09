@@ -56,19 +56,29 @@ TRAININGS = {
     ],
 }
 ROUTES = {
+    'cbtj': [
+        ('route1', "홍보물(포스터/브로슈어/현수막)"), ('route2', "주변 사람들의 추천"),
+        ('route3', "교회나 단체 홍보"), ('route4', "Social Network(트위터, 페이스북 등)"),
+        ('route5', "인터콥정기모임(월드미션,C-BTJ모임 등)"),
+    ],
+    'cmc': [
+        ('route1', "홍보물(포스터/브로슈어/현수막)"), ('route2', "주변 사람들의 추천"),
+        ('route3', "교회나 단체 홍보"), ('route4', "Social Network(트위터, 페이스북 등)"),
+        ('route5', "인터콥정기모임(월드미션,C-BTJ모임 등)"),
+    ],
     'youth': [
         ('route1', "지인추천(친구,선생님)"), ('route2', "교회추천"),
         ('route3', "홍보물(포스터,브로셔)"), ('route4', "인터넷(Facebook,포털사이트,카페 등등)"),
         ('route5', "월드미션"), ('route6', "유비투어"),
         ('route6', "U★BTJ"), ('none', '없음')
-    ]
+    ],
 }
 MEMBERSHIP_FIELDS = {
-    'cbtj': ['job', 'job_name', 'vision_yn'],
-    'cmc': ['job', 'campus', 'major', 'vision_yn'],
+    'cbtj': ['job', 'job_name', 'vision_yn', 'route'],
+    'cmc': ['job', 'campus', 'major', 'vision_yn', 'route'],
     'kids': ['pname', 'sch1', 'sch2'],
     'ws': ['job', 'pname', 'stafftype'],
-    'youth': ['sch1', 'sch2'],
+    'youth': ['sch1', 'sch2', 'route'],
     'ga': ['enname', 'etcperson', 'pname', 'address', 'location', 'city', 'etclanguage', 'route', 'denomination'],
 }
 GROUP_TYPES = {

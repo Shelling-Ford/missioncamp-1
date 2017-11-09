@@ -256,7 +256,7 @@ class RegistrationForm(Form):
                 self.date_of_arrival.widget = HiddenInput()
                 self.date_of_leave.widget = HiddenInput()
 
-            if camp == 'youth':
+            if camp == 'youth' or camp == 'cbtj' or camp == 'cmc':
                 self.route.choices = form_config.ROUTES[camp]
             else:
                 self.route.widget = HiddenInput()
@@ -422,6 +422,9 @@ class RegistrationForm(Form):
         member.cancel_reason = None
         member.room_idx = None
         member.smallgroup_num = None
+
+        if member.mit_yn is None or member.mit_yn == 'None':
+            member.mit_yn = 0
 
         attend = member.get_attend_array()
         member.attend1, member.attend2, member.attend3, member.attend4 = attend
